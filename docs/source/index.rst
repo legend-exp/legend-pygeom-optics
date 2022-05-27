@@ -9,5 +9,4 @@ Table of Contents
 .. toctree::
    :maxdepth: 1
 
-   install
-   Package API reference <generated/pygama>
+   Package API reference <generated/modules>

@@ -6,7 +6,7 @@ import sys
 sys.path.insert(0, pathlib.Path(__file__).parents[2].resolve().as_posix())
 
 project = 'legend-optics'
-copyright = '2022, the LEGEND Collaboration'
+copyright = '2022, Manuel Huber'
 
 extensions = [
     'sphinx.ext.githubpages',
@@ -17,6 +17,7 @@ extensions = [
     'sphinx.ext.autosectionlabel',
     'sphinx_rtd_theme',
     'sphinx_multiversion',
+    'sphinx_copybutton',
     'myst_parser'
 ]
 
