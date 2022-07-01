@@ -29,6 +29,7 @@ jobs:
       run: |
         sudo apt-get install -y libcgal-dev libmpfr-dev libgmp-dev pybind11-dev
         python -m pip install --upgrade pip wheel setuptools
+        python -m pip install packaging
         python -m pip install --upgrade .[test]
     - name: Run unit tests
       run: |
