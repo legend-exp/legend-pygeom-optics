@@ -28,8 +28,7 @@ jobs:
     - name: Get dependencies and install the package
       run: |
         sudo apt-get install -y libcgal-dev libmpfr-dev libgmp-dev pybind11-dev
-        python -m pip install --upgrade pip wheel setuptools
-        python -m pip install packaging
+        python -m pip install --upgrade pip wheel setuptools packaging
         python -m pip install --upgrade .[test]
     - name: Run unit tests
       run: |
@@ -49,7 +48,7 @@ jobs:
 
       - name: Generate Report
         run: |
-          python -m pip install --upgrade pip wheel setuptools
+          python -m pip install --upgrade pip wheel setuptools packaging
           python -m pip install --upgrade .[test]
           coverage run -m pytest
       - name: Upload Coverage to codecov.io
@@ -68,7 +67,7 @@ jobs:
           python-version: '3.8'
       - name: Setup build environment
         run: |
-          python -m pip install --upgrade pip wheel setuptools
+          python -m pip install --upgrade pip wheel setuptools packaging
           python -m pip install --upgrade .[docs]
       - name: Build docs for current ref
         run: |
