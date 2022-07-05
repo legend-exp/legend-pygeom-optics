@@ -1,5 +1,5 @@
 Welcome to legend-optics's documentation!
-==================================
+=========================================
 
 *Under construction...*
 
