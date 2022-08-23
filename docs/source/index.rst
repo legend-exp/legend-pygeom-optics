@@ -1,4 +1,4 @@
-Welcome to pkgplaceholder's documentation!
+Welcome to legend_optics's documentation!
 ==========================================
 
 Table of Contents

@@ -15,8 +15,8 @@ build:
         --module-first
         --force
         --output-dir docs/source/generated
-        src/pkgplaceholder
-        src/pkgplaceholder/_version.py
+        src/legend_optics
+        src/legend_optics/_version.py
 
 python:
   install:

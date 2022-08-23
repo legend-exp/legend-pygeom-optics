@@ -7,9 +7,9 @@ from pkg_resources import get_distribution
 
 sys.path.insert(0, Path(__file__).parents[2].resolve().as_posix())
 
-project = "pkgplaceholder"
+project = "legend_optics"
 copyright = "Copyright Holder"
-version = get_distribution("pkgplaceholder").version
+version = get_distribution("legend_optics").version
 
 extensions = [
     "sphinx.ext.githubpages",
@@ -31,7 +31,7 @@ language = "python"
 # Furo theme
 html_theme = "furo"
 html_theme_options = {
-    "source_repository": "https://github.com/ghuserplaceholder/pkgplaceholder",
+    "source_repository": "https://github.com/gipert/legend_optics",
     "source_branch": "main",
     "source_directory": "docs/source",
 }
