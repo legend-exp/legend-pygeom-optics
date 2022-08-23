@@ -11,3 +11,5 @@
 [![Read the Docs](https://img.shields.io/readthedocs/legend-optics?logo=readthedocs)](https://legend-optics.readthedocs.io)
 
 Optical properties for the LEGEND experiment.
+
+<sub>*This Python package layout is based on [pyproject-template](https://github.com/gipert/pyproject-template).*</sub>
