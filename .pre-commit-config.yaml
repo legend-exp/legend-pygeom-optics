@@ -34,13 +34,13 @@ repos:
   - id: isort
 
 - repo: https://github.com/asottile/pyupgrade
-  rev: "v2.37.3"
+  rev: "v2.38.0"
   hooks:
   - id: pyupgrade
     args: ["--py36-plus"]
 
 - repo: https://github.com/psf/black
-  rev: "22.6.0"
+  rev: "22.8.0"
   hooks:
   - id: black
 
@@ -83,7 +83,7 @@ repos:
     stages: [manual]
 
 - repo: https://github.com/codespell-project/codespell
-  rev: "v2.1.0"
+  rev: "v2.2.1"
   hooks:
   - id: codespell
     args: ["-L", "nd,unparseable,compiletime"]
@@ -102,7 +102,7 @@ repos:
   - id: rst-inline-touching-normal
 
 - repo: https://github.com/pre-commit/mirrors-prettier
-  rev: "v2.7.1"
+  rev: "v3.0.0-alpha.0"
   hooks:
     - id: prettier
       types_or: [json]
