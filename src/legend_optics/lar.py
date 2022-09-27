@@ -1,3 +1,10 @@
+"""
+.. [Heindl2010] https://doi.org/10.1209/0295-5075/91/62002
+.. [Doke1976] Doke et al, NIM 134 (1976)353
+.. [Bideau-Mehu1980] https://doi.org/10.1016/0022-4073(81)90057-1
+.. [Seidel2002] G. M. Seidel at al., "Rayleigh scattering in rare-gas liquids", https://arxiv.org/abs/hep-ex/0111054v2
+.. [Babicz2020] https://doi.org/10.1088/1748-0221/15/09/P09009
+"""
 from __future__ import annotations
 
 import logging
@@ -13,12 +20,13 @@ log = logging.getLogger(__name__)
 u = pint.get_application_registry()
 
 
-def lar_dielectric_constant_bideau_mehu(λ: Quantity[float | NDArray]) -> float:
+def lar_dielectric_constant_bideau_mehu(
+    λ: Quantity[float | NDArray]
+) -> Quantity[float | NDArray]:
     """Calculate the dielectric constant of LAr for a given photon wavelength.
 
-    From the Bideau-Sellmeier formula [Bideau-Mehu1980]_.
-
-    .. [Bideau-Mehu1980] https://doi.org/10.1016/0022-4073(81)90057-1
+    From the Bideau-Sellmeier formula [Bideau-Mehu1980]_ in gaseous argon, 
+    density-corrected for liquid argon.
     """
     if not λ.check("[length]"):
         raise ValueError("input does not look like a wavelength")
@@ -39,12 +47,12 @@ def lar_dielectric_constant_bideau_mehu(λ: Quantity[float | NDArray]) -> float:
     return (1 + 2 * ϵ) / (1 - ϵ)
 
 
-def lar_dielectric_constant_cern2020(λ: Quantity[float | NDArray]) -> float:
+def lar_dielectric_constant_cern2020(
+    λ: Quantity[float | NDArray]
+) -> Quantity[float | NDArray]:
     """Calculate the dielectric constant of LAr for a given photon wavelength.
 
-    From [Babicz2020]_.
-
-    .. [Babicz2020] https://doi.org/10.1088/1748-0221/15/09/P09009
+    From [Babicz2020]_ (measurements in LAr).
     """
     if not λ.check("[length]"):
         raise ValueError("input does not look like a wavelength")
@@ -68,7 +76,7 @@ def lar_dielectric_constant_cern2020(λ: Quantity[float | NDArray]) -> float:
 
 def lar_dielectric_constant(
     λ: Quantity[float | NDArray], method: str = "cern2020"
-) -> float:
+) -> Quantity[float | NDArray]:
     """Calculate the dielectric constant of LAr for a given photon wavelength.
 
     See Also
@@ -83,7 +91,7 @@ def lar_dielectric_constant(
 
 def lar_refractive_index(
     λ: Quantity[float | NDArray], method: str = "cern2020"
-) -> float:
+) -> Quantity[float | NDArray]:
     """Calculate the refractive index of LAr for a given photon wavelength.
 
     See Also
@@ -97,7 +105,45 @@ def lar_emission_spectrum() -> tuple[Quantity[NDArray], Quantity[NDArray]]:
     """Return the LAr emission spectrum.
 
     Adapted from [Heindl2010]_.
-
-    .. [Heindl2010] https://doi.org/10.1209/0295-5075/91/62002
     """
     return readdatafile("lar_emission_heindl2010.dat")
+
+
+def lar_fano_factor() -> float:
+    """LAr Fano factor
+
+    statistical yield fluctuation can be broadened or narrower
+    (impurities, fano factor). Value 0.11 from [Doke1976]_.
+    """
+    return 0.11
+
+
+def lar_rayleigh(
+    λ: Quantity[float | NDArray], temperature: Quantity[float], method: str = "cern2020"
+) -> Quantity[float | NDArray]:
+    """Calculate the Rayleigh scattering length using the equations given in
+    [Seidel2002]_, but using the dielectric constant created using the specified method.
+
+    This calculation leads to about 90cm length at 128nm (using cern2020), but keep in
+    mind that the value changes drastically out the scintillation peak.
+
+    See Also
+    --------
+    .lar_dielectric_constant
+    """
+
+    dyne = 1.0e-5 * u.newton
+    lar_κT = 2.18e-10 * u.cm**2 / dyne     # LAr isothermal compressibility
+    k = 1.380658e-23 * u.joule / u.kelvin  # the Boltzmann constant
+
+    ϵ = lar_dielectric_constant(λ, method)
+    assert not np.any(ϵ > 1.00000001)
+
+    invL = ((ϵ - 1.0) * (ϵ + 2.0))**2
+    invL *= lar_κT * temperature * k
+    invL /= λ**4
+    invL *= (2/3 * np.pi)**3
+
+    assert not np.any(invL < 1 / (10.0 * u.km)) and not np.any(invL > 1 / (0.1 * u.nm))
+
+    return (1 / invL).to('cm') # simplify units

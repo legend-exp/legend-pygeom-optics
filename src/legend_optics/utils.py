@@ -1,5 +1,8 @@
 import pint
+import scipy.interpolate
+import numpy as np
 from importlib_resources import files
+from pint import Quantity
 from numpy.typing import NDArray
 
 u = pint.get_application_registry()
@@ -44,3 +47,31 @@ def readdatafile(filename: str) -> tuple[NDArray, NDArray]:
         y.append(float(val[1]))
 
     return (x * u[units[0]], y * u[units[1]])
+
+
+class InterpolatingGraph:
+    """Linear interpolation between data points, similar to Geant4 default interpolation.
+    The data points are given as two 1-dimensional NDArrays with units.
+    """
+    def __init__(self, idx: Quantity[NDArray], vals: Quantity[NDArray]):
+        self.idx = idx
+        self.vals = vals
+        self.d_min = min(idx)
+        self.d_max = max(idx)
+        self.n = len(idx)
+        assert min(vals).m >= 0 # We only want positive values in the spectra
+        fn = scipy.interpolate.interp1d(idx.m, vals.m)
+        self.fn = lambda l: u.Quantity(fn(l.to(self.idx.u).m), self.vals.u)
+
+    def __call__(self, l: Quantity[float|NDArray]) -> Quantity[float|NDArray]:
+        # return first/last value if l out of defined range
+        if isinstance(l, np.ndarray):
+            return np.piecewise(l,
+                [l < self.d_min, ((l >= self.d_min)&(l <= self.d_max)), l > self.d_max],
+                [self.vals.iloc[0], self.fn, self.vals.iloc[-1]]
+            )
+        if l < self.d_min:
+            return self.vals.iloc[0]
+        if l > self.d_max:
+            return self.vals.iloc[-1]
+        return self.fn(l)
