@@ -42,12 +42,12 @@ html_title = f"{project} {version}"
 autodoc_mock_imports = [
     "pandas",
     # 'numpy',
-    "matplotlib",
+    # "matplotlib",
     "mplhep",
     "scipy",
     "scimath",
     "pytest",
-    #"pint",
+    # "pint",
 ]  # add new packages here
 autodoc_default_options = {"ignore-module-all": True}
 
