@@ -47,7 +47,7 @@ autodoc_mock_imports = [
     "scipy",
     "scimath",
     "pytest",
-    "pint",
+    #"pint",
 ]  # add new packages here
 autodoc_default_options = {"ignore-module-all": True}
 
