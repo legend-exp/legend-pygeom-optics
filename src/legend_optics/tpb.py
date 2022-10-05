@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import logging
 
-import numpy as np
 import pint
 from numpy.typing import NDArray
 from pint import Quantity
@@ -44,7 +43,7 @@ def tpb_refractive_index() -> float:
 
 def tpb_wls_timeconstant() -> Quantity[float]:
     """Time constant: arbitrary small"""
-    return 0.01*u.ns
+    return 0.01 * u.ns
 
 
 def tpb_wls_emission() -> tuple[Quantity[NDArray], Quantity[NDArray]]:
@@ -61,6 +60,5 @@ def tpb_wls_emission() -> tuple[Quantity[NDArray], Quantity[NDArray]]:
 def tpb_wls_absorption() -> tuple[Quantity[NDArray], Quantity[NDArray]]:
     """Values reported in [Benson2017]_ for TPB evaporated on utraviolet-transmitting acrylic substrate"""
     wvl, absorp = readdatafile("tpb_wlsabslength.dat")
-    assert absorp.check('[length]')
+    assert absorp.check("[length]")
     return wvl, absorp
-

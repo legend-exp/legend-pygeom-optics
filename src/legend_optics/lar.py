@@ -21,11 +21,11 @@ u = pint.get_application_registry()
 
 
 def lar_dielectric_constant_bideau_mehu(
-    λ: Quantity[float | NDArray]
+    λ: Quantity[float | NDArray],
 ) -> Quantity[float | NDArray]:
     """Calculate the dielectric constant of LAr for a given photon wavelength.
 
-    From the Bideau-Sellmeier formula [Bideau-Mehu1980]_ in gaseous argon, 
+    From the Bideau-Sellmeier formula [Bideau-Mehu1980]_ in gaseous argon,
     density-corrected for liquid argon.
     """
     if not λ.check("[length]"):
@@ -48,7 +48,7 @@ def lar_dielectric_constant_bideau_mehu(
 
 
 def lar_dielectric_constant_cern2020(
-    λ: Quantity[float | NDArray]
+    λ: Quantity[float | NDArray],
 ) -> Quantity[float | NDArray]:
     """Calculate the dielectric constant of LAr for a given photon wavelength.
 
@@ -133,17 +133,17 @@ def lar_rayleigh(
     """
 
     dyne = 1.0e-5 * u.newton
-    lar_κT = 2.18e-10 * u.cm**2 / dyne     # LAr isothermal compressibility
+    lar_κT = 2.18e-10 * u.cm**2 / dyne  # LAr isothermal compressibility
     k = 1.380658e-23 * u.joule / u.kelvin  # the Boltzmann constant
 
     ϵ = lar_dielectric_constant(λ, method)
     assert not np.any(ϵ > 1.00000001)
 
-    invL = ((ϵ - 1.0) * (ϵ + 2.0))**2
+    invL = ((ϵ - 1.0) * (ϵ + 2.0)) ** 2
     invL *= lar_κT * temperature * k
     invL /= λ**4
-    invL *= (2/3 * np.pi)**3
+    invL *= (2 / 3 * np.pi) ** 3
 
     assert not np.any(invL < 1 / (10.0 * u.km)) and not np.any(invL > 1 / (0.1 * u.nm))
 
-    return (1 / invL).to('cm') # simplify units
+    return (1 / invL).to("cm")  # simplify units
