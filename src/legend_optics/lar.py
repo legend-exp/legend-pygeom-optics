@@ -1,9 +1,22 @@
 """
-.. [Heindl2010] https://doi.org/10.1209/0295-5075/91/62002
-.. [Doke1976] Doke et al, NIM 134 (1976)353
-.. [Bideau-Mehu1980] https://doi.org/10.1016/0022-4073(81)90057-1
-.. [Seidel2002] G. M. Seidel at al., "Rayleigh scattering in rare-gas liquids", https://arxiv.org/abs/hep-ex/0111054v2
-.. [Babicz2020] https://doi.org/10.1088/1748-0221/15/09/P09009
+Liquid Argon (LAr)
+
+.. [Heindl2010] T. Heindl et al. “The scintillation of liquid argon.” In: EPL 91.6 (Sept. 2010).
+    https://doi.org/10.1209/0295-5075/91/62002
+.. [Doke1976] Doke et al. “Estimation of Fano factors in liquid argon, krypton, xenon and
+    xenon-doped liquid argon. NIM 134 (1976)353, https://doi.org/10.1016/0029-554X(76)90292-5
+.. [Bideau-Mehu1980] Bideau-Mehu et al. “Measurement of refractive indices of neon, argon, krypton
+    and xenon in the 253.7–140.4 nm wavelength range. Dispersion relations and
+    estimated oscillator strengths of the resonance lines.” In: Journal of Quantitative
+    Spectroscopy and Radiative Transfer 25.5 (1981)).
+    https://doi.org/10.1016/0022-4073(81)90057-1
+.. [Seidel2002] G. M. Seidel at al. “Rayleigh scattering in rare-gas liquids.” In: Nuclear
+    Instruments and Methods in Physics Research Section A: Accelerators, Spectrometers
+    Detectors and Associated Equipment 489.1-3 (Aug. 2002).
+    https://doi.org/10.1016/s0168-9002(02)00890-2
+.. [Babicz2020] M. Babicz et al. “A measurement of the group velocity of scintillation light in liquid
+    argon.” In: Journal of Instrumentation 15.09 (Sept. 2020).
+    https://doi.org/10.1088/1748-0221/15/09/P09009
 """
 from __future__ import annotations
 
@@ -102,10 +115,7 @@ def lar_refractive_index(
 
 
 def lar_emission_spectrum() -> tuple[Quantity[NDArray], Quantity[NDArray]]:
-    """Return the LAr emission spectrum.
-
-    Adapted from [Heindl2010]_.
-    """
+    """Return the LAr emission spectrum, adapted from [Heindl2010]_."""
     return readdatafile("lar_emission_heindl2010.dat")
 
 
@@ -137,7 +147,7 @@ def lar_rayleigh(
     k = 1.380658e-23 * u.joule / u.kelvin  # the Boltzmann constant
 
     ϵ = lar_dielectric_constant(λ, method)
-    assert not np.any(ϵ > 1.00000001)
+    assert not np.any(ϵ < 1.00000001)
 
     invL = ((ϵ - 1.0) * (ϵ + 2.0)) ** 2
     invL *= lar_κT * temperature * k

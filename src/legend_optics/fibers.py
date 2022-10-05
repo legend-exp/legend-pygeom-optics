@@ -38,16 +38,17 @@ def fiber_wls_absorption(
     r"""[SaintGobainDataSheet]_ reports the absorption spectrum for BCF-91A. Knowing that the fibers are 1mm thick one can
     extract the absorption length: starting from the trivial relation:
 
-    \[1 - P(E) = \exp(-x/l(E))\]
+    :math:`1 - P(E) = \exp(-x/l(E))`
 
-    where P(E) is the probability (thus proportional to the absorption spectrum) for a photon
-    travelling a distance x to be absorbed in the material given the attenuation length l(E), one
-    can extract l(E) from P(E).  By integrating over the thickness of the material L one obtains:
+    where :math:`P(E)` is the probability (thus proportional to the absorption spectrum) for a photon
+    travelling a distance :math:`x` to be absorbed in the material given the attenuation length
+    :math:`l(E)`, one can extract :math:`l(E)` from :math:`P(E)`. By integrating over the thickness of
+    the material :math:`L` one obtains:
 
-    \[(1 - P(E)) \cdot L = l(E) \cdot (1 - \exp(-L/l(E)))\]
+    :math:`(1 - P(E)) \cdot L = l(E) \cdot (1 - \exp(-L/l(E)))`
 
-    but the problem now is that l(E) cannot be extracted analytically (inhomogeneus expression).
-    I wrote a Mathematica script that solves it numerically.
+    but the problem now is that :math:`l(E)` cannot be extracted analytically (inhomogeneus expression).
+    Luigi wrote a Mathematica script that solves it numerically.
     Remeber that the units are arbitrary because the original absorption
     spectrum has arbitrary units.
 
