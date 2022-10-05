@@ -4,7 +4,7 @@ Tetraphenyl-Butadiene wavelength shifter
 .. [Francini2013] R. Francini et al. “VUV-Vis optical characterization of Tetraphenyl-butadiene films
     on glass and specular reflector substrates from room to liquid Argon temperature.”
     In: Journal of Instrumentation 8.09 (Sept. 2013). https://doi.org/10.1088/1748-0221/8/09/p09006.
-.. [Benson2018] C. Benson et al. “Measurements of the intrinsic quantum eﬀiciency and absorption 
+.. [Benson2018] C. Benson et al. “Measurements of the intrinsic quantum eﬀiciency and absorption
     length of tetraphenyl butadiene thin films in the vacuum ultraviolet regime.”
     In: The European Physical Journal C 78.4 (Apr. 2018).
     https://doi.org/10.1140/epjc/s10052-018-5807-z

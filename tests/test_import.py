@@ -1,5 +1,5 @@
-import pint
 import numpy as np
+import pint
 
 u = pint.get_application_registry()
 
@@ -18,7 +18,7 @@ def test_import():
     legend_optics.lar.lar_dielectric_constant_cern2020(wvl)
     legend_optics.lar.lar_dielectric_constant(wvl)
     legend_optics.lar.lar_refractive_index(wvl)
-    legend_optics.lar.lar_rayleigh(wvl, 87*u.K)
+    legend_optics.lar.lar_rayleigh(wvl, 87 * u.K)
 
     legend_optics.tpb.tpb_quantum_efficiency()
     legend_optics.tpb.tpb_refractive_index()
