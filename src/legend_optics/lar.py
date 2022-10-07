@@ -1,5 +1,5 @@
 """
-Liquid Argon (LAr)
+Liquid Argon (LAr).
 
 .. [Heindl2010] T. Heindl et al. “The scintillation of liquid argon.” In: EPL 91.6 (Sept. 2010).
     https://doi.org/10.1209/0295-5075/91/62002
@@ -120,9 +120,9 @@ def lar_emission_spectrum() -> tuple[Quantity[NDArray], Quantity[NDArray]]:
 
 
 def lar_fano_factor() -> float:
-    """LAr Fano factor
+    """Fano factor.
 
-    statistical yield fluctuation can be broadened or narrower
+    Statistical yield fluctuation can be broadened or narrower
     (impurities, fano factor). Value 0.11 from [Doke1976]_.
     """
     return 0.11
@@ -131,29 +131,28 @@ def lar_fano_factor() -> float:
 def lar_rayleigh(
     λ: Quantity[float | NDArray], temperature: Quantity[float], method: str = "cern2020"
 ) -> Quantity[float | NDArray]:
-    """Calculate the Rayleigh scattering length using the equations given in
-    [Seidel2002]_, but using the dielectric constant created using the specified method.
+    """Calculate the Rayleigh scattering length using the equations given in [Seidel2002]_.
 
-    This calculation leads to about 90cm length at 128nm (using cern2020), but keep in
-    mind that the value changes drastically out the scintillation peak.
+    This uses the dielectric constant created using the specified method. This calculation
+    leads to about 90cm length at 128nm (using cern2020), but keep in mind that the value
+    changes drastically out the scintillation peak.
 
     See Also
     --------
     .lar_dielectric_constant
     """
-
     dyne = 1.0e-5 * u.newton
-    κ_T = 2.18e-10 * u.cm**2 / dyne  # LAr isothermal compressibility
+    κ = 2.18e-10 * u.cm**2 / dyne  # LAr isothermal compressibility
     k = 1.380658e-23 * u.joule / u.kelvin  # the Boltzmann constant
 
     ϵ = lar_dielectric_constant(λ, method)
     assert not np.any(ϵ < 1.00000001)
 
-    invL = ((ϵ - 1.0) * (ϵ + 2.0)) ** 2
-    invL *= κ_T * temperature * k
-    invL /= λ**4
-    invL *= (2 / 3 * np.pi) ** 3
+    inv_l = ((ϵ - 1.0) * (ϵ + 2.0)) ** 2
+    inv_l *= κ * temperature * k
+    inv_l /= λ**4
+    inv_l *= (2 / 3 * np.pi) ** 3
 
-    assert not np.any(invL < 1 / (10.0 * u.km)) and not np.any(invL > 1 / (0.1 * u.nm))
+    assert not np.any(inv_l < 1 / (10.0 * u.km)) and not np.any(inv_l > 1 / (0.1 * u.nm))
 
-    return (1 / invL).to("cm")  # simplify units
+    return (1 / inv_l).to("cm")  # simplify units

@@ -53,6 +53,7 @@ def readdatafile(filename: str) -> tuple[NDArray, NDArray]:
 
 class InterpolatingGraph:
     """Linear interpolation between data points, similar to Geant4 default interpolation.
+
     The data points are given as two 1-dimensional NDArrays with units.
     """
 
@@ -66,20 +67,20 @@ class InterpolatingGraph:
         fn = scipy.interpolate.interp1d(idx.m, vals.m)
         self.fn = lambda l: u.Quantity(fn(l.to(self.idx.u).m), self.vals.u)
 
-    def __call__(self, l: Quantity[float | NDArray]) -> Quantity[float | NDArray]:
-        # return first/last value if l out of defined range
-        if isinstance(l, np.ndarray):
+    def __call__(self, pts: Quantity[float | NDArray]) -> Quantity[float | NDArray]:
+        # return first/last value if pts out of defined range
+        if isinstance(pts, np.ndarray):
             return np.piecewise(
-                l,
+                pts,
                 [
-                    l < self.d_min,
-                    ((l >= self.d_min) & (l <= self.d_max)),
-                    l > self.d_max,
+                    pts < self.d_min,
+                    ((pts >= self.d_min) & (pts <= self.d_max)),
+                    pts > self.d_max,
                 ],
                 [self.vals.iloc[0], self.fn, self.vals.iloc[-1]],
             )
-        if l < self.d_min:
+        if pts < self.d_min:
             return self.vals.iloc[0]
-        if l > self.d_max:
+        if pts > self.d_max:
             return self.vals.iloc[-1]
-        return self.fn(l)
+        return self.fn(pts)

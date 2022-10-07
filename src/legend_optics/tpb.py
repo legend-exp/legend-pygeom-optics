@@ -1,5 +1,5 @@
 """
-Tetraphenyl-Butadiene wavelength shifter
+Tetraphenyl-Butadiene wavelength shifter.
 
 .. [Francini2013] R. Francini et al. “VUV-Vis optical characterization of Tetraphenyl-butadiene films
     on glass and specular reflector substrates from room to liquid Argon temperature.”
@@ -30,7 +30,7 @@ u = pint.get_application_registry()
 
 
 def tpb_quantum_efficiency() -> float:
-    """Quantum efficiency
+    """Quantum efficiency.
 
     * Current literature value of 0.85 from [Araujo2022]_ at LAr Temperature.
     * Other measurement from [Benson2018]_ reports ~0.6 at room temperature
@@ -44,12 +44,12 @@ def tpb_refractive_index() -> float:
 
 
 def tpb_wls_timeconstant() -> Quantity[float]:
-    """Time constant: arbitrary small"""
+    """Time constant: arbitrary small."""
     return 0.01 * u.ns
 
 
 def tpb_wls_emission() -> tuple[Quantity[NDArray], Quantity[NDArray]]:
-    """WLS Emission spectrum
+    """WLS Emission spectrum.
 
     [Francini2013]_ measure the emission spectrum of TPB (~160 um thick layer) on VM2000
     at an excitation wavelength of 128nm and at 87K, so exactly in our experimental
@@ -60,7 +60,7 @@ def tpb_wls_emission() -> tuple[Quantity[NDArray], Quantity[NDArray]]:
 
 
 def tpb_wls_absorption() -> tuple[Quantity[NDArray], Quantity[NDArray]]:
-    """Values reported in [Benson2018]_ for TPB evaporated on utraviolet-transmitting acrylic substrate"""
+    """Values reported in [Benson2018]_ for TPB evaporated on utraviolet-transmitting acrylic substrate."""
     wvl, absorp = readdatafile("tpb_wlsabslength.dat")
     assert absorp.check("[length]")
     return wvl, absorp

@@ -35,7 +35,9 @@ def fiber_core_refractive_index() -> float:
 def fiber_wls_absorption(
     abs_at_400nm: Quantity[float] = 0.7 * u.mm,
 ) -> tuple[Quantity[NDArray], Quantity[NDArray]]:
-    r"""[SaintGobainDataSheet]_ reports the absorption spectrum for BCF-91A. Knowing that the fibers are 1mm thick one can
+    r"""[SaintGobainDataSheet]_ reports the absorption spectrum for BCF-91A.
+
+    Knowing that the fibers are 1mm thick one can
     extract the absorption length: starting from the trivial relation:
 
     :math:`1 - P(E) = \exp(-x/l(E))`
@@ -49,7 +51,7 @@ def fiber_wls_absorption(
 
     but the problem now is that :math:`l(E)` cannot be extracted analytically (inhomogeneus expression).
     Luigi wrote a Mathematica script that solves it numerically.
-    Remeber that the units are arbitrary because the original absorption
+    Remember that the units are arbitrary because the original absorption
     spectrum has arbitrary units.
 
     Measured an absorption length of 0.7 mm at 400 nm, the spectrum has been rescaled by
