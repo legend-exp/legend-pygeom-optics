@@ -28,7 +28,7 @@ def plot_continuous_prop(
         dictionary defining custom matplotlib settings to be passed to
         :func:`plot`.
     """
-    if param_dict == None:
+    if param_dict is None:
         param_dict = {}
     ax.grid(True)
     out = ax.plot(x, prop(x), **param_dict)
@@ -53,7 +53,7 @@ def plot_discrete_prop(ax: plt.Axes, prop: Callable, param_dict=None):
         dictionary defining custom matplotlib settings to be passed to
         :func:`plot`.
     """
-    if param_dict == None:
+    if param_dict is None:
         param_dict = {}
     ax.grid(True)
     out = ax.plot(*prop(), marker="o", **param_dict)
