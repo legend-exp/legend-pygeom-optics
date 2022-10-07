@@ -153,6 +153,8 @@ def lar_rayleigh(
     inv_l /= λ**4
     inv_l *= (2 / 3 * np.pi) ** 3
 
-    assert not np.any(inv_l < 1 / (10.0 * u.km)) and not np.any(inv_l > 1 / (0.1 * u.nm))
+    assert not np.any(inv_l < 1 / (10.0 * u.km)) and not np.any(
+        inv_l > 1 / (0.1 * u.nm)
+    )
 
     return (1 / inv_l).to("cm")  # simplify units

@@ -9,7 +9,7 @@ pint.get_application_registry().setup_matplotlib(True)
 
 
 def plot_continuous_prop(
-    ax: plt.Axes, prop: Callable, x: Quantity[NDArray], param_dict = None
+    ax: plt.Axes, prop: Callable, x: Quantity[NDArray], param_dict=None
 ):
     """Plot continuous property.
 
@@ -28,14 +28,15 @@ def plot_continuous_prop(
         dictionary defining custom matplotlib settings to be passed to
         :func:`plot`.
     """
-    if param_dict == None: param_dict = {}
+    if param_dict == None:
+        param_dict = {}
     ax.grid(True)
     out = ax.plot(x, prop(x), **param_dict)
     plt.tight_layout()
     return out
 
 
-def plot_discrete_prop(ax: plt.Axes, prop: Callable, param_dict = None):
+def plot_discrete_prop(ax: plt.Axes, prop: Callable, param_dict=None):
     """Plot discrete property.
 
     Unpacks what returned by the `prop` function and feeds it to matplotlib's
@@ -52,7 +53,8 @@ def plot_discrete_prop(ax: plt.Axes, prop: Callable, param_dict = None):
         dictionary defining custom matplotlib settings to be passed to
         :func:`plot`.
     """
-    if param_dict == None: param_dict = {}
+    if param_dict == None:
+        param_dict = {}
     ax.grid(True)
     out = ax.plot(*prop(), marker="o", **param_dict)
     plt.tight_layout()
