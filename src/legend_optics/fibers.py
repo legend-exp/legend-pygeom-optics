@@ -33,7 +33,7 @@ def fiber_core_refractive_index() -> float:
 
 
 def fiber_wls_absorption(
-    absAt400nm: Quantity[float] = 0.7 * u.mm,
+    abs_at_400nm: Quantity[float] = 0.7 * u.mm,
 ) -> tuple[Quantity[NDArray], Quantity[NDArray]]:
     r"""[SaintGobainDataSheet]_ reports the absorption spectrum for BCF-91A. Knowing that the fibers are 1mm thick one can
     extract the absorption length: starting from the trivial relation:
@@ -58,7 +58,7 @@ def fiber_wls_absorption(
     wvl, absorp = readdatafile("psfibers_wlsabslength.dat")  # arbitrary unit
     assert str(absorp.dimensionality) == "dimensionless"
     # scale factor for absorption lengths (abslength is 0.7mm at 400nm, see above)
-    absorp *= absAt400nm / InterpolatingGraph(wvl, absorp)(400 * u.nm)
+    absorp *= abs_at_400nm / InterpolatingGraph(wvl, absorp)(400 * u.nm)
     return wvl, absorp
 
 

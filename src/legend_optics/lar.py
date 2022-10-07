@@ -143,14 +143,14 @@ def lar_rayleigh(
     """
 
     dyne = 1.0e-5 * u.newton
-    lar_κT = 2.18e-10 * u.cm**2 / dyne  # LAr isothermal compressibility
+    κ_T = 2.18e-10 * u.cm ** 2 / dyne  # LAr isothermal compressibility
     k = 1.380658e-23 * u.joule / u.kelvin  # the Boltzmann constant
 
     ϵ = lar_dielectric_constant(λ, method)
     assert not np.any(ϵ < 1.00000001)
 
     invL = ((ϵ - 1.0) * (ϵ + 2.0)) ** 2
-    invL *= lar_κT * temperature * k
+    invL *= κ_T * temperature * k
     invL /= λ**4
     invL *= (2 / 3 * np.pi) ** 3
 
