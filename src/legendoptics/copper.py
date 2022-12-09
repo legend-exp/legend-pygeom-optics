@@ -16,6 +16,6 @@ log = logging.getLogger(__name__)
 u = pint.get_application_registry()
 
 
-def copper_reflectivity() -> tuple[Quantity[NDArray], Quantity[NDArray]]:
+def copper_reflectivity() -> tuple[Quantity, Quantity]:
     """Measurements from [Wegmann2017]_."""
     return readdatafile("cu_reflectivity.dat")

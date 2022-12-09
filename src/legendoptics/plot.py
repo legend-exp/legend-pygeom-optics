@@ -9,7 +9,7 @@ pint.get_application_registry().setup_matplotlib(True)
 
 
 def plot_continuous_prop(
-    ax: plt.Axes, prop: Callable, x: Quantity[NDArray], param_dict=None
+    ax: plt.Axes, prop: Callable, x: Quantity, param_dict=None
 ):
     """Plot continuous property.
 

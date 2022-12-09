@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 u = pint.get_application_registry()
 
 
-def tetratex_reflectivity() -> tuple[Quantity[NDArray], Quantity[NDArray]]:
+def tetratex_reflectivity() -> tuple[Quantity, Quantity]:
     """Tetratex reflectivity from [Janacek2012]_.
 
     He measures the reflectivity of 2 and 4 superimposed layers of 160um thick

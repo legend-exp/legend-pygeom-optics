@@ -28,7 +28,7 @@ def nylon_refractive_index() -> float:
     return 1.53
 
 
-def nylon_absorption() -> tuple[Quantity[NDArray], Quantity[NDArray]]:
+def nylon_absorption() -> tuple[Quantity, Quantity]:
     """Values reported in [Agostini2018]_."""
     wvl, absorp = readdatafile("nylon_absorption.dat")
     assert absorp.check("[length]")

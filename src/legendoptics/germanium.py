@@ -20,6 +20,6 @@ log = logging.getLogger(__name__)
 u = pint.get_application_registry()
 
 
-def germanium_reflectivity() -> tuple[Quantity[NDArray], Quantity[NDArray]]:
+def germanium_reflectivity() -> tuple[Quantity, Quantity]:
     """Measurements from [Wegmann2017]_ (with GERDA dead-layer Li-doped germanium, at room temperature)."""
     return readdatafile("ge_reflectivity.dat")

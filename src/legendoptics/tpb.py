@@ -43,12 +43,12 @@ def tpb_refractive_index() -> float:
     return 1.635
 
 
-def tpb_wls_timeconstant() -> Quantity[float]:
+def tpb_wls_timeconstant() -> Quantity:
     """Time constant: arbitrary small."""
     return 0.01 * u.ns
 
 
-def tpb_wls_emission() -> tuple[Quantity[NDArray], Quantity[NDArray]]:
+def tpb_wls_emission() -> tuple[Quantity, Quantity]:
     """WLS Emission spectrum.
 
     [Francini2013]_ measure the emission spectrum of TPB (~160 um thick layer) on VM2000
@@ -59,7 +59,7 @@ def tpb_wls_emission() -> tuple[Quantity[NDArray], Quantity[NDArray]]:
     return readdatafile("tpb_vm2000_wlscomponent.dat")
 
 
-def tpb_wls_absorption() -> tuple[Quantity[NDArray], Quantity[NDArray]]:
+def tpb_wls_absorption() -> tuple[Quantity, Quantity]:
     """Values reported in [Benson2018]_ for TPB evaporated on utraviolet-transmitting acrylic substrate."""
     wvl, absorp = readdatafile("tpb_wlsabslength.dat")
     assert absorp.check("[length]")
