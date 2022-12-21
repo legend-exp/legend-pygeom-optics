@@ -33,8 +33,8 @@ def fiber_core_refractive_index() -> float:
 
 
 def fiber_wls_absorption(
-    abs_at_400nm: Quantity[float] = 0.7 * u.mm,
-) -> tuple[Quantity[NDArray], Quantity[NDArray]]:
+    abs_at_400nm: Quantity = 0.7 * u.mm,
+) -> tuple[Quantity, Quantity]:
     r"""[SaintGobainDataSheet]_ reports the absorption spectrum for BCF-91A.
 
     Knowing that the fibers are 1mm thick one can
@@ -64,7 +64,7 @@ def fiber_wls_absorption(
     return wvl, absorp
 
 
-def fiber_wls_emission() -> tuple[Quantity[NDArray], Quantity[NDArray]]:
+def fiber_wls_emission() -> tuple[Quantity, Quantity]:
     """[SaintGobainDataSheet]_ reports the emission spectrum for BCF-91A."""
     return readdatafile("psfibers_wlscomponent.dat")
 

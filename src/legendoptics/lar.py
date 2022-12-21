@@ -34,8 +34,8 @@ u = pint.get_application_registry()
 
 
 def lar_dielectric_constant_bideau_mehu(
-    λ: Quantity[float | NDArray],
-) -> Quantity[float | NDArray]:
+    λ: Quantity,
+) -> Quantity:
     """Calculate the dielectric constant of LAr for a given photon wavelength.
 
     From the Bideau-Sellmeier formula [Bideau-Mehu1980]_ in gaseous argon,
@@ -61,8 +61,8 @@ def lar_dielectric_constant_bideau_mehu(
 
 
 def lar_dielectric_constant_cern2020(
-    λ: Quantity[float | NDArray],
-) -> Quantity[float | NDArray]:
+    λ: Quantity,
+) -> Quantity:
     """Calculate the dielectric constant of LAr for a given photon wavelength.
 
     From [Babicz2020]_ (measurements in LAr).
@@ -88,8 +88,8 @@ def lar_dielectric_constant_cern2020(
 
 
 def lar_dielectric_constant(
-    λ: Quantity[float | NDArray], method: str = "cern2020"
-) -> Quantity[float | NDArray]:
+    λ: Quantity, method: str = "cern2020"
+) -> Quantity:
     """Calculate the dielectric constant of LAr for a given photon wavelength.
 
     See Also
@@ -103,8 +103,8 @@ def lar_dielectric_constant(
 
 
 def lar_refractive_index(
-    λ: Quantity[float | NDArray], method: str = "cern2020"
-) -> Quantity[float | NDArray]:
+    λ: Quantity, method: str = "cern2020"
+) -> Quantity:
     """Calculate the refractive index of LAr for a given photon wavelength.
 
     See Also
@@ -114,7 +114,7 @@ def lar_refractive_index(
     return np.sqrt(lar_dielectric_constant(λ, method))
 
 
-def lar_emission_spectrum() -> tuple[Quantity[NDArray], Quantity[NDArray]]:
+def lar_emission_spectrum() -> tuple[Quantity, Quantity]:
     """Return the LAr emission spectrum, adapted from [Heindl2010]_."""
     return readdatafile("lar_emission_heindl2010.dat")
 
@@ -129,8 +129,8 @@ def lar_fano_factor() -> float:
 
 
 def lar_rayleigh(
-    λ: Quantity[float | NDArray], temperature: Quantity[float], method: str = "cern2020"
-) -> Quantity[float | NDArray]:
+    λ: Quantity, temperature: Quantity, method: str = "cern2020"
+) -> Quantity:
     """Calculate the Rayleigh scattering length using the equations given in [Seidel2002]_.
 
     This uses the dielectric constant created using the specified method. This calculation

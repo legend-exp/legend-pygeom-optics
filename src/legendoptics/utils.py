@@ -57,7 +57,7 @@ class InterpolatingGraph:
     The data points are given as two 1-dimensional NDArrays with units.
     """
 
-    def __init__(self, idx: Quantity[NDArray], vals: Quantity[NDArray]):
+    def __init__(self, idx: Quantity, vals: Quantity):
         self.idx = idx
         self.vals = vals
         self.d_min = min(idx)
@@ -67,7 +67,7 @@ class InterpolatingGraph:
         fn = scipy.interpolate.interp1d(idx.m, vals.m)
         self.fn = lambda l: u.Quantity(fn(l.to(self.idx.u).m), self.vals.u)
 
-    def __call__(self, pts: Quantity[float | NDArray]) -> Quantity[float | NDArray]:
+    def __call__(self, pts: Quantity) -> Quantity:
         # return first/last value if pts out of defined range
         if isinstance(pts, np.ndarray):
             return np.piecewise(
