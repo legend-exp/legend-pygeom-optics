@@ -1,4 +1,4 @@
-from legend_optics.utils import readdatafile
+from legendoptics.utils import readdatafile
 
 
 def test_read_data_file():

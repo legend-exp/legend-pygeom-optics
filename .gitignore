@@ -1,4 +1,4 @@
-/src/legend_optics/_version.py
+/src/legendoptics/_version.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -72,7 +72,7 @@ instance/
 
 # Sphinx documentation
 /docs/build/
-/docs/source/generated
+/docs/source/api
 
 # PyBuilder
 .pybuilder/

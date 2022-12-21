@@ -7,9 +7,9 @@ from pkg_resources import get_distribution
 
 sys.path.insert(0, Path(__file__).parents[2].resolve().as_posix())
 
-project = "legend_optics"
-copyright = "Copyright Holder"
-version = get_distribution("legend_optics").version
+project = "legend-geom-optics"
+copyright = "The LEGEND Collaboration"
+version = get_distribution("legendoptics").version
 
 extensions = [
     "sphinx.ext.githubpages",
@@ -31,17 +31,12 @@ language = "python"
 # Furo theme
 html_theme = "furo"
 html_theme_options = {
-    "source_repository": "https://github.com/gipert/legend_optics",
+    "source_repository": "https://github.com/legend-exp/legendoptics",
     "source_branch": "main",
     "source_directory": "docs/source",
 }
 html_title = f"{project} {version}"
 
-# list here legend-optics dependencies that are not required for building docs and
-# could be unmet at build time
-autodoc_mock_imports = [
-    "pytest",
-]
 autodoc_default_options = {"ignore-module-all": True}
 
 # sphinx-napoleon
