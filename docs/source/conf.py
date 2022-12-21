@@ -9,7 +9,7 @@ sys.path.insert(0, Path(__file__).parents[2].resolve().as_posix())
 
 project = "legend-geom-optics"
 copyright = "The LEGEND Collaboration"
-version = get_distribution("legendoptics").version
+version = get_distribution("legend-geom-optics").version
 
 extensions = [
     "sphinx.ext.githubpages",
