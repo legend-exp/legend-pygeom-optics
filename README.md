@@ -1,7 +1,7 @@
 # legend-geom-optics
 
 ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/legend-exp/legend-geom-optics?logo=git)
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/legend-exp/legend-geom-optics/legend-geom-optics/main?label=main%20branch&logo=github)](https://github.com/legend-exp/legend-geom-optics/actions)
+[![GitHub Workflow Status](https://img.shields.io/github/checks-status/legend-exp/legend-geom-optics/legend-geom-optics/main?label=main%20branch&logo=github)](https://github.com/legend-exp/legend-geom-optics/actions)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Codecov](https://img.shields.io/codecov/c/github/legend-exp/legend-geom-optics?logo=codecov)](https://app.codecov.io/gh/legend-exp/legend-geom-optics)
