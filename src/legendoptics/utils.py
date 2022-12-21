@@ -24,7 +24,7 @@ def readdatafile(filename: str) -> tuple[NDArray, NDArray]:
     """
     x = []
     y = []
-    lines = files("legend_optics.data").joinpath(filename).read_text().split("\n")
+    lines = files("legendoptics.data").joinpath(filename).read_text().split("\n")
 
     # parse header
     header = lines[0].lstrip()

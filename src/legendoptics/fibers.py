@@ -11,7 +11,7 @@ import pint
 from numpy.typing import NDArray
 from pint import Quantity
 
-from legend_optics.utils import InterpolatingGraph, readdatafile
+from legendoptics.utils import InterpolatingGraph, readdatafile
 
 log = logging.getLogger(__name__)
 u = pint.get_application_registry()

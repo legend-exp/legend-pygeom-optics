@@ -1,7 +1,7 @@
 import pint
 from pytest import approx
 
-from legend_optics import lar
+from legendoptics import lar
 
 u = pint.get_application_registry()
 
