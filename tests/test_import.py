@@ -37,6 +37,7 @@ def test_import():
     legendoptics.fibers.fiber_wls_emission()
     legendoptics.fibers.fiber_wls_timeconstant()
     legendoptics.fibers.fiber_absorption_length()
+    legendoptics.fibers.fiber_absorption_path_length()
 
     legendoptics.tetratex.tetratex_reflectivity()
 
