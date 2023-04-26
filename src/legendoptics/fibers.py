@@ -75,5 +75,21 @@ def fiber_wls_timeconstant() -> float:
 
 
 def fiber_absorption_length() -> float:
-    """Absorption length of fiber [SaintGobainDataSheet]_. Note this is a macroscopical value for a 1 mm fiber."""
+    """Absorption length of fiber [SaintGobainDataSheet]_. Note this is a macroscopical value for a 1 mm fiber.
+
+    See Also
+    --------
+    .fiber_absorption_path_length
+    """
     return 3.5 * u.m
+
+
+def fiber_absorption_path_length() -> float:
+    """Absorption length of fiber [SaintGobainDataSheet]_, multiplied by an empirical factor to account for
+    the prolonged path length inside a square fiber with 1mm side length.
+
+    See Also
+    --------
+    .fiber_absorption_length
+    """
+    return fiber_absorption_length() * 1.21

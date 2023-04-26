@@ -13,6 +13,7 @@ def test_import():
     import legendoptics.germanium
     import legendoptics.copper
     import legendoptics.nylon
+    import legendoptics.silicon
 
     legendoptics.lar.lar_fano_factor()
     legendoptics.lar.lar_emission_spectrum()
@@ -36,12 +37,15 @@ def test_import():
     legendoptics.fibers.fiber_wls_emission()
     legendoptics.fibers.fiber_wls_timeconstant()
     legendoptics.fibers.fiber_absorption_length()
+    legendoptics.fibers.fiber_absorption_path_length()
 
     legendoptics.tetratex.tetratex_reflectivity()
 
     legendoptics.germanium.germanium_reflectivity()
 
     legendoptics.copper.copper_reflectivity()
+
+    legendoptics.silicon.silicon_complex_rindex()
 
     legendoptics.nylon.nylon_refractive_index()
     legendoptics.nylon.nylon_absorption()
