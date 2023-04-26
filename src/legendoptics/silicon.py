@@ -2,7 +2,7 @@
 Silicon
 
 .. [Phillip1960] H. R. Phillip and E. A. Taft “Optical Constants of Silicon in the Region 1 to 10 eV”.
-   In: In: Phys. Rev. 120 (1 Oct. 1960)
+   In: Phys. Rev. 120 (1 Oct. 1960)
    https://doi.org/10.1103/PhysRev.120.37
 """
 
