@@ -31,7 +31,7 @@ language = "python"
 # Furo theme
 html_theme = "furo"
 html_theme_options = {
-    "source_repository": "https://github.com/legend-exp/legendoptics",
+    "source_repository": "https://github.com/legend-exp/legend-geom-optics",
     "source_branch": "main",
     "source_directory": "docs/source",
 }
@@ -52,6 +52,7 @@ intersphinx_mapping = {
     "scipy": ("http://docs.scipy.org/doc/scipy/reference", None),
     "pandas": ("https://pandas.pydata.org/docs", None),
     "matplotlib": ("http://matplotlib.org/stable", None),
+    "pint": ("https://pint.readthedocs.io/en/stable", None),
 }  # add new intersphinx mappings here
 
 # sphinx-autodoc
