@@ -7,9 +7,9 @@ from pkg_resources import get_distribution
 
 sys.path.insert(0, Path(__file__).parents[2].resolve().as_posix())
 
-project = "legend-geom-optics"
+project = "legend-pygeom-optics"
 copyright = "The LEGEND Collaboration"
-version = get_distribution("legend-geom-optics").version
+version = get_distribution("legend-pygeom-optics").version
 
 extensions = [
     "sphinx.ext.githubpages",
@@ -31,7 +31,7 @@ language = "python"
 # Furo theme
 html_theme = "furo"
 html_theme_options = {
-    "source_repository": "https://github.com/legend-exp/legend-geom-optics",
+    "source_repository": "https://github.com/legend-exp/legend-pygeom-optics",
     "source_branch": "main",
     "source_directory": "docs/source",
 }
