@@ -5,6 +5,7 @@ import pint
 import scipy.interpolate
 from importlib_resources import files
 from numpy.typing import NDArray
+from typing import NamedTuple
 from pint import Quantity
 
 u = pint.get_application_registry()
@@ -48,7 +49,7 @@ def readdatafile(filename: str) -> tuple[NDArray, NDArray]:
         x.append(float(val[0]))
         y.append(float(val[1]))
 
-    return (x * u[units[0]], y * u[units[1]])
+    return (x * u(units[0]), y * u(units[1]))
 
 
 class InterpolatingGraph:
@@ -57,30 +58,56 @@ class InterpolatingGraph:
     The data points are given as two 1-dimensional NDArrays with units.
     """
 
-    def __init__(self, idx: Quantity, vals: Quantity):
+    def __init__(self, idx: Quantity, vals: Quantity, min_idx: Quantity = None, max_idx: Quantity = None):
+        # Filter the supplied data points.
+        f = np.full(idx.shape, True)
+        if min_idx != None:
+            f = f & (idx >= min_idx)
+        if max_idx != None:
+            f = f & (idx <= max_idx)
+        idx = idx[f]
+        vals = vals[f]
+
         self.idx = idx
         self.vals = vals
         self.d_min = min(idx)
         self.d_max = max(idx)
         self.n = len(idx)
         assert min(vals).m >= 0  # We only want positive values in the spectra
-        fn = scipy.interpolate.interp1d(idx.m, vals.m)
-        self.fn = lambda l: u.Quantity(fn(l.to(self.idx.u).m), self.vals.u)
+        self.fn = scipy.interpolate.interp1d(idx.m, vals.m)
 
     def __call__(self, pts: Quantity) -> Quantity:
         # return first/last value if pts out of defined range
-        if isinstance(pts, np.ndarray):
-            return np.piecewise(
-                pts,
-                [
-                    pts < self.d_min,
-                    ((pts >= self.d_min) & (pts <= self.d_max)),
-                    pts > self.d_max,
-                ],
-                [self.vals.iloc[0], self.fn, self.vals.iloc[-1]],
-            )
+        if isinstance(pts.m, np.ndarray):
+            p = pts.to(self.idx.u).m
+            return Quantity(
+                np.piecewise(
+                    p,
+                    [
+                        p < self.d_min.m,
+                        ((p >= self.d_min.m) & (p <= self.d_max.m)),
+                        p > self.d_max.m,
+                    ],
+                    [self.vals[0].m, self.fn, self.vals[-1].m],
+                ),
+                self.vals.u,
+             )
+
         if pts < self.d_min:
             return self.vals.iloc[0]
         if pts > self.d_max:
             return self.vals.iloc[-1]
         return self.fn(pts)
+
+
+class ScintParticle(NamedTuple):
+    """Configuration for the scintillation yield relative to the flat-top yield."""
+    name: str
+    yield_factor: float
+    exc_ratio: float
+
+
+class ScintConfig(NamedTuple):
+    """Scintillation yield parameters, depending on the particle types."""
+    flat_top: Quantity
+    particles: list[ScintParticle]

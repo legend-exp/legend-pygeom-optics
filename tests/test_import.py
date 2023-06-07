@@ -23,6 +23,10 @@ def test_import():
     legendoptics.lar.lar_dielectric_constant(wvl)
     legendoptics.lar.lar_refractive_index(wvl)
     legendoptics.lar.lar_rayleigh(wvl, 87 * u.K)
+    legendoptics.lar.lar_abs_length(wvl)
+    legendoptics.lar.lar_peak_attenuation_length()
+    legendoptics.lar.lar_lifetimes()
+    legendoptics.lar.lar_scintillation_params()
 
     legendoptics.tpb.tpb_quantum_efficiency()
     legendoptics.tpb.tpb_refractive_index()

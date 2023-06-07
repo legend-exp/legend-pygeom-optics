@@ -1,10 +1,9 @@
-"""
-Liquid Argon (LAr).
+"""Liquid Argon (LAr).
 
 .. [Heindl2010] T. Heindl et al. “The scintillation of liquid argon.” In: EPL 91.6 (Sept. 2010).
     https://doi.org/10.1209/0295-5075/91/62002
 .. [Doke1976] Doke et al. “Estimation of Fano factors in liquid argon, krypton, xenon and
-    xenon-doped liquid argon. NIM 134 (1976)353, https://doi.org/10.1016/0029-554X(76)90292-5
+    xenon-doped liquid argon.” NIM 134 (1976)353, https://doi.org/10.1016/0029-554X(76)90292-5
 .. [Bideau-Mehu1980] Bideau-Mehu et al. “Measurement of refractive indices of neon, argon, krypton
     and xenon in the 253.7–140.4 nm wavelength range. Dispersion relations and
     estimated oscillator strengths of the resonance lines.” In: Journal of Quantitative
@@ -17,20 +16,33 @@ Liquid Argon (LAr).
 .. [Babicz2020] M. Babicz et al. “A measurement of the group velocity of scintillation light in liquid
     argon.” In: Journal of Instrumentation 15.09 (Sept. 2020).
     https://doi.org/10.1088/1748-0221/15/09/P09009
+.. [Doke2002] T. Doke et al. “Absolute Scintillation Yields in Liquid Argon and Xenon for Various Particles”
+    Jpn. J. Appl. Phys. 41 1538, https://doi.org/10.1143/JJAP.41.1538
+.. [Hitachi1983] A. Hitachi et al. “Effect of ionization density on the time dependence of luminescence
+    from liquid argon and xenon.” In: Phys. Rev. B 27 (9 May 1983), pp. 5279–5285,
+    https://doi.org/10.1103/PhysRevB.27.5279
+.. [Pertoldi2020] L. Pertoldi “Search for new physics with two-neutrino double-beta decay in
+    GERDA data.” 2020, https://www.mpi-hd.mpg.de/gerda/public/2020/phd2020_LuigiPertoldi.pdf
 """
 from __future__ import annotations
 
 import logging
+from typing import NamedTuple
 
 import numpy as np
 import pint
 from numpy.typing import NDArray
 from pint import Quantity
 
-from legendoptics.utils import readdatafile
+from legendoptics.utils import readdatafile, InterpolatingGraph, ScintConfig, ScintParticle
 
 log = logging.getLogger(__name__)
 u = pint.get_application_registry()
+
+
+class ArScintLiftime(NamedTuple):
+    singlet: Quantity
+    triplet: Quantity
 
 
 def lar_dielectric_constant_bideau_mehu(
@@ -100,6 +112,7 @@ def lar_dielectric_constant(
         return lar_dielectric_constant_bideau_mehu(λ)
     elif method == "cern2020":
         return lar_dielectric_constant_cern2020(λ)
+    raise ValueError(f"Unknown LAr dielectric constant method {method}")
 
 
 def lar_refractive_index(
@@ -141,6 +154,9 @@ def lar_rayleigh(
     --------
     .lar_dielectric_constant
     """
+    if not temperature.check('[temperature]'):
+        raise ValueError("input does not look like a temperature")
+
     dyne = 1.0e-5 * u.newton
     κ = 2.18e-10 * u.cm**2 / dyne  # LAr isothermal compressibility
     k = 1.380658e-23 * u.joule / u.kelvin  # the Boltzmann constant
@@ -158,3 +174,61 @@ def lar_rayleigh(
     )
 
     return (1 / inv_l).to("cm")  # simplify units
+
+
+def lar_abs_length(λ: Quantity) -> Quantity:
+    """Absorption length (not correctly scaled).
+
+    We don't know how the attenuation length actually varies with the wavelength, so here
+    we use a custom exponential function connecting the LAr Scintillation peak and the VIS
+    range just to avoid a step-like function. Still is a guess.
+    This function has to be re-scaled with the intended attenuation length at the VUV
+    emission peak.
+    """
+    λ = np.maximum(λ, 141 * u.nm)
+    l = 5.976e-12 * np.exp(0.223 * λ.to('nm').m) * u.cm
+    return np.minimum(l, 100000 * u.cm)  # avoid large numbers
+
+
+def lar_peak_attenuation_length() -> Quantity:
+    """Attenuation length in the LEGEND-argon, as measured with LLAMA."""
+    return 30 * u.cm
+
+
+def lar_lifetimes() -> ArScintLiftime:
+    """Singlet and triplet lifetimes of liquid argon
+
+    Singlet time from [Hitachi1983]_ and triplet time as measured in GERDA phase II
+    ([Pertoldi2020]_, fig. 2.10).
+    """
+    return ArScintLiftime(singlet=5.95*u.ns, triplet=1*u.us)
+
+
+def lar_scintillation_params() -> ScintConfig:
+    """Scintillation yield (approx. inverse of the mean energy to produce a UV photon)
+
+    depends on the nature of the impinging particles, the field configuration
+    and the quencher impurities. We set here just a reference value from [Doke2002]_,
+    that probably does not represent the reality of GERDA/LEGEND:
+
+    for flat top response particles the mean energy to produce a photon is 19.5 eV
+    => Y = 1/19.5 = 0.051
+
+    At zero electric field, for not-flat-top particles, the scintillation yield,
+    relative to the one of flat top particles is:
+    Y_e = 0.8 Y
+    Y_alpha = 0.7 Y
+    Y_recoils = 0.2-0.4
+
+    Excitation ratio:
+    For example, for nuclear recoils it should be 0.75
+    nominal value for electrons and gammas: 0.23 (WArP data)
+    """
+    return ScintConfig(
+        flat_top=31250 / u.MeV,
+        particles=[
+            ScintParticle('electron', yield_factor=0.8, exc_ratio=0.23),
+            ScintParticle('alpha',    yield_factor=0.7, exc_ratio=1),
+            ScintParticle('ion',      yield_factor=0.3, exc_ratio=0.75),
+        ],
+    )
