@@ -232,3 +232,50 @@ def lar_scintillation_params() -> ScintConfig:
             ScintParticle('ion',      yield_factor=0.3, exc_ratio=0.75),
         ],
     )
+
+
+def pyg4_lar_define_opticalproperties(lar_mat, lar_temperature: Quentity, reg) -> None:
+    """Define all liquid argon optical properties on a geant4 material, as defined by
+    this module."""
+    from legendoptics.pyg4utils import pyg4_sample_λ, pyg4_def_scint_by_particle_type
+
+    lar_dielectric_method = 'cern2020'
+
+    # build arrays with properties
+    LAr_PPCK = pyg4_sample_λ(112 * u.nm, 650 * u.nm)
+    LAr_SCPP = pyg4_sample_λ(116 * u.nm, 141 * u.nm)
+
+    LAr_RIND = lar_refractive_index(LAr_PPCK, lar_dielectric_method)
+    LAr_RAYL = lar_rayleigh(LAr_PPCK, lar_temperature, lar_dielectric_method)
+
+    peak_rayleigh_length = lar_rayleigh(126.8 * u.nm, lar_temperature)
+    peak_abs_length = 1 / (1 / lar_peak_attenuation_length() - 1 / peak_rayleigh_length)
+
+    absl_scale = peak_abs_length / lar_abs_length(126.8 * u.nm)
+    LAr_ABSL = lar_abs_length(LAr_PPCK) * absl_scale
+
+    LAr_SCIN = InterpolatingGraph(
+        *lar_emission_spectrum(),
+        min_idx=115*u.nm,
+        max_idx=150*u.nm,
+    )(LAr_SCPP)
+    LAr_SCIN[0] = 0 # make sure that the scintillation spectrum is zero at the boundaries
+    LAr_SCIN[-1] = 0
+
+    lar_mat.addConstProperty('RESOLUTIONSCALE', lar_fano_factor())
+
+    with u.context('sp'):
+        lar_mat.addVecProperty('RINDEX',    LAr_PPCK.to('eV'), LAr_RIND)
+        lar_mat.addVecProperty('RAYLEIGH',  LAr_PPCK.to('eV'), LAr_RAYL)
+        lar_mat.addVecProperty('ABSLENGTH', LAr_PPCK.to('eV'), LAr_ABSL)
+
+        lar_scint = lar_mat.addVecProperty('SCINTILLATIONCOMPONENT1', LAr_SCPP.to('eV'), LAr_SCIN)
+        lar_mat.addProperty('SCINTILLATIONCOMPONENT2', lar_scint)
+
+    lar_mat.addConstProperty('SCINTILLATIONTIMECONSTANT1', lar_lifetimes().singlet)
+    lar_mat.addConstProperty('SCINTILLATIONTIMECONSTANT2', lar_lifetimes().triplet)
+
+    pyg4_def_scint_by_particle_type(lar_mat, lar_scintillation_params())
+
+    # It is impossible to directly set Birks Constant from GDML, this must be consumed in the Geant4 application.
+    lar_mat.addConstProperty('BIRKSCONSTANT', 5.1748e-4 * u.cm/u.MeV)
