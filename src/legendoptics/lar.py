@@ -31,10 +31,14 @@ from typing import NamedTuple
 
 import numpy as np
 import pint
-from numpy.typing import NDArray
 from pint import Quantity
 
-from legendoptics.utils import readdatafile, InterpolatingGraph, ScintConfig, ScintParticle
+from legendoptics.utils import (
+    InterpolatingGraph,
+    ScintConfig,
+    ScintParticle,
+    readdatafile,
+)
 
 log = logging.getLogger(__name__)
 u = pint.get_application_registry()
@@ -99,9 +103,7 @@ def lar_dielectric_constant_cern2020(
     return (3 + 2 * x) / (3 - x)
 
 
-def lar_dielectric_constant(
-    λ: Quantity, method: str = "cern2020"
-) -> Quantity:
+def lar_dielectric_constant(λ: Quantity, method: str = "cern2020") -> Quantity:
     """Calculate the dielectric constant of LAr for a given photon wavelength.
 
     See Also
@@ -115,9 +117,7 @@ def lar_dielectric_constant(
     raise ValueError(f"Unknown LAr dielectric constant method {method}")
 
 
-def lar_refractive_index(
-    λ: Quantity, method: str = "cern2020"
-) -> Quantity:
+def lar_refractive_index(λ: Quantity, method: str = "cern2020") -> Quantity:
     """Calculate the refractive index of LAr for a given photon wavelength.
 
     See Also
@@ -154,7 +154,7 @@ def lar_rayleigh(
     --------
     .lar_dielectric_constant
     """
-    if not temperature.check('[temperature]'):
+    if not temperature.check("[temperature]"):
         raise ValueError("input does not look like a temperature")
 
     dyne = 1.0e-5 * u.newton
@@ -186,8 +186,8 @@ def lar_abs_length(λ: Quantity) -> Quantity:
     emission peak.
     """
     λ = np.maximum(λ, 141 * u.nm)
-    l = 5.976e-12 * np.exp(0.223 * λ.to('nm').m) * u.cm
-    return np.minimum(l, 100000 * u.cm)  # avoid large numbers
+    absl = 5.976e-12 * np.exp(0.223 * λ.to("nm").m) * u.cm
+    return np.minimum(absl, 100000 * u.cm)  # avoid large numbers
 
 
 def lar_peak_attenuation_length() -> Quantity:
@@ -196,18 +196,18 @@ def lar_peak_attenuation_length() -> Quantity:
 
 
 def lar_lifetimes() -> ArScintLiftime:
-    """Singlet and triplet lifetimes of liquid argon
+    """Singlet and triplet lifetimes of liquid argon.
 
     Singlet time from [Hitachi1983]_ and triplet time as measured in GERDA phase II
     ([Pertoldi2020]_, fig. 2.10).
     """
-    return ArScintLiftime(singlet=5.95*u.ns, triplet=1*u.us)
+    return ArScintLiftime(singlet=5.95 * u.ns, triplet=1 * u.us)
 
 
 def lar_scintillation_params() -> ScintConfig:
-    """Scintillation yield (approx. inverse of the mean energy to produce a UV photon)
+    """Scintillation yield (approx. inverse of the mean energy to produce a UV photon).
 
-    depends on the nature of the impinging particles, the field configuration
+    This depends on the nature of the impinging particles, the field configuration
     and the quencher impurities. We set here just a reference value from [Doke2002]_,
     that probably does not represent the reality of GERDA/LEGEND:
 
@@ -227,55 +227,56 @@ def lar_scintillation_params() -> ScintConfig:
     return ScintConfig(
         flat_top=31250 / u.MeV,
         particles=[
-            ScintParticle('electron', yield_factor=0.8, exc_ratio=0.23),
-            ScintParticle('alpha',    yield_factor=0.7, exc_ratio=1),
-            ScintParticle('ion',      yield_factor=0.3, exc_ratio=0.75),
+            ScintParticle("electron", yield_factor=0.8, exc_ratio=0.23),
+            ScintParticle("alpha", yield_factor=0.7, exc_ratio=1),
+            ScintParticle("ion", yield_factor=0.3, exc_ratio=0.75),
         ],
     )
 
 
-def pyg4_lar_define_opticalproperties(lar_mat, lar_temperature: Quentity, reg) -> None:
-    """Define all liquid argon optical properties on a geant4 material, as defined by
-    this module."""
-    from legendoptics.pyg4utils import pyg4_sample_λ, pyg4_def_scint_by_particle_type
+def pyg4_lar_define_opticalproperties(
+    lar_mat, lar_temperature: Quantity, reg, lar_dielectric_method="cern2020"
+) -> None:
+    """Define all liquid argon optical properties on a geant4 material, as defined by this module."""
+    from legendoptics.pyg4utils import pyg4_def_scint_by_particle_type, pyg4_sample_λ
 
-    lar_dielectric_method = 'cern2020'
+    λ_full = pyg4_sample_λ(112 * u.nm, 650 * u.nm)
+    λ_peak = pyg4_sample_λ(116 * u.nm, 141 * u.nm)
 
     # build arrays with properties
-    LAr_PPCK = pyg4_sample_λ(112 * u.nm, 650 * u.nm)
-    LAr_SCPP = pyg4_sample_λ(116 * u.nm, 141 * u.nm)
+    rindex = lar_refractive_index(λ_full, lar_dielectric_method)
+    rayleigh = lar_rayleigh(λ_full, lar_temperature, lar_dielectric_method)
 
-    LAr_RIND = lar_refractive_index(LAr_PPCK, lar_dielectric_method)
-    LAr_RAYL = lar_rayleigh(LAr_PPCK, lar_temperature, lar_dielectric_method)
-
+    #
     peak_rayleigh_length = lar_rayleigh(126.8 * u.nm, lar_temperature)
+
+    # absorption length and rayleigh add up inversely to the attenuation length.
     peak_abs_length = 1 / (1 / lar_peak_attenuation_length() - 1 / peak_rayleigh_length)
-
     absl_scale = peak_abs_length / lar_abs_length(126.8 * u.nm)
-    LAr_ABSL = lar_abs_length(LAr_PPCK) * absl_scale
+    abslength = lar_abs_length(λ_full) * absl_scale
 
-    LAr_SCIN = InterpolatingGraph(
+    scint_em = InterpolatingGraph(
         *lar_emission_spectrum(),
-        min_idx=115*u.nm,
-        max_idx=150*u.nm,
-    )(LAr_SCPP)
-    LAr_SCIN[0] = 0 # make sure that the scintillation spectrum is zero at the boundaries
-    LAr_SCIN[-1] = 0
+        min_idx=115 * u.nm,
+        max_idx=150 * u.nm,
+    )(λ_peak)
+    # make sure that the scintillation spectrum is zero at the boundaries.
+    scint_em[0] = 0
+    scint_em[-1] = 0
 
-    lar_mat.addConstProperty('RESOLUTIONSCALE', lar_fano_factor())
+    lar_mat.addConstProperty("RESOLUTIONSCALE", lar_fano_factor())
 
-    with u.context('sp'):
-        lar_mat.addVecProperty('RINDEX',    LAr_PPCK.to('eV'), LAr_RIND)
-        lar_mat.addVecProperty('RAYLEIGH',  LAr_PPCK.to('eV'), LAr_RAYL)
-        lar_mat.addVecProperty('ABSLENGTH', LAr_PPCK.to('eV'), LAr_ABSL)
+    with u.context("sp"):
+        lar_mat.addVecProperty("RINDEX", λ_full.to("eV"), rindex)
+        lar_mat.addVecProperty("RAYLEIGH", λ_full.to("eV"), rayleigh)
+        lar_mat.addVecProperty("ABSLENGTH", λ_full.to("eV"), abslength)
 
-        lar_scint = lar_mat.addVecProperty('SCINTILLATIONCOMPONENT1', LAr_SCPP.to('eV'), LAr_SCIN)
-        lar_mat.addProperty('SCINTILLATIONCOMPONENT2', lar_scint)
+        lar_scint = lar_mat.addVecProperty(
+            "SCINTILLATIONCOMPONENT1", λ_peak.to("eV"), scint_em
+        )
+        lar_mat.addProperty("SCINTILLATIONCOMPONENT2", lar_scint)
 
-    lar_mat.addConstProperty('SCINTILLATIONTIMECONSTANT1', lar_lifetimes().singlet)
-    lar_mat.addConstProperty('SCINTILLATIONTIMECONSTANT2', lar_lifetimes().triplet)
+    lar_mat.addConstProperty("SCINTILLATIONTIMECONSTANT1", lar_lifetimes().singlet)
+    lar_mat.addConstProperty("SCINTILLATIONTIMECONSTANT2", lar_lifetimes().triplet)
 
     pyg4_def_scint_by_particle_type(lar_mat, lar_scintillation_params())
-
-    # It is impossible to directly set Birks Constant from GDML, this must be consumed in the Geant4 application.
-    lar_mat.addConstProperty('BIRKSCONSTANT', 5.1748e-4 * u.cm/u.MeV)

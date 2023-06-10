@@ -6,14 +6,14 @@ u = pint.get_application_registry()
 
 def test_import():
     import legendoptics  # noqa: F401
-    import legendoptics.fibers
-    import legendoptics.lar
-    import legendoptics.tetratex
-    import legendoptics.tpb
-    import legendoptics.germanium
     import legendoptics.copper
+    import legendoptics.fibers
+    import legendoptics.germanium
+    import legendoptics.lar
     import legendoptics.nylon
     import legendoptics.silicon
+    import legendoptics.tetratex
+    import legendoptics.tpb
 
     legendoptics.lar.lar_fano_factor()
     legendoptics.lar.lar_emission_spectrum()

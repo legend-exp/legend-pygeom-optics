@@ -1,5 +1,4 @@
-"""
-Silicon
+"""Silicon.
 
 .. [Phillip1960] H. R. Phillip and E. A. Taft “Optical Constants of Silicon in the Region 1 to 10 eV”.
    In: Phys. Rev. 120 (1 Oct. 1960)
@@ -11,7 +10,6 @@ from __future__ import annotations
 import logging
 
 import pint
-from numpy.typing import NDArray
 from pint import Quantity
 
 from legendoptics.utils import readdatafile

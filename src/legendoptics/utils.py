@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+from typing import NamedTuple
+
 import numpy as np
 import pint
 import scipy.interpolate
 from importlib_resources import files
 from numpy.typing import NDArray
-from typing import NamedTuple
 from pint import Quantity
 
 u = pint.get_application_registry()
@@ -58,12 +59,18 @@ class InterpolatingGraph:
     The data points are given as two 1-dimensional NDArrays with units.
     """
 
-    def __init__(self, idx: Quantity, vals: Quantity, min_idx: Quantity = None, max_idx: Quantity = None):
+    def __init__(
+        self,
+        idx: Quantity,
+        vals: Quantity,
+        min_idx: Quantity = None,
+        max_idx: Quantity = None,
+    ):
         # Filter the supplied data points.
         f = np.full(idx.shape, True)
-        if min_idx != None:
+        if min_idx is not None:
             f = f & (idx >= min_idx)
-        if max_idx != None:
+        if max_idx is not None:
             f = f & (idx <= max_idx)
         idx = idx[f]
         vals = vals[f]
@@ -91,7 +98,7 @@ class InterpolatingGraph:
                     [self.vals[0].m, self.fn, self.vals[-1].m],
                 ),
                 self.vals.u,
-             )
+            )
 
         if pts < self.d_min:
             return self.vals.iloc[0]
@@ -102,6 +109,7 @@ class InterpolatingGraph:
 
 class ScintParticle(NamedTuple):
     """Configuration for the scintillation yield relative to the flat-top yield."""
+
     name: str
     yield_factor: float
     exc_ratio: float
@@ -109,5 +117,6 @@ class ScintParticle(NamedTuple):
 
 class ScintConfig(NamedTuple):
     """Scintillation yield parameters, depending on the particle types."""
+
     flat_top: Quantity
     particles: list[ScintParticle]
