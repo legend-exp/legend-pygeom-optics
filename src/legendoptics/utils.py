@@ -104,7 +104,7 @@ class InterpolatingGraph:
             return self.vals.iloc[0]
         if pts > self.d_max:
             return self.vals.iloc[-1]
-        return self.fn(pts)
+        return self.fn(pts.to(self.idx.u).m) * self.vals.u
 
 
 class ScintParticle(NamedTuple):
