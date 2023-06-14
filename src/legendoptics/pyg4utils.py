@@ -75,8 +75,8 @@ def _gdml_format(unit, registry, **options):
 def _patch_g4_pint_unit_support() -> None:
     """:py:mod:`pyg4ometry` does currently not support code::`pint` unit that we use extensively here.
 
-    This function adds some helper functions to :py:class:`pyg4ometry.geant4.WithPropertiesBase`
-    in order to make adding material properties nicer.
+    This function adds some helper functions to :py:class:`pyg4ometry.geant4.Material` and
+    :py:class:`pyg4ometry.geant4.solid.OpticalSurface` in order to make adding material properties nicer.
     The new functions also check for some common properties to be used with the correct units.
     """
 
@@ -93,21 +93,33 @@ def _patch_g4_pint_unit_support() -> None:
         v = v.m_as(base_unit)
         return unit, v
 
+    length_u = ["m", "cm", "mm", "um"]
+    dimless_props = [
+        "RINDEX",
+        "WLSCOMPONENT",
+        "REFLECTIVITY",
+        "REALRINDEX",
+        "IMAGINARYRINDEX",
+    ]
+    length_props = ["ABSLENGTH", "WLSABSLENGTH", "RAYLEIGH"]
+
     def addVecPropertyPint(self, name, e, v):  # noqa: N802
         vunit, v = _val_pint_to_gdml(v)
         eunit, e = _val_pint_to_gdml(e)
 
-        length_u = ["m", "cm", "mm", "um"]
-        if name in ["ABSLENGTH", "WLSABSLENGTH", "RAYLEIGH"] and vunit not in length_u:
+        if name in length_props and vunit not in length_u:
             log.warning("Wrong unit %s for property %s", vunit, name)
-        if name in ["RINDEX", "WLSCOMPONENT", "REFLECTIVITY"] and vunit != "":
+        if name in dimless_props and vunit != "":
             log.warning("Wrong unit %s for property %s", vunit, name)
-        if eunit not in ["", "eV", "keV", "MeV", "GeV", "TeV" "PeV"]:
+        if eunit not in ["", "eV", "keV", "MeV", "GeV", "TeV", "PeV"]:
             log.warning("Wrong energy unit %s", eunit)
 
-        return g4.WithPropertiesBase.addVecProperty(self, name, e, v, eunit, vunit)
+        # TODO: necessary to reorder values
 
-    g4.WithPropertiesBase.addVecPropertyPint = addVecPropertyPint
+        return g4.Material.addVecProperty(self, name, e, v, eunit, vunit)
+
+    g4.Material.addVecPropertyPint = addVecPropertyPint
+    g4.solid.OpticalSurface.addVecPropertyPint = addVecPropertyPint
 
     def addConstPropertyPint(self, name, value):  # noqa: N802
         vunit, value = _val_pint_to_gdml(value)
@@ -115,9 +127,10 @@ def _patch_g4_pint_unit_support() -> None:
         if name in ["SCINTILLATIONYIELD"]:
             log.warning("%s cannot be used with scintillationByParticleType", name)
 
-        return g4.WithPropertiesBase.addConstProperty(self, name, value, vunit)
+        return g4.Material.addConstProperty(self, name, value, vunit)
 
-    g4.WithPropertiesBase.addConstPropertyPint = addConstPropertyPint
+    g4.Material.addConstPropertyPint = addConstPropertyPint
+    g4.solid.OpticalSurface.addConstPropertyPint = addConstPropertyPint
 
 
 _patch_g4_pint_unit_support()

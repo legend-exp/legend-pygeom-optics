@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import logging
 
+import numpy as np
 import pint
 from pint import Quantity
 
@@ -32,3 +33,28 @@ def nylon_absorption() -> tuple[Quantity, Quantity]:
     wvl, absorp = readdatafile("nylon_absorption.dat")
     assert absorp.check("[length]")
     return wvl, absorp
+
+
+def pyg4_nylon_attach_rindex(mat, reg) -> None:
+    """Attach the refractive index to the given fiber core material instance.
+
+    See Also
+    --------
+    .nylon_refractive_index
+    """
+    λ = np.array([650.0, 115.0]) * u.nm
+    r = [nylon_refractive_index()] * 2
+    with u.context("sp"):
+        mat.addVecPropertyPint("RINDEX", λ.to("eV"), r)
+
+
+def pyg4_nylon_attach_absorption(mat, reg) -> None:
+    """Attach absorption to the given nylon material instance.
+
+    See Also
+    --------
+    .nylon_absorption
+    """
+    λ, absorption = nylon_absorption()
+    with u.context("sp"):
+        mat.addVecPropertyPint("ABSLENGTH", λ.to("eV"), absorption)

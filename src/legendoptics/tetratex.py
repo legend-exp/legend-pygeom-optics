@@ -25,3 +25,20 @@ def tetratex_reflectivity() -> tuple[Quantity, Quantity]:
     of our foil should be (negligibly) smaller.
     """
     return readdatafile("tpb_wlsabslength.dat")
+
+
+def pyg4_tetratex_attach_reflectivity(mat, reg, reflectivity_scale: float = 1) -> None:
+    """Attach the optical reflectivity to the given germanium material instance.
+
+    Parameters
+    ----------
+    tetratex_refl_scale
+        Global scale for tetratex reflectivity.
+
+    See Also
+    --------
+    .tetratex_reflectivity
+    """
+    λ, refl = tetratex_reflectivity()
+    with u.context("sp"):
+        mat.addVecPropertyPint("REFLECTIVITY", λ.to("eV"), reflectivity_scale * refl)
