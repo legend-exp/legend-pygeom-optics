@@ -1,13 +1,10 @@
-"""
-Copper
-"""
-    
+"""Copper."""
+
 from __future__ import annotations
 
 import logging
 
 import pint
-from numpy.typing import NDArray
 from pint import Quantity
 
 from legendoptics.utils import readdatafile

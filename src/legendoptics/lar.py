@@ -1,10 +1,9 @@
-"""
-Liquid Argon (LAr).
+"""Liquid Argon (LAr).
 
 .. [Heindl2010] T. Heindl et al. “The scintillation of liquid argon.” In: EPL 91.6 (Sept. 2010).
     https://doi.org/10.1209/0295-5075/91/62002
 .. [Doke1976] Doke et al. “Estimation of Fano factors in liquid argon, krypton, xenon and
-    xenon-doped liquid argon. NIM 134 (1976)353, https://doi.org/10.1016/0029-554X(76)90292-5
+    xenon-doped liquid argon.” NIM 134 (1976)353, https://doi.org/10.1016/0029-554X(76)90292-5
 .. [Bideau-Mehu1980] Bideau-Mehu et al. “Measurement of refractive indices of neon, argon, krypton
     and xenon in the 253.7–140.4 nm wavelength range. Dispersion relations and
     estimated oscillator strengths of the resonance lines.” In: Journal of Quantitative
@@ -17,20 +16,35 @@ Liquid Argon (LAr).
 .. [Babicz2020] M. Babicz et al. “A measurement of the group velocity of scintillation light in liquid
     argon.” In: Journal of Instrumentation 15.09 (Sept. 2020).
     https://doi.org/10.1088/1748-0221/15/09/P09009
+.. [Doke2002] T. Doke et al. “Absolute Scintillation Yields in Liquid Argon and Xenon for Various Particles”
+    Jpn. J. Appl. Phys. 41 1538, https://doi.org/10.1143/JJAP.41.1538
+.. [Hitachi1983] A. Hitachi et al. “Effect of ionization density on the time dependence of luminescence
+    from liquid argon and xenon.” In: Phys. Rev. B 27 (9 May 1983), pp. 5279–5285,
+    https://doi.org/10.1103/PhysRevB.27.5279
 """
 from __future__ import annotations
 
 import logging
+from typing import NamedTuple
 
 import numpy as np
 import pint
-from numpy.typing import NDArray
 from pint import Quantity
 
-from legendoptics.utils import readdatafile
+from legendoptics.utils import (
+    InterpolatingGraph,
+    ScintConfig,
+    ScintParticle,
+    readdatafile,
+)
 
 log = logging.getLogger(__name__)
 u = pint.get_application_registry()
+
+
+class ArScintLiftime(NamedTuple):
+    singlet: Quantity
+    triplet: Quantity
 
 
 def lar_dielectric_constant_bideau_mehu(
@@ -87,9 +101,7 @@ def lar_dielectric_constant_cern2020(
     return (3 + 2 * x) / (3 - x)
 
 
-def lar_dielectric_constant(
-    λ: Quantity, method: str = "cern2020"
-) -> Quantity:
+def lar_dielectric_constant(λ: Quantity, method: str = "cern2020") -> Quantity:
     """Calculate the dielectric constant of LAr for a given photon wavelength.
 
     See Also
@@ -100,11 +112,10 @@ def lar_dielectric_constant(
         return lar_dielectric_constant_bideau_mehu(λ)
     elif method == "cern2020":
         return lar_dielectric_constant_cern2020(λ)
+    raise ValueError(f"Unknown LAr dielectric constant method {method}")
 
 
-def lar_refractive_index(
-    λ: Quantity, method: str = "cern2020"
-) -> Quantity:
+def lar_refractive_index(λ: Quantity, method: str = "cern2020") -> Quantity:
     """Calculate the refractive index of LAr for a given photon wavelength.
 
     See Also
@@ -141,6 +152,9 @@ def lar_rayleigh(
     --------
     .lar_dielectric_constant
     """
+    if not temperature.check("[temperature]"):
+        raise ValueError("input does not look like a temperature")
+
     dyne = 1.0e-5 * u.newton
     κ = 2.18e-10 * u.cm**2 / dyne  # LAr isothermal compressibility
     k = 1.380658e-23 * u.joule / u.kelvin  # the Boltzmann constant
@@ -158,3 +172,247 @@ def lar_rayleigh(
     )
 
     return (1 / inv_l).to("cm")  # simplify units
+
+
+def lar_abs_length(λ: Quantity) -> Quantity:
+    """Absorption length (not correctly scaled).
+
+    We don't know how the attenuation length actually varies with the wavelength, so here
+    we use a custom exponential function connecting the LAr Scintillation peak and the VIS
+    range just to avoid a step-like function. Still is a guess.
+    This function has to be re-scaled with the intended attenuation length at the VUV
+    emission peak.
+    """
+    λ = np.maximum(λ, 141 * u.nm)
+    absl = 5.976e-12 * np.exp(0.223 * λ.to("nm").m) * u.cm
+    return np.minimum(absl, 100000 * u.cm)  # avoid large numbers
+
+
+def lar_peak_attenuation_length(
+    attenuation_method: str | Quantity = "legend200-llama",
+) -> Quantity:
+    """Attenuation length in the LEGEND-argon, as measured with LLAMA."""
+    if isinstance(attenuation_method, str):
+        if attenuation_method == "legend200-llama":
+            return 30 * u.cm
+        else:
+            raise ValueError(f"unknown attenuation_method {attenuation_method}")
+    else:
+        assert attenuation_method.check("[length]")
+        return attenuation_method
+
+
+def lar_lifetimes(
+    triplet_lifetime_method: float | str = "legend200-llama",
+) -> ArScintLiftime:
+    """Singlet and triplet lifetimes of liquid argon.
+
+    Singlet time from [Hitachi1983]_ and triplet time as measured by LLAMA in LEGEND-200.
+    """
+    triplet = 1 * u.us
+    if isinstance(triplet_lifetime_method, str):
+        if triplet_lifetime_method == "legend200-llama":
+            triplet = 1.3 * u.us
+        else:
+            raise ValueError(
+                f"unknown triplet_lifetime_method {triplet_lifetime_method}"
+            )
+    else:
+        triplet = triplet_lifetime_method * u.us
+
+    return ArScintLiftime(singlet=5.95 * u.ns, triplet=triplet)
+
+
+def lar_scintillation_params(flat_top_yield: Quantity = 31250 / u.MeV) -> ScintConfig:
+    """Scintillation yield (approx. inverse of the mean energy to produce a UV photon).
+
+    This depends on the nature of the impinging particles, the field configuration
+    and the quencher impurities. We set here just a reference value that is lower than
+    the value provided by [Doke2002]_, that probably does not represent experimental
+    reality.
+
+    For flat-top response particles the mean energy to produce a photon is 19.5 eV
+    .. math::
+        Y = 1/(19.5 eV) = 0.051 eV^{-1}
+
+    At zero electric field, for not-flat-top particles, the scintillation yield,
+    relative to the one of flat top particles is:
+    .. math::
+
+        Y_e = 0.8 Y
+
+        Y_alpha = 0.7 Y
+
+        Y_recoils = 0.2-0.4
+
+    Excitation ratio:
+    For example, for nuclear recoils it should be 0.75
+    nominal value for electrons and gammas: 0.23 (WArP data)
+    """
+    return ScintConfig(
+        flat_top=flat_top_yield,
+        particles=[
+            ScintParticle("electron", yield_factor=0.8, exc_ratio=0.23),
+            ScintParticle("alpha", yield_factor=0.7, exc_ratio=1),
+            ScintParticle("ion", yield_factor=0.3, exc_ratio=0.75),
+        ],
+    )
+
+
+def pyg4_lar_attach_rindex(
+    lar_mat, reg, lar_dielectric_method: str = "cern2020"
+) -> None:
+    """Attach the refractive index to the given LAr material instance.
+
+    Parameters
+    ----------
+    lar_dielectric_method
+        Choose which calculation method is used for calculation of the refractive
+        index.
+
+    See Also
+    --------
+    .lar_refractive_index
+    .lar_dielectric_constant
+    """
+    from legendoptics.pyg4utils import pyg4_sample_λ
+
+    λ_full = pyg4_sample_λ(112 * u.nm, 650 * u.nm)
+    rindex = lar_refractive_index(λ_full, lar_dielectric_method)
+    with u.context("sp"):
+        lar_mat.addVecPropertyPint("RINDEX", λ_full.to("eV"), rindex)
+
+
+def pyg4_lar_attach_attenuation(
+    lar_mat,
+    reg,
+    lar_temperature: Quantity,
+    lar_dielectric_method: str = "cern2020",
+    attenuation_method_or_length: str | Quantity = "legend200-llama",
+    rayleigh_enabled_or_length: bool | Quantity = True,
+    absorption_enabled_or_length: bool | Quantity = True,
+) -> None:
+    """Define all liquid argon optical properties on a Geant4 material, as defined by this module.
+
+    Parameters
+    ----------
+    lar_temperature
+        liquid phase temperature for rayleigh scattering length calculation.
+    lar_dielectric_method
+        Choose which calculation method is used for calculation of the dielectric
+        function, which is used for deriving the rayleigh scattering length.
+    attenuation_method_or_length
+        Change the method/measurement used to define the LAr triplet state lifetime.
+        If set to a length-Quantity, this value is used directly as attenuation length at
+        the scintillation peak.
+    rayleigh_enabled_or_length
+        If set to a boolean value, it enables or disables the default rayleigh scattering.
+
+        If set to a length-Quantity, the given value will be used as the scattering length at
+        the scintillation peak.
+    absorption_enabled_or_length
+        If set to a boolean value, the default absorption length is used (i.e. it is derived
+        from the scattering length and the total attenuation length).
+
+        If set to a length-Quantity, the given value will be used as the absorption length at
+        the scintillation peak.
+
+    Notes
+    -----
+    If all three of rayleigh length, absorption length and attenuation length are set via the function
+    parameters, the parameter on total attenuation length will be ignored!
+
+    See Also
+    --------
+    .lar_rayleigh
+    .lar_peak_attenuation_length
+    .lar_abs_length
+    """
+    from legendoptics.pyg4utils import pyg4_sample_λ
+
+    if (
+        isinstance(absorption_enabled_or_length, Quantity)
+        and isinstance(rayleigh_enabled_or_length, Quantity)
+        and isinstance(attenuation_method_or_length, Quantity)
+    ):
+        log.warning(
+            "All three of attenuation, absorption and rayleigh scattering length are constrained manually. The specified attenuation length will be ignored."
+        )
+
+    λ_full = pyg4_sample_λ(112 * u.nm, 650 * u.nm)
+
+    # rayleigh scattern is a (theoretically) defined property.
+    rayleigh = lar_rayleigh(λ_full, lar_temperature, lar_dielectric_method)
+    peak_rayleigh_length = lar_rayleigh(126.8 * u.nm, lar_temperature)
+    if isinstance(rayleigh_enabled_or_length, Quantity):
+        assert rayleigh_enabled_or_length.check("[length]")
+        peak_abs_length = rayleigh_enabled_or_length
+
+    # absorption length and rayleigh add up inversely to the measured attenuation length.
+    peak_att_length = lar_peak_attenuation_length(attenuation_method_or_length)
+
+    peak_abs_length = 1 / (1 / peak_att_length - 1 / peak_rayleigh_length)
+    if isinstance(absorption_enabled_or_length, Quantity):
+        assert absorption_enabled_or_length.check("[length]")
+        peak_abs_length = absorption_enabled_or_length
+
+    absl_scale = peak_abs_length / lar_abs_length(126.8 * u.nm)
+    abslength = lar_abs_length(λ_full) * absl_scale
+
+    with u.context("sp"):
+        if rayleigh_enabled_or_length is not False:
+            lar_mat.addVecPropertyPint("RAYLEIGH", λ_full.to("eV"), rayleigh)
+        if absorption_enabled_or_length is not False:
+            lar_mat.addVecPropertyPint("ABSLENGTH", λ_full.to("eV"), abslength)
+
+
+def pyg4_lar_attach_scintillation(
+    lar_mat,
+    reg,
+    flat_top_yield: Quantity = 31250 / u.MeV,
+    triplet_lifetime_method: float | str = "legend200-llama",
+) -> None:
+    """Attach Geant4 properties for LAr scintillation response to the given Geant4 material.
+
+    Parameters
+    ----------
+    flat_top_yield_per_mev
+        Change the flat-top light yield of the scintillation response. Note that for
+        different particle types, the value might be lower(see .lar_scintillation_params).
+    triplet_lifetime_method
+        Change the method/measurement used to define the LAr triplet state lifetime.
+        If set to a number, this value is used directly as lifetime in µs.
+
+    See Also
+    --------
+    .lar_scintillation_params
+    .lar_fano_factor
+    .lar_emission_spectrum
+    .lar_lifetimes
+    """
+    from legendoptics.pyg4utils import pyg4_def_scint_by_particle_type, pyg4_sample_λ
+
+    λ_peak = pyg4_sample_λ(116 * u.nm, 141 * u.nm)
+
+    # sample the measured emission spectrum.
+    scint_em = InterpolatingGraph(
+        *lar_emission_spectrum(),
+        min_idx=115 * u.nm,
+        max_idx=150 * u.nm,
+    )(λ_peak)
+    # make sure that the scintillation spectrum is zero at the boundaries.
+    scint_em[0] = 0
+    scint_em[-1] = 0
+
+    with u.context("sp"):
+        lar_scint = lar_mat.addVecPropertyPint(
+            "SCINTILLATIONCOMPONENT1", λ_peak.to("eV"), scint_em
+        )
+        lar_mat.addProperty("SCINTILLATIONCOMPONENT2", lar_scint)
+
+    lifetimes = lar_lifetimes(triplet_lifetime_method)
+    lar_mat.addConstPropertyPint("SCINTILLATIONTIMECONSTANT1", lifetimes.singlet)
+    lar_mat.addConstPropertyPint("SCINTILLATIONTIMECONSTANT2", lifetimes.triplet)
+    lar_mat.addConstPropertyPint("RESOLUTIONSCALE", lar_fano_factor())
+
+    pyg4_def_scint_by_particle_type(lar_mat, lar_scintillation_params(flat_top_yield))

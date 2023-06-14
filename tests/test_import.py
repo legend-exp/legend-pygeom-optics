@@ -6,14 +6,14 @@ u = pint.get_application_registry()
 
 def test_import():
     import legendoptics  # noqa: F401
-    import legendoptics.fibers
-    import legendoptics.lar
-    import legendoptics.tetratex
-    import legendoptics.tpb
-    import legendoptics.germanium
     import legendoptics.copper
+    import legendoptics.fibers
+    import legendoptics.germanium
+    import legendoptics.lar
     import legendoptics.nylon
     import legendoptics.silicon
+    import legendoptics.tetratex
+    import legendoptics.tpb
 
     legendoptics.lar.lar_fano_factor()
     legendoptics.lar.lar_emission_spectrum()
@@ -23,6 +23,10 @@ def test_import():
     legendoptics.lar.lar_dielectric_constant(wvl)
     legendoptics.lar.lar_refractive_index(wvl)
     legendoptics.lar.lar_rayleigh(wvl, 87 * u.K)
+    legendoptics.lar.lar_abs_length(wvl)
+    legendoptics.lar.lar_peak_attenuation_length()
+    legendoptics.lar.lar_lifetimes()
+    legendoptics.lar.lar_scintillation_params()
 
     legendoptics.tpb.tpb_quantum_efficiency()
     legendoptics.tpb.tpb_refractive_index()

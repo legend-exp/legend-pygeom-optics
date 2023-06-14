@@ -2,15 +2,12 @@ from typing import Callable
 
 import matplotlib.pyplot as plt
 import pint
-from numpy.typing import NDArray
 from pint import Quantity
 
 pint.get_application_registry().setup_matplotlib(True)
 
 
-def plot_continuous_prop(
-    ax: plt.Axes, prop: Callable, x: Quantity, param_dict=None
-):
+def plot_continuous_prop(ax: plt.Axes, prop: Callable, x: Quantity, param_dict=None):
     """Plot continuous property.
 
     Plots the `prop` function on values `x` with matplotlib's :func:`plot`.

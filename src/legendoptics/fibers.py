@@ -8,7 +8,6 @@ from __future__ import annotations
 import logging
 
 import pint
-from numpy.typing import NDArray
 from pint import Quantity
 
 from legendoptics.utils import InterpolatingGraph, readdatafile
@@ -85,8 +84,9 @@ def fiber_absorption_length() -> float:
 
 
 def fiber_absorption_path_length() -> float:
-    """Absorption length of fiber [SaintGobainDataSheet]_, multiplied by an empirical factor to account for
-    the prolonged path length inside a square fiber with 1mm side length.
+    """Absorption length of fiber [SaintGobainDataSheet]_, corrected for the geometry of a 1 mm square fiber.
+
+    Multiplied by an empirical factor to account for the prolonged path length inside a square fiber with 1mm side length.
 
     See Also
     --------

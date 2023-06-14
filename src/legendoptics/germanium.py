@@ -1,5 +1,4 @@
-"""
-Germanium 
+"""Germanium.
 
 .. [Wegmann2017] A. Wegmann “Characterization of the liquid argon veto of the GERDA
     experiment and its application for the measurement of the 76Ge half-life”
@@ -11,7 +10,6 @@ from __future__ import annotations
 import logging
 
 import pint
-from numpy.typing import NDArray
 from pint import Quantity
 
 from legendoptics.utils import readdatafile
