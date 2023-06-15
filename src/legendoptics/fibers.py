@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import logging
 
+import numpy as np
 import pint
 from pint import Quantity
 
@@ -93,3 +94,99 @@ def fiber_absorption_path_length() -> float:
     .fiber_absorption_length
     """
     return fiber_absorption_length() * 1.21
+
+
+def pyg4_fiber_cladding1_attach_rindex(mat, reg) -> None:
+    """Attach the refractive index to the given fiber cladding 1 material instance.
+
+    See Also
+    --------
+    .fiber_cladding1_refractive_index
+    """
+    λ = np.array([650.0, 115.0]) * u.nm
+    r = [fiber_cladding1_refractive_index()] * 2
+    with u.context("sp"):
+        mat.addVecPropertyPint("RINDEX", λ.to("eV"), r)
+
+
+def pyg4_fiber_cladding2_attach_rindex(mat, reg) -> None:
+    """Attach the refractive index to the given fiber cladding 2 material instance.
+
+    See Also
+    --------
+    .fiber_cladding2_refractive_index
+    """
+    λ = np.array([650.0, 115.0]) * u.nm
+    r = [fiber_cladding2_refractive_index()] * 2
+    with u.context("sp"):
+        mat.addVecPropertyPint("RINDEX", λ.to("eV"), r)
+
+
+def pyg4_fiber_core_attach_rindex(mat, reg) -> None:
+    """Attach the refractive index to the given fiber core material instance.
+
+    See Also
+    --------
+    .fiber_core_refractive_index
+    """
+    λ = np.array([650.0, 115.0]) * u.nm
+    r = [fiber_core_refractive_index()] * 2
+    with u.context("sp"):
+        mat.addVecPropertyPint("RINDEX", λ.to("eV"), r)
+
+
+def pyg4_fiber_core_attach_wls(
+    mat,
+    reg,
+    wls_abs_at_400nm: Quantity = 0.7 * u.mm,
+) -> None:
+    """Attach wavelength shifting properties to the given material instance.
+
+    See Also
+    --------
+    .fiber_wls_absorption
+    .fiber_wls_emission
+    .fiber_wls_timeconstant
+    """
+    from legendoptics.pyg4utils import pyg4_sample_λ
+
+    λ_full = pyg4_sample_λ(112 * u.nm, 650 * u.nm)
+    absorption = InterpolatingGraph(*fiber_wls_absorption())(λ_full)
+    emission = InterpolatingGraph(*fiber_wls_emission())(λ_full)
+    # make sure that the scintillation spectrum is zero at the boundaries.
+    emission[0] = 0
+    emission[-1] = 0
+
+    with u.context("sp"):
+        mat.addVecPropertyPint("WLSABSLENGTH", λ_full.to("eV"), absorption)
+        mat.addVecPropertyPint("WLSCOMPONENT", λ_full.to("eV"), emission)
+
+    mat.addConstPropertyPint("WLSTIMECONSTANT", fiber_wls_timeconstant())
+
+
+def pyg4_fiber_core_attach_absorption(
+    mat, reg, use_geometrical_absorption: bool = True
+) -> None:
+    """Attach absorption to the given material instance.
+
+    Parameters
+    ----------
+    use_geometrical_absorption
+        switch between the absorption length as specified by the manufacturer and the length
+        corrected for the geometry of a 1x1mm fiber.
+
+    See Also
+    --------
+    .fiber_absorption_path_length
+    """
+    from legendoptics.pyg4utils import pyg4_sample_λ
+
+    λ_full = pyg4_sample_λ(112 * u.nm, 650 * u.nm)
+    length = (
+        fiber_absorption_path_length()
+        if use_geometrical_absorption
+        else fiber_absorption_length()
+    )
+    absorption = np.array([length.m] * λ_full.shape[0]) * length.u
+    with u.context("sp"):
+        mat.addVecPropertyPint("ABSLENGTH", λ_full.to("eV"), absorption)

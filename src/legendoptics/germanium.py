@@ -21,3 +21,15 @@ u = pint.get_application_registry()
 def germanium_reflectivity() -> tuple[Quantity, Quantity]:
     """Measurements from [Wegmann2017]_ (with GERDA dead-layer Li-doped germanium, at room temperature)."""
     return readdatafile("ge_reflectivity.dat")
+
+
+def pyg4_germanium_attach_reflectivity(mat, reg) -> None:
+    """Attach the optical reflectivity to the given germanium material instance.
+
+    See Also
+    --------
+    .germanium_reflectivity
+    """
+    λ, refl = germanium_reflectivity()
+    with u.context("sp"):
+        mat.addVecPropertyPint("REFLECTIVITY", λ.to("eV"), refl)

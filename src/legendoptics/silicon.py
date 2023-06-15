@@ -24,3 +24,16 @@ def silicon_complex_rindex() -> tuple[Quantity, Quantity, Quantity]:
     imag = readdatafile("si_rindex_imag.dat")
     assert (real[0] == imag[0]).all()
     return real[0], real[1], imag[1]
+
+
+def pyg4_silicon_attach_complex_rindex(mat, reg) -> None:
+    """Attach the complex refractive index to the given silicon material instance.
+
+    See Also
+    --------
+    .silicon_complex_rindex
+    """
+    λ, re, im = silicon_complex_rindex()
+    with u.context("sp"):
+        mat.addVecPropertyPint("REALRINDEX", λ.to("eV"), re)
+        mat.addVecPropertyPint("IMAGINARYRINDEX", λ.to("eV"), im)
