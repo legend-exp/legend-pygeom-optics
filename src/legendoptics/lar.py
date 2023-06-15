@@ -232,8 +232,8 @@ def lar_scintillation_params(flat_top_yield: Quantity = 31250 / u.MeV) -> ScintC
     reality.
 
     For flat-top response particles the mean energy to produce a photon is 19.5 eV
-    .. math::
-        Y = 1/(19.5 eV) = 0.051 eV^{-1}
+
+    .. math:: Y = 1/(19.5 eV) = 0.051 eV^{-1}
 
     At zero electric field, for not-flat-top particles, the scintillation yield,
     relative to the one of flat top particles is:
