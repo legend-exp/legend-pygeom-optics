@@ -24,7 +24,7 @@ def tetratex_reflectivity() -> tuple[Quantity, Quantity]:
     for the two superimposed foils (= 320um). So, in reality, the reflectivity
     of our foil should be (negligibly) smaller.
     """
-    return readdatafile("tpb_wlsabslength.dat")
+    return readdatafile("tetratex_reflectivity.dat")
 
 
 def pyg4_tetratex_attach_reflectivity(mat, reg, reflectivity_scale: float = 1) -> None:
