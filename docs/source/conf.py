@@ -6,6 +6,8 @@ from pathlib import Path
 from pkg_resources import get_distribution
 
 sys.path.insert(0, Path(__file__).parents[2].resolve().as_posix())
+# Add local extension directory.
+sys.path.insert(0, (Path(__file__).parents[0] / "exts").as_posix())
 
 project = "legend-pygeom-optics"
 copyright = "The LEGEND Collaboration"
@@ -19,6 +21,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",
     "myst_parser",
+    "optics_plot_extension",
 ]
 
 source_suffix = {

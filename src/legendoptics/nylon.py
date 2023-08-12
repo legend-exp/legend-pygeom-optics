@@ -29,7 +29,10 @@ def nylon_refractive_index() -> float:
 
 
 def nylon_absorption() -> tuple[Quantity, Quantity]:
-    """Values reported in [Agostini2018]_."""
+    """Values reported in [Agostini2018]_.
+
+    ..optics-plot::
+    """
     wvl, absorp = readdatafile("nylon_absorption.dat")
     assert absorp.check("[length]")
     return wvl, absorp

@@ -19,7 +19,10 @@ u = pint.get_application_registry()
 
 
 def germanium_reflectivity() -> tuple[Quantity, Quantity]:
-    """Measurements from [Wegmann2017]_ (with GERDA dead-layer Li-doped germanium, at room temperature)."""
+    """Measurements from [Wegmann2017]_ (with GERDA dead-layer Li-doped germanium, at room temperature).
+
+    ..optics-plot::
+    """
     return readdatafile("ge_reflectivity.dat")
 
 
