@@ -413,6 +413,10 @@ def pyg4_lar_attach_scintillation(
     lifetimes = lar_lifetimes(triplet_lifetime_method)
     lar_mat.addConstPropertyPint("SCINTILLATIONTIMECONSTANT1", lifetimes.singlet)
     lar_mat.addConstPropertyPint("SCINTILLATIONTIMECONSTANT2", lifetimes.triplet)
-    lar_mat.addConstPropertyPint("RESOLUTIONSCALE", lar_fano_factor())
+
+    # the fano factor is the ratio between variance and mean. Geant4 calculates
+    # σ = RESOLUTIONSCALE × √mean, so we have to take the root of the fano factor
+    # here to keep it consistent.
+    lar_mat.addConstPropertyPint("RESOLUTIONSCALE", np.sqrt(lar_fano_factor()))
 
     pyg4_def_scint_by_particle_type(lar_mat, lar_scintillation_params(flat_top_yield))
