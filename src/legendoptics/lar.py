@@ -152,7 +152,7 @@ def lar_fano_factor() -> float:
 
 
 def lar_rayleigh(
-    λ: Quantity, temperature: Quantity, method: str = "cern2020"
+    λ: Quantity, temperature: Quantity = 90 * u.K, method: str = "cern2020"
 ) -> Quantity:
     """Calculate the Rayleigh scattering length using the equations given in [Seidel2002]_.
 
@@ -163,6 +163,9 @@ def lar_rayleigh(
     See Also
     --------
     .lar_dielectric_constant
+
+
+    .. optics-plot:: {'call_x': True}
     """
     if not temperature.check("[temperature]"):
         raise ValueError("input does not look like a temperature")
@@ -247,17 +250,17 @@ def lar_scintillation_params(flat_top_yield: Quantity = 31250 / u.MeV) -> ScintC
 
     For flat-top response particles the mean energy to produce a photon is 19.5 eV
 
-    .. math:: Y = 1/(19.5 eV) = 0.051 eV^{-1}
+    .. math:: Y = 1/(19.5 \\mathrm{eV}) = 0.051 \\mathrm{eV}^{-1}
 
     At zero electric field, for not-flat-top particles, the scintillation yield,
     relative to the one of flat top particles is:
+
     .. math::
+        Y_\\texrm{e} &= 0.8 Y
 
-        Y_e = 0.8 Y
+        Y_\\texrm{alpha} &= 0.7 Y
 
-        Y_alpha = 0.7 Y
-
-        Y_recoils = 0.2-0.4
+        Y_\\texrm{recoils} &= 0.2\\textrm{--}0.4
 
     Excitation ratio:
     For example, for nuclear recoils it should be 0.75
