@@ -21,7 +21,7 @@ def do_plot(
     By default, it will call ``obj()`` and unpack the result into an x-vector, and multiple
     y-vectors. All y-vectors will pe plotted together into one output file.
 
-    Other parameters
+    Other Parameters
     ----------------
     options
         Change the behaviour of the plot.
