@@ -24,7 +24,10 @@ u = pint.get_application_registry()
 
 
 def nylon_refractive_index() -> float:
-    """Refractive index in near-UV range, from [Benziger2007]_."""
+    """Refractive index in near-UV range, from [Benziger2007]_.
+
+    .. optics-const::
+    """
     return 1.53
 
 

@@ -18,17 +18,26 @@ u = pint.get_application_registry()
 
 
 def fiber_cladding2_refractive_index() -> float:
-    """Refractive index of second fiber cladding material [SaintGobainDataSheet]_."""
+    """Refractive index of second fiber cladding material [SaintGobainDataSheet]_.
+
+    .. optics-const::
+    """
     return 1.42
 
 
 def fiber_cladding1_refractive_index() -> float:
-    """Refractive index of first fiber cladding material [SaintGobainDataSheet]_."""
+    """Refractive index of first fiber cladding material [SaintGobainDataSheet]_.
+
+    .. optics-const::
+    """
     return 1.49
 
 
 def fiber_core_refractive_index() -> float:
-    """Refractive index of fiber core material [SaintGobainDataSheet]_."""
+    """Refractive index of fiber core material [SaintGobainDataSheet]_.
+
+    .. optics-const::
+    """
     return 1.6
 
 
@@ -74,22 +83,28 @@ def fiber_wls_emission() -> tuple[Quantity, Quantity]:
     return readdatafile("psfibers_wlscomponent.dat")
 
 
-def fiber_wls_timeconstant() -> float:
-    """WLS time constant [SaintGobainDataSheet]_."""
+def fiber_wls_timeconstant() -> Quantity:
+    """WLS time constant [SaintGobainDataSheet]_.
+
+    .. optics-const::
+    """
     return 12 * u.ns
 
 
-def fiber_absorption_length() -> float:
+def fiber_absorption_length() -> Quantity:
     """Absorption length of fiber [SaintGobainDataSheet]_. Note this is a macroscopical value for a 1 mm fiber.
 
     See Also
     --------
     .fiber_absorption_path_length
+
+
+    .. optics-const::
     """
     return 3.5 * u.m
 
 
-def fiber_absorption_path_length() -> float:
+def fiber_absorption_path_length() -> Quantity:
     """Absorption length of fiber [SaintGobainDataSheet]_, corrected for the geometry of a 1 mm square fiber.
 
     Multiplied by an empirical factor to account for the prolonged path length inside a square fiber with 1mm side length.
@@ -97,6 +112,9 @@ def fiber_absorption_path_length() -> float:
     See Also
     --------
     .fiber_absorption_length
+
+
+    .. optics-const::
     """
     return fiber_absorption_length() * 1.21
 

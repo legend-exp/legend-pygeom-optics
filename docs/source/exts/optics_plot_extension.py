@@ -13,7 +13,9 @@ from sphinx.application import Sphinx
 u = pint.get_application_registry()
 
 
-def do_plot(obj: Callable, fn: str, options: dict[str, Any]):
+def do_plot(
+    obj: Callable, plots_dir: Path, safe_name: str, options: dict[str, Any]
+) -> str:
     """Create a plot from the given optical property function.
 
     By default, it will call ``obj()`` and unpack the result into an x-vector, and multiple
@@ -89,7 +91,30 @@ def do_plot(obj: Callable, fn: str, options: dict[str, Any]):
 
     # export figure to the filesystem
     fig.tight_layout(pad=0.3)
-    fig.savefig(fn)
+    fig.savefig(plots_dir / (safe_name + ".png"))
+
+    return f":returns: .. image:: plots/{safe_name}.png"
+
+
+def do_const(obj: Callable) -> str:
+    """Output the constant return value of the function.
+
+    By default, it will call ``obj()`` and display the numerical value of the return value.
+    """
+    const = obj()
+    description = None
+
+    if isinstance(const, pint.Quantity):
+        description = f":math:`{const.m}\\ \\mathrm{{{const.u:~}}}`"
+    elif isinstance(const, float):
+        description = f":math:`{const}`"
+    else:
+        raise ValueError("")
+
+    if description is None:
+        return ""
+    else:
+        return f":returns: constant value {description}"
 
 
 def process_docstring(
@@ -104,23 +129,25 @@ def process_docstring(
 
     # this only appears to be a sphix directive, but the parsing here is very simple.
     plot_token = ".. optics-plot::"
+    const_token = ".. optics-const::"
 
     i = 0
     for line in lines:
         if line.startswith(plot_token):
             plots_dir.mkdir(exist_ok=True, parents=True)
             safe_name = "".join(c for c in name if c.isalnum() or c in (".", "-", "_"))
-            fn = plots_dir / (safe_name + ".png")
 
             opt_string = line[len(plot_token) :]
             opts = []
             if opt_string != "":
                 opts = ast.literal_eval(opt_string)
 
-            do_plot(obj, fn, opts)
-
             # replace the custom 'directive' with an actually supported reST directive.
-            lines[i] = f".. image:: plots/{safe_name}.png"
+            lines[i] = do_plot(obj, plots_dir, safe_name, opts)
+        elif line.startswith(const_token):
+            # replace the custom 'directive' with actually supported reST content.
+            lines[i] = do_const(obj)
+
         i += 1
 
 

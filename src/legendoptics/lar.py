@@ -144,7 +144,9 @@ def lar_fano_factor() -> float:
     """Fano factor.
 
     Statistical yield fluctuation can be broadened or narrower
-    (impurities, fano factor). Value 0.11 from [Doke1976]_.
+    (impurities, fano factor). Value from [Doke1976]_.
+
+    .. optics-const::
     """
     return 0.11
 
