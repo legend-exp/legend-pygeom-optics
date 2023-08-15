@@ -56,7 +56,7 @@ def tpb_wls_emission() -> tuple[Quantity, Quantity]:
     conditions. The major differences brougth by the LAr temperature are the vibronic
     structures that modify the shape of the spectrum.
 
-    ..optics-plot::
+    .. optics-plot::
     """
     return readdatafile("tpb_vm2000_wlscomponent.dat")
 
@@ -64,7 +64,7 @@ def tpb_wls_emission() -> tuple[Quantity, Quantity]:
 def tpb_wls_absorption() -> tuple[Quantity, Quantity]:
     """Values reported in [Benson2018]_ for TPB evaporated on utraviolet-transmitting acrylic substrate.
 
-    ..optics-plot:: {'yscale': 'log'}
+    .. optics-plot:: {'yscale': 'log'}
     """
     wvl, absorp = readdatafile("tpb_wlsabslength.dat")
     assert absorp.check("[length]")

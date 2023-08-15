@@ -24,7 +24,7 @@ def tetratex_reflectivity() -> tuple[Quantity, Quantity]:
     for the two superimposed foils (= 320um). So, in reality, the reflectivity
     of our foil should be (negligibly) smaller.
 
-    ..optics-plot::
+    .. optics-plot::
     """
     return readdatafile("tetratex_reflectivity.dat")
 

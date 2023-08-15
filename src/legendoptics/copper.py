@@ -16,7 +16,7 @@ u = pint.get_application_registry()
 def copper_reflectivity() -> tuple[Quantity, Quantity]:
     """Measurements from [Wegmann2017]_.
 
-    ..optics-plot::
+    .. optics-plot::
     """
     return readdatafile("cu_reflectivity.dat")
 

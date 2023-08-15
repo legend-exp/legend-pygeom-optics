@@ -55,7 +55,7 @@ def lar_dielectric_constant_bideau_mehu(
     From the Bideau-Sellmeier formula [Bideau-Mehu1980]_ in gaseous argon,
     density-corrected for liquid argon.
 
-    ..optics-plot:: {'call_x': True}
+    .. optics-plot:: {'call_x': True}
     """
     if not λ.check("[length]"):
         raise ValueError("input does not look like a wavelength")
@@ -83,7 +83,7 @@ def lar_dielectric_constant_cern2020(
 
     From [Babicz2020]_ (measurements in LAr).
 
-    ..optics-plot:: {'call_x': True}
+    .. optics-plot:: {'call_x': True}
     """
     if not λ.check("[length]"):
         raise ValueError("input does not look like a wavelength")
@@ -127,7 +127,7 @@ def lar_refractive_index(λ: Quantity, method: str = "cern2020") -> Quantity:
     .lar_dielectric_constant
 
 
-    ..optics-plot:: {'call_x': True}
+    .. optics-plot:: {'call_x': True}
     """
     return np.sqrt(lar_dielectric_constant(λ, method))
 
@@ -135,7 +135,7 @@ def lar_refractive_index(λ: Quantity, method: str = "cern2020") -> Quantity:
 def lar_emission_spectrum() -> tuple[Quantity, Quantity]:
     """Return the LAr emission spectrum, adapted from [Heindl2010]_.
 
-    ..optics-plot::
+    .. optics-plot::
     """
     return readdatafile("lar_emission_heindl2010.dat")
 
@@ -193,7 +193,7 @@ def lar_abs_length(λ: Quantity) -> Quantity:
     This function has to be re-scaled with the intended attenuation length at the VUV
     emission peak.
 
-    ..optics-plot:: {'call_x': True}
+    .. optics-plot:: {'call_x': True}
     """
     λ = np.maximum(λ, 141 * u.nm)
     absl = 5.976e-12 * np.exp(0.223 * λ.to("nm").m) * u.cm

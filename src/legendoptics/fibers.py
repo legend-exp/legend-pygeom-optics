@@ -57,7 +57,7 @@ def fiber_wls_absorption(
     Measured an absorption length of 0.7 mm at 400 nm, the spectrum has been rescaled by
     that.
 
-    ..optics-plot::
+    .. optics-plot::
     """
     wvl, absorp = readdatafile("psfibers_wlsabslength.dat")  # arbitrary unit
     assert str(absorp.dimensionality) == "dimensionless"
@@ -67,7 +67,10 @@ def fiber_wls_absorption(
 
 
 def fiber_wls_emission() -> tuple[Quantity, Quantity]:
-    """[SaintGobainDataSheet]_ reports the emission spectrum for BCF-91A."""
+    """[SaintGobainDataSheet]_ reports the emission spectrum for BCF-91A.
+
+    .. optics-plot::
+    """
     return readdatafile("psfibers_wlscomponent.dat")
 
 
