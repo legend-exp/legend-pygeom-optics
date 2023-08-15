@@ -23,6 +23,8 @@ def tetratex_reflectivity() -> tuple[Quantity, Quantity]:
     Tetratex. As our layer in GERDA/LEGEND is 254um thick I'm taking here his results
     for the two superimposed foils (= 320um). So, in reality, the reflectivity
     of our foil should be (negligibly) smaller.
+
+    .. optics-plot::
     """
     return readdatafile("tetratex_reflectivity.dat")
 

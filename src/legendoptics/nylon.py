@@ -24,12 +24,18 @@ u = pint.get_application_registry()
 
 
 def nylon_refractive_index() -> float:
-    """Refractive index in near-UV range, from [Benziger2007]_."""
+    """Refractive index in near-UV range, from [Benziger2007]_.
+
+    .. optics-const::
+    """
     return 1.53
 
 
 def nylon_absorption() -> tuple[Quantity, Quantity]:
-    """Values reported in [Agostini2018]_."""
+    """Values reported in [Agostini2018]_.
+
+    .. optics-plot::
+    """
     wvl, absorp = readdatafile("nylon_absorption.dat")
     assert absorp.check("[length]")
     return wvl, absorp

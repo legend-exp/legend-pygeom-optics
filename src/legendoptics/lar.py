@@ -54,6 +54,8 @@ def lar_dielectric_constant_bideau_mehu(
 
     From the Bideau-Sellmeier formula [Bideau-Mehu1980]_ in gaseous argon,
     density-corrected for liquid argon.
+
+    .. optics-plot:: {'call_x': True}
     """
     if not λ.check("[length]"):
         raise ValueError("input does not look like a wavelength")
@@ -80,6 +82,8 @@ def lar_dielectric_constant_cern2020(
     """Calculate the dielectric constant of LAr for a given photon wavelength.
 
     From [Babicz2020]_ (measurements in LAr).
+
+    .. optics-plot:: {'call_x': True}
     """
     if not λ.check("[length]"):
         raise ValueError("input does not look like a wavelength")
@@ -121,12 +125,18 @@ def lar_refractive_index(λ: Quantity, method: str = "cern2020") -> Quantity:
     See Also
     --------
     .lar_dielectric_constant
+
+
+    .. optics-plot:: {'call_x': True}
     """
     return np.sqrt(lar_dielectric_constant(λ, method))
 
 
 def lar_emission_spectrum() -> tuple[Quantity, Quantity]:
-    """Return the LAr emission spectrum, adapted from [Heindl2010]_."""
+    """Return the LAr emission spectrum, adapted from [Heindl2010]_.
+
+    .. optics-plot::
+    """
     return readdatafile("lar_emission_heindl2010.dat")
 
 
@@ -134,13 +144,15 @@ def lar_fano_factor() -> float:
     """Fano factor.
 
     Statistical yield fluctuation can be broadened or narrower
-    (impurities, fano factor). Value 0.11 from [Doke1976]_.
+    (impurities, fano factor). Value from [Doke1976]_.
+
+    .. optics-const::
     """
     return 0.11
 
 
 def lar_rayleigh(
-    λ: Quantity, temperature: Quantity, method: str = "cern2020"
+    λ: Quantity, temperature: Quantity = 90 * u.K, method: str = "cern2020"
 ) -> Quantity:
     """Calculate the Rayleigh scattering length using the equations given in [Seidel2002]_.
 
@@ -151,6 +163,9 @@ def lar_rayleigh(
     See Also
     --------
     .lar_dielectric_constant
+
+
+    .. optics-plot:: {'call_x': True}
     """
     if not temperature.check("[temperature]"):
         raise ValueError("input does not look like a temperature")
@@ -182,6 +197,8 @@ def lar_abs_length(λ: Quantity) -> Quantity:
     range just to avoid a step-like function. Still is a guess.
     This function has to be re-scaled with the intended attenuation length at the VUV
     emission peak.
+
+    .. optics-plot:: {'call_x': True}
     """
     λ = np.maximum(λ, 141 * u.nm)
     absl = 5.976e-12 * np.exp(0.223 * λ.to("nm").m) * u.cm
@@ -224,7 +241,7 @@ def lar_lifetimes(
 
 
 def lar_scintillation_params(flat_top_yield: Quantity = 31250 / u.MeV) -> ScintConfig:
-    """Scintillation yield (approx. inverse of the mean energy to produce a UV photon).
+    r"""Scintillation yield (approx. inverse of the mean energy to produce a UV photon).
 
     This depends on the nature of the impinging particles, the field configuration
     and the quencher impurities. We set here just a reference value that is lower than
@@ -233,17 +250,17 @@ def lar_scintillation_params(flat_top_yield: Quantity = 31250 / u.MeV) -> ScintC
 
     For flat-top response particles the mean energy to produce a photon is 19.5 eV
 
-    .. math:: Y = 1/(19.5 eV) = 0.051 eV^{-1}
+    .. math:: Y = 1/(19.5 \mathrm{eV}) = 0.051 \mathrm{eV}^{-1}
 
     At zero electric field, for not-flat-top particles, the scintillation yield,
     relative to the one of flat top particles is:
+
     .. math::
+        Y_\texrm{e} &= 0.8 Y
 
-        Y_e = 0.8 Y
+        Y_\texrm{alpha} &= 0.7 Y
 
-        Y_alpha = 0.7 Y
-
-        Y_recoils = 0.2-0.4
+        Y_\texrm{recoils} &= 0.2\textrm{--}0.4
 
     Excitation ratio:
     For example, for nuclear recoils it should be 0.75

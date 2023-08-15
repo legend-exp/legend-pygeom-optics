@@ -34,17 +34,25 @@ def tpb_quantum_efficiency() -> float:
 
     * Current literature value of 0.85 from [Araujo2022]_ at LAr Temperature.
     * Other measurement from [Benson2018]_ reports ~0.6 at room temperature
+
+    .. optics-const::
     """
     return 0.85
 
 
 def tpb_refractive_index() -> float:
-    """Refractive index from [MolbaseTPB]_."""
+    """Refractive index from [MolbaseTPB]_.
+
+    .. optics-const::
+    """
     return 1.635
 
 
 def tpb_wls_timeconstant() -> Quantity:
-    """Time constant: arbitrary small."""
+    """Time constant: arbitrary small.
+
+    .. optics-const::
+    """
     return 0.01 * u.ns
 
 
@@ -55,12 +63,17 @@ def tpb_wls_emission() -> tuple[Quantity, Quantity]:
     at an excitation wavelength of 128nm and at 87K, so exactly in our experimental
     conditions. The major differences brougth by the LAr temperature are the vibronic
     structures that modify the shape of the spectrum.
+
+    .. optics-plot::
     """
     return readdatafile("tpb_vm2000_wlscomponent.dat")
 
 
 def tpb_wls_absorption() -> tuple[Quantity, Quantity]:
-    """Values reported in [Benson2018]_ for TPB evaporated on utraviolet-transmitting acrylic substrate."""
+    """Values reported in [Benson2018]_ for TPB evaporated on utraviolet-transmitting acrylic substrate.
+
+    .. optics-plot:: {'yscale': 'log'}
+    """
     wvl, absorp = readdatafile("tpb_wlsabslength.dat")
     assert absorp.check("[length]")
     return wvl, absorp

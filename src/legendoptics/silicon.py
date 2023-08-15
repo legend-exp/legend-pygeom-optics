@@ -19,7 +19,10 @@ u = pint.get_application_registry()
 
 
 def silicon_complex_rindex() -> tuple[Quantity, Quantity, Quantity]:
-    """Real and imaginary parts as tuple(wavelength, Re, Im). Measurements from [Phillip1960]_."""
+    """Real and imaginary parts as tuple(wavelength, Re, Im). Measurements from [Phillip1960]_.
+
+    .. optics-plot:: {'labels':('Re n','Im n')}
+    """
     real = readdatafile("si_rindex_real.dat")
     imag = readdatafile("si_rindex_imag.dat")
     assert (real[0] == imag[0]).all()
