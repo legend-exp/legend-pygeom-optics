@@ -1,8 +1,8 @@
-import numpy as np
 import pint
 import pyg4ometry.geant4 as g4
 
 u = pint.get_application_registry()
+
 
 def _create_dummy_mat():
     reg = g4.Registry()
