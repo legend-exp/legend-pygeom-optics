@@ -106,6 +106,8 @@ def _patch_g4_pint_unit_support() -> None:
     def addVecPropertyPint(self, name, e, v):  # noqa: N802
         vunit, v = _val_pint_to_gdml(v)
         eunit, e = _val_pint_to_gdml(e)
+        v = np.array(v)
+        e = np.array(e)
 
         if name in length_props and vunit not in length_u:
             log.warning("Wrong unit %s for property %s", vunit, name)
@@ -114,7 +116,10 @@ def _patch_g4_pint_unit_support() -> None:
         if eunit not in ["", "eV", "keV", "MeV", "GeV", "TeV", "PeV"]:
             log.warning("Wrong energy unit %s", eunit)
 
-        # TODO: necessary to reorder values
+        # reorder the values to be in ascending energy order.
+        sort = np.argsort(e)
+        e = e[sort]
+        v = v[sort]
 
         return g4.Material.addVecProperty(self, name, e, v, eunit, vunit)
 

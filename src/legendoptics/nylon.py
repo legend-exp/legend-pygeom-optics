@@ -5,7 +5,7 @@ Nylon from Borexino tank, as described in [Agostini2018]_.
     In: Astroparticle Physics 97 (2018). https://doi.org/10.1016/j.astropartphys.2017.10.003
 
 .. [Benziger2007] J. Benziger et al. “The Nylon Scintillator Containment Vessels for the
-    Borexino Solar Neutrino Experiment” In: nternational Journal of Modern Physics A, 29(16)
+    Borexino Solar Neutrino Experiment” In: International Journal of Modern Physics A, 29(16)
     (2014). https://doi.org/10.1016/j.nima.2007.08.176
 """
 
