@@ -11,6 +11,7 @@ def test_import():
     import legendoptics.germanium
     import legendoptics.lar
     import legendoptics.nylon
+    import legendoptics.pen
     import legendoptics.silicon
     import legendoptics.tetratex
     import legendoptics.tpb
@@ -53,3 +54,13 @@ def test_import():
 
     legendoptics.nylon.nylon_refractive_index()
     legendoptics.nylon.nylon_absorption()
+
+    legendoptics.pen.pen_refractive_index()
+    legendoptics.pen.pen_quantum_efficiency()
+    legendoptics.pen.pen_scint_timeconstant()
+    legendoptics.pen.pen_scint_light_yield()
+    legendoptics.pen.pen_wls_emission()
+    legendoptics.pen.pen_absorption()
+    legendoptics.pen.pen_wls_absorption()
+    legendoptics.pen.pen_wls_absorption()
+    legendoptics.pen.pen_wls_absorption()
