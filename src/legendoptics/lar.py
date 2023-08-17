@@ -309,7 +309,7 @@ def pyg4_lar_attach_attenuation(
     rayleigh_enabled_or_length: bool | Quantity = True,
     absorption_enabled_or_length: bool | Quantity = True,
 ) -> None:
-    """Define all liquid argon optical properties on a Geant4 material, as defined by this module.
+    """Attach all attenuation-related optical properties to the given LAr material instance.
 
     Parameters
     ----------
@@ -389,13 +389,13 @@ def pyg4_lar_attach_scintillation(
     flat_top_yield: Quantity = 31250 / u.MeV,
     triplet_lifetime_method: float | str = "legend200-llama",
 ) -> None:
-    """Attach Geant4 properties for LAr scintillation response to the given Geant4 material.
+    """Attach all properties for LAr scintillation response to the given LAr material instance.
 
     Parameters
     ----------
     flat_top_yield_per_mev
         Change the flat-top light yield of the scintillation response. Note that for
-        different particle types, the value might be lower(see .lar_scintillation_params).
+        different particle types, the value might be lower (see :func:`lar_scintillation_params`).
     triplet_lifetime_method
         Change the method/measurement used to define the LAr triplet state lifetime.
         If set to a number, this value is used directly as lifetime in µs.

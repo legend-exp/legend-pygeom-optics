@@ -98,7 +98,7 @@ def pyg4_tpb_attach_wls(mat, reg, quantum_efficiency: bool | float = True) -> No
     Parameters
     ----------
     quantum_efficiency
-        If `False`, disable attaching any photon number information. If `True`, use the valiues
+        If `False`, disable attaching any photon number information. If `True`, use the values
         from .tpb_quantum_efficiency. If specified as a number, directly attach this number as
         mean number of emitted photons.
 

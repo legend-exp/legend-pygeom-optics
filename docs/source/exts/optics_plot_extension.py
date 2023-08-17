@@ -105,7 +105,7 @@ def do_const(obj: Callable) -> str:
     description = None
 
     if isinstance(const, pint.Quantity):
-        description = f":math:`{const.m}\\ \\mathrm{{{const.u:~}}}`"
+        description = f":math:`{const.m}\\ {const.u:L~}`"
     elif isinstance(const, float):
         description = f":math:`{const}`"
     else:

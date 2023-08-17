@@ -12,7 +12,7 @@ from pint import Quantity
 u = pint.get_application_registry()
 
 
-def readdatafile(filename: str) -> tuple[NDArray, NDArray]:
+def readdatafile(filename: str) -> tuple[Quantity, Quantity]:
     """Read ``(x, y)`` data points from `filename` with units.
 
     Accepted file format ::
@@ -63,8 +63,8 @@ class InterpolatingGraph:
         self,
         idx: Quantity,
         vals: Quantity,
-        min_idx: Quantity = None,
-        max_idx: Quantity = None,
+        min_idx: Quantity | None = None,
+        max_idx: Quantity | None = None,
     ):
         # Filter the supplied data points.
         f = np.full(idx.shape, True)
