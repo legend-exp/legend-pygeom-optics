@@ -6,7 +6,6 @@ import numpy as np
 import pint
 import scipy.interpolate
 from importlib_resources import files
-from numpy.typing import NDArray
 from pint import Quantity
 
 u = pint.get_application_registry()
