@@ -111,7 +111,7 @@ class ScintParticle(NamedTuple):
 
     name: str
     yield_factor: float
-    exc_ratio: float
+    exc_ratio: float | None
 
 
 class ScintConfig(NamedTuple):
