@@ -64,3 +64,5 @@ autoclass_content = "both"
 autodoc_typehints = "both"
 autodoc_typehints_description_target = "documented_params"
 autodoc_typehints_format = "short"
+# mock pyg4ometry that will sometimes lead to build failures.
+autodoc_mock_imports = ["pyg4ometry"]
