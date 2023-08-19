@@ -15,7 +15,7 @@ u = pint.get_application_registry()
 
 def do_plot(
     obj: Callable, plots_dir: Path, safe_name: str, options: dict[str, Any]
-) -> str:
+) -> list[str]:
     """Create a plot from the given optical property function.
 
     By default, it will call ``obj()`` and unpack the result into an x-vector, and multiple
@@ -91,12 +91,16 @@ def do_plot(
 
     # export figure to the filesystem
     fig.tight_layout(pad=0.3)
-    fig.savefig(plots_dir / (safe_name + ".png"))
+    fig.savefig(plots_dir / (safe_name + ".png"), dpi=300)
 
-    return f":returns: .. image:: plots/{safe_name}.png"
+    return [
+        ":returns:",
+        f"    .. image:: plots/{safe_name}.png",
+        "        :width: 400px",
+    ]
 
 
-def do_const(obj: Callable) -> str:
+def do_const(obj: Callable) -> list[str]:
     """Output the constant return value of the function.
 
     By default, it will call ``obj()`` and display the numerical value of the return value.
@@ -112,9 +116,9 @@ def do_const(obj: Callable) -> str:
         raise ValueError("")
 
     if description is None:
-        return ""
+        return [""]
     else:
-        return f":returns: constant value {description}"
+        return [f":returns: constant value {description}"]
 
 
 def process_docstring(
@@ -132,7 +136,8 @@ def process_docstring(
     const_token = ".. optics-const::"
 
     i = 0
-    for line in lines:
+    orig_lines = lines.copy()
+    for line in orig_lines:
         if line.startswith(plot_token):
             plots_dir.mkdir(exist_ok=True, parents=True)
             safe_name = "".join(c for c in name if c.isalnum() or c in (".", "-", "_"))
@@ -143,12 +148,16 @@ def process_docstring(
                 opts = ast.literal_eval(opt_string)
 
             # replace the custom 'directive' with an actually supported reST directive.
-            lines[i] = do_plot(obj, plots_dir, safe_name, opts)
+            replace = do_plot(obj, plots_dir, safe_name, opts)
+            lines[i : i + 1] = replace
+            i += len(replace)
         elif line.startswith(const_token):
             # replace the custom 'directive' with actually supported reST content.
-            lines[i] = do_const(obj)
-
-        i += 1
+            replace = do_const(obj)
+            lines[i : i + 1] = replace
+            i += len(replace)
+        else:
+            i += 1
 
 
 def setup(app: Sphinx) -> dict[str, bool]:
