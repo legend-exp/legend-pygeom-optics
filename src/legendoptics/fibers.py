@@ -66,7 +66,7 @@ def fiber_wls_absorption(
     Measured an absorption length of 0.7 mm at 400 nm, the spectrum has been rescaled by
     that.
 
-    .. optics-plot::
+    .. optics-plot:: {'yscale': 'log'}
     """
     wvl, absorp = readdatafile("psfibers_wlsabslength.dat")  # arbitrary unit
     assert str(absorp.dimensionality) == "dimensionless"
