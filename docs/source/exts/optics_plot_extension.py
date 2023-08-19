@@ -93,7 +93,7 @@ def do_plot(
     fig.tight_layout(pad=0.3)
     fig.savefig(plots_dir / (safe_name + ".png"), dpi=300)
 
-    return [f":returns: .. image:: plots/{safe_name}.png", "        :width: 400px"]
+    return [":returns:", f"    .. image:: plots/{safe_name}.png", "        :width: 400px"]
 
 
 def do_const(obj: Callable) -> list[str]:
@@ -145,12 +145,12 @@ def process_docstring(
 
             # replace the custom 'directive' with an actually supported reST directive.
             replace = do_plot(obj, plots_dir, safe_name, opts)
-            lines[i:i] = replace
+            lines[i:i + 1] = replace
             i += len(replace)
         elif line.startswith(const_token):
             # replace the custom 'directive' with actually supported reST content.
             replace = do_const(obj)
-            lines[i:i] = replace
+            lines[i:i + 1] = replace
             i += len(replace)
         else:
             i += 1
