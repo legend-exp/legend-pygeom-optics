@@ -93,7 +93,7 @@ def do_plot(
     fig.tight_layout(pad=0.3)
     fig.savefig(plots_dir / (safe_name + ".png"), dpi=300)
 
-    return [f":returns: .. image:: plots/{safe_name}.png", "    :width: 400px"]
+    return [f":returns: .. image:: plots/{safe_name}.png", "        :width: 400px"]
 
 
 def do_const(obj: Callable) -> list[str]:
