@@ -82,16 +82,17 @@ def pen_absorption() -> tuple[Quantity, Quantity]:
 def pen_wls_absorption() -> tuple[Quantity, Quantity]:
     """WLS absorption of PEN.
 
-    .. warning:: There is no measurement of PEN similar to ours available, so this step-function is improvised.
-    For geometries with thick PEN objects, the absorption length should not matter too much—in a
-    certain range, all light will be absorbed anyway.
+    .. warning::
+        There is no measurement of PEN similar to ours available, so this step-function is improvised.
+        For geometries with thick PEN objects, the absorption length should not matter too much—in a
+        certain range, all light will be absorbed anyway.
 
 
     The absorbing range and approximate magnitude have been extracted from [Ouchi2006]_, figure 1.
 
     .. optics-plot:: {'yscale': 'log'}
     """
-    wvl = np.array([70, 711, 380, 381]) * u.nm
+    wvl = np.array([70, 71, 380, 381]) * u.nm
     absorp = np.array([1e3, 2e-4, 2e-4, 1e3]) * u.m  # 1e3 is "infinity"
     assert absorp.check("[length]")
     return wvl, absorp
