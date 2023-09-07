@@ -86,7 +86,7 @@ repos:
   rev: "v2.2.5"
   hooks:
   - id: codespell
-    args: ["-L", "nd,unparseable,compiletime"]
+    args: ["-L", "nd,unparseable,compiletime,tre"]
 
 - repo: https://github.com/shellcheck-py/shellcheck-py
   rev: "v0.9.0.5"

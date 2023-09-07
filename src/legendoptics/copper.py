@@ -14,7 +14,10 @@ u = pint.get_application_registry()
 
 
 def copper_reflectivity() -> tuple[Quantity, Quantity]:
-    """Measurements from [Wegmann2017]_.
+    """Reflectivity of copper surfaces.
+
+    Measurements from [Wegmann2017]_ (data points above 300 nm) and [Salamanna2022]_ (data points between 120 and 220 nm, averaged and smoothed).
+    The interpolation between both domains is linear, but arbitrary.
 
     .. optics-plot::
     """
