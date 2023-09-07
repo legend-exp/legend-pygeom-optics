@@ -35,14 +35,17 @@ def _get_scint_yield_vector(yield_per_mev: Quantity):
 
 
 def _def_scint_particle(
-    mat, particle: str, y: Quantity, yield_factor: float, exc_ratio: float
+    mat, particle: str, y: Quantity, yield_factor: float, exc_ratio: float | None
 ) -> None:
     """Define a single particle type used by Geant4's ScintillationByParticleType."""
     mat.addVecPropertyPint(
         particle + "SCINTILLATIONYIELD", *_get_scint_yield_vector(y * yield_factor)
     )
-    mat.addConstProperty(particle + "SCINTILLATIONYIELD1", exc_ratio)
-    mat.addConstProperty(particle + "SCINTILLATIONYIELD2", 1 - exc_ratio)
+    if exc_ratio is None:
+        mat.addConstProperty(particle + "SCINTILLATIONYIELD1", 1)
+    else:
+        mat.addConstProperty(particle + "SCINTILLATIONYIELD1", exc_ratio)
+        mat.addConstProperty(particle + "SCINTILLATIONYIELD2", 1 - exc_ratio)
 
 
 def pyg4_def_scint_by_particle_type(mat, scint_cfg: ScintConfig) -> None:
