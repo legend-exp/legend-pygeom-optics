@@ -93,7 +93,7 @@ def pen_wls_absorption() -> tuple[Quantity, Quantity]:
     .. optics-plot:: {'yscale': 'log'}
     """
     wvl = np.array([70, 71, 380, 381]) * u.nm
-    absorp = np.array([1e3, 2e-4, 2e-4, 1e3]) * u.m  # 1e3 is "infinity"
+    absorp = np.array([1e3, 2e-8, 2e-8, 1e3]) * u.m  # 1e3 is "infinity"
     assert absorp.check("[length]")
     return wvl, absorp
 
