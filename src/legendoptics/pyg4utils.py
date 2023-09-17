@@ -96,7 +96,8 @@ def _patch_g4_pint_unit_support() -> None:
         v = v.m_as(base_unit)
         return unit, v
 
-    length_u = ["m", "cm", "mm", "um"]
+    # Only as of Geant4 11.1.0, `um` and `nm` are supported.
+    length_u = ["km", "m", "cm", "mm", "um", "nm"]
     dimless_props = [
         "RINDEX",
         "WLSCOMPONENT",
