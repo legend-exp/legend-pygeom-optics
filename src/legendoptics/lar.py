@@ -132,12 +132,21 @@ def lar_refractive_index(λ: Quantity, method: str = "cern2020") -> Quantity:
     return np.sqrt(lar_dielectric_constant(λ, method))
 
 
-def lar_emission_spectrum() -> tuple[Quantity, Quantity]:
+def lar_emission_spectrum(λ: Quantity) -> Quantity:
     """Return the LAr emission spectrum, adapted from [Heindl2010]_.
 
-    .. optics-plot::
+    .. optics-plot:: {'call_x': True, 'xlim': [116, 141]}
     """
-    return readdatafile("lar_emission_heindl2010.dat")
+    heindl = readdatafile("lar_emission_heindl2010.dat")
+
+    # sample the measured emission spectrum and avoid the fluctuations below 115 nm.
+    scint_em = InterpolatingGraph(
+        *heindl,
+        min_idx=115 * u.nm,
+        max_idx=150 * u.nm,
+    )(λ)
+
+    return scint_em
 
 
 def lar_fano_factor() -> float:
@@ -256,11 +265,11 @@ def lar_scintillation_params(flat_top_yield: Quantity = 31250 / u.MeV) -> ScintC
     relative to the one of flat top particles is:
 
     .. math::
-        Y_\texrm{e} &= 0.8 Y
+        Y_\textrm{e} &= 0.8 Y
 
-        Y_\texrm{alpha} &= 0.7 Y
+        Y_\textrm{alpha} &= 0.7 Y
 
-        Y_\texrm{recoils} &= 0.2\textrm{--}0.4
+        Y_\textrm{recoils} &= 0.2\textrm{--}0.4
 
     Excitation ratio:
     For example, for nuclear recoils it should be 0.75
@@ -412,11 +421,7 @@ def pyg4_lar_attach_scintillation(
     λ_peak = pyg4_sample_λ(116 * u.nm, 141 * u.nm)
 
     # sample the measured emission spectrum.
-    scint_em = InterpolatingGraph(
-        *lar_emission_spectrum(),
-        min_idx=115 * u.nm,
-        max_idx=150 * u.nm,
-    )(λ_peak)
+    scint_em = lar_emission_spectrum(λ_peak)
     # make sure that the scintillation spectrum is zero at the boundaries.
     scint_em[0] = 0
     scint_em[-1] = 0

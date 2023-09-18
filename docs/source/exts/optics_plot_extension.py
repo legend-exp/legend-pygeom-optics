@@ -48,7 +48,10 @@ def do_plot(
 
     if "call_x" in options:
         # special case for LAr properties
-        x = np.linspace(112 * u.nm, 650 * u.nm, num=200)
+        lim = [112 * u.nm, 650 * u.nm]
+        if "xlim" in options:
+            lim = [xl * u.nm for xl in options["xlim"]]
+        x = np.linspace(*lim, num=200)
         ys = obj(x)
         # wrap the result in a tuple, if needed
         ys = ys if isinstance(ys, tuple) else (ys,)

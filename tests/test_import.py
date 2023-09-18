@@ -17,14 +17,15 @@ def test_import():
     import legendoptics.tpb
 
     legendoptics.lar.lar_fano_factor()
-    legendoptics.lar.lar_emission_spectrum()
-    wvl = np.arange(110, 400, 20) * u.nm
-    legendoptics.lar.lar_dielectric_constant_bideau_mehu(wvl)
-    legendoptics.lar.lar_dielectric_constant_cern2020(wvl)
-    legendoptics.lar.lar_dielectric_constant(wvl)
-    legendoptics.lar.lar_refractive_index(wvl)
-    legendoptics.lar.lar_rayleigh(wvl, 87 * u.K)
-    legendoptics.lar.lar_abs_length(wvl)
+    λ_peak = np.arange(116, 141, 20) * u.nm
+    legendoptics.lar.lar_emission_spectrum(λ_peak)
+    λ = np.arange(110, 400, 20) * u.nm
+    legendoptics.lar.lar_dielectric_constant_bideau_mehu(λ)
+    legendoptics.lar.lar_dielectric_constant_cern2020(λ)
+    legendoptics.lar.lar_dielectric_constant(λ)
+    legendoptics.lar.lar_refractive_index(λ)
+    legendoptics.lar.lar_rayleigh(λ, 87 * u.K)
+    legendoptics.lar.lar_abs_length(λ)
     legendoptics.lar.lar_peak_attenuation_length()
     legendoptics.lar.lar_lifetimes()
     legendoptics.lar.lar_scintillation_params()
