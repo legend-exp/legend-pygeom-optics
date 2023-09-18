@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pint
 
-from legendoptics.lar import lar_refractive_index
 from legendoptics.copper import copper_reflectivity
+from legendoptics.lar import lar_refractive_index
 from legendoptics.plot import plot_continuous_prop, plot_discrete_prop
 
 u = pint.get_application_registry()
