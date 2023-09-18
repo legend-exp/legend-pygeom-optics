@@ -50,7 +50,7 @@ def do_plot(
         # special case for LAr properties
         lim = [112 * u.nm, 650 * u.nm]
         if "xlim" in options:
-            lim = [l * u.nm for l in options["xlim"]]
+            lim = [xl * u.nm for xl in options["xlim"]]
         x = np.linspace(*lim, num=200)
         ys = obj(x)
         # wrap the result in a tuple, if needed
