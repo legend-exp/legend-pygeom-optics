@@ -69,6 +69,19 @@ def tpb_wls_emission() -> tuple[Quantity, Quantity]:
     return readdatafile("tpb_vm2000_wlscomponent.dat")
 
 
+def tpb_polystrene_wls_emission() -> tuple[Quantity, Quantity]:
+    """WLS Emission spectrum for TPB in .
+
+    [Francini2013]_ measure the emission spectrum of TPB in a polystrene matrix
+    at an excitation wavelength of 128nm and at 87K, so exactly in our experimental
+    conditions. The major differences brougth by the embedding in the PS matrix is the
+    shift of the main emission peak and a loss of vibronic structures.
+
+    .. optics-plot::
+    """
+    return readdatafile("tpb_polystrene_wlscomponent.dat")
+
+
 def tpb_wls_absorption() -> tuple[Quantity, Quantity]:
     """Values reported in [Benson2018]_ for TPB evaporated on utraviolet-transmitting acrylic substrate.
 
@@ -92,7 +105,12 @@ def pyg4_tpb_attach_rindex(mat, reg) -> None:
         mat.addVecPropertyPint("RINDEX", λ.to("eV"), r)
 
 
-def pyg4_tpb_attach_wls(mat, reg, quantum_efficiency: bool | float = True) -> None:
+def pyg4_tpb_attach_wls(
+    mat,
+    reg,
+    quantum_efficiency: bool | float = True,
+    emission_spectrum: str = "default",
+) -> None:
     """Attach wavelength shifting properties to the given tpb material instance.
 
     Parameters
@@ -101,20 +119,30 @@ def pyg4_tpb_attach_wls(mat, reg, quantum_efficiency: bool | float = True) -> No
         If `False`, disable attaching any photon number information. If `True`, use the values
         from .tpb_quantum_efficiency. If specified as a number, directly attach this number as
         mean number of emitted photons.
+    emission_spectrum
+        either `default` or `polystrene_matrix`
 
     See Also
     --------
     .tpb_wls_absorption
     .tpb_wls_emission
+    .tpb_polystrene_wls_emission
     .tpb_wls_timeconstant
     .tpb_quantum_efficiency
     """
     from legendoptics.pyg4utils import pyg4_sample_λ
 
+    if emission_spectrum not in ["default", "polystrene_matrix"]:
+        raise ValueError("invalid parameter value of emission_spectrum")
+
+    emission_fn = tpb_wls_emission
+    if emission_spectrum == "polystrene_matrix":
+        emission_fn = tpb_polystrene_wls_emission
+
     λ_full = pyg4_sample_λ(112 * u.nm, 650 * u.nm, 800)
 
     absorption = InterpolatingGraph(*tpb_wls_absorption())(λ_full)
-    emission = InterpolatingGraph(*tpb_wls_emission())(λ_full)
+    emission = InterpolatingGraph(*emission_fn())(λ_full)
     # make sure that the scintillation spectrum is zero at the boundaries.
     emission[0] = 0
     emission[-1] = 0
