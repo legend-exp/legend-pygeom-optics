@@ -13,6 +13,6 @@
 
 This package contains a collection of optical properties of materials used in the LEGEND experiment.
 
-As a common interface, each optical property gets its own defining function in the material's module. Those functions can be used directly to just retrieve the value(s) of the property. Most property definitions contain unit information via the `pint` package. For a full list of defined properties refer to the [package documentation]((https://legend-pygeom-optics.readthedocs.io).
+As a common interface, each optical property gets its own defining function in the material's module. Those functions can be used directly to just retrieve the value(s) of the property. Most property definitions contain unit information via the `pint` package. For a full list of defined properties refer to the [package documentation](https://legend-pygeom-optics.readthedocs.io).
 
 To ease the use in Geant4-based simulations, every module also provides functions to be used with [`pyg4ometry`](https://pyg4ometry.readthedocs.io).
