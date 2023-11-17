@@ -69,17 +69,17 @@ def tpb_wls_emission() -> tuple[Quantity, Quantity]:
     return readdatafile("tpb_vm2000_wlscomponent.dat")
 
 
-def tpb_polystrene_wls_emission() -> tuple[Quantity, Quantity]:
-    """WLS Emission spectrum for TPB in .
+def tpb_polystyrene_wls_emission() -> tuple[Quantity, Quantity]:
+    """WLS Emission spectrum for TPB in a polystyrene matrix.
 
-    [Francini2013]_ measure the emission spectrum of TPB in a polystrene matrix
+    [Francini2013]_ measure the emission spectrum of TPB in a polystyrene matrix
     at an excitation wavelength of 128nm and at 87K, so exactly in our experimental
     conditions. The major differences brougth by the embedding in the PS matrix is the
     shift of the main emission peak and a loss of vibronic structures.
 
     .. optics-plot::
     """
-    return readdatafile("tpb_polystrene_wlscomponent.dat")
+    return readdatafile("tpb_polystyrene_wlscomponent.dat")
 
 
 def tpb_wls_absorption() -> tuple[Quantity, Quantity]:
@@ -120,24 +120,24 @@ def pyg4_tpb_attach_wls(
         from .tpb_quantum_efficiency. If specified as a number, directly attach this number as
         mean number of emitted photons.
     emission_spectrum
-        either `default` or `polystrene_matrix`
+        either `default` or `polystyrene_matrix`
 
     See Also
     --------
     .tpb_wls_absorption
     .tpb_wls_emission
-    .tpb_polystrene_wls_emission
+    .tpb_polystyrene_wls_emission
     .tpb_wls_timeconstant
     .tpb_quantum_efficiency
     """
     from legendoptics.pyg4utils import pyg4_sample_λ
 
-    if emission_spectrum not in ["default", "polystrene_matrix"]:
+    if emission_spectrum not in ["default", "polystyrene_matrix"]:
         raise ValueError("invalid parameter value of emission_spectrum")
 
     emission_fn = tpb_wls_emission
-    if emission_spectrum == "polystrene_matrix":
-        emission_fn = tpb_polystrene_wls_emission
+    if emission_spectrum == "polystyrene_matrix":
+        emission_fn = tpb_polystyrene_wls_emission
 
     λ_full = pyg4_sample_λ(112 * u.nm, 650 * u.nm, 800)
 
