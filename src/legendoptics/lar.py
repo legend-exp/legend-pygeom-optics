@@ -22,6 +22,7 @@
     from liquid argon and xenon.” In: Phys. Rev. B 27 (9 May 1983), pp. 5279–5285,
     https://doi.org/10.1103/PhysRevB.27.5279
 """
+
 from __future__ import annotations
 
 import logging
@@ -96,10 +97,7 @@ def lar_dielectric_constant_cern2020(
             f"this parametrization holds only between {λ_uv+1*u.nm} and {λ_ir-1*u.nm}"
         )
 
-    x = 0.334 + (
-        (0.100 * λ**2) / (λ**2 - λ_uv**2)
-        + (0.008 * λ**2) / (λ**2 - λ_ir**2)
-    )
+    x = 0.334 + ((0.100 * λ**2) / (λ**2 - λ_uv**2) + (0.008 * λ**2) / (λ**2 - λ_ir**2))
 
     # solve Clausius-Mossotti
     return (3 + 2 * x) / (3 - x)
