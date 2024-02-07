@@ -91,7 +91,8 @@ def _patch_g4_pint_unit_support() -> None:
 
         unit = f"{base_unit:~gdml}"
         assert unit == f"{base_unit:~}".replace(" ", "").replace("µ", "u")
-        log.debug(f"Unit pint->gdml: {unit} - {base_unit}")
+        msg = f"Unit pint->gdml: {unit} - {base_unit}"
+        log.debug(msg)
 
         v = v.m_as(base_unit)
         return unit, v
@@ -107,7 +108,7 @@ def _patch_g4_pint_unit_support() -> None:
     ]
     length_props = ["ABSLENGTH", "WLSABSLENGTH", "RAYLEIGH"]
 
-    def addVecPropertyPint(self, name, e, v):  # noqa: N802
+    def addVecPropertyPint(self, name, e, v):
         vunit, v = _val_pint_to_gdml(v)
         eunit, e = _val_pint_to_gdml(e)
         v = np.array(v)
@@ -130,7 +131,7 @@ def _patch_g4_pint_unit_support() -> None:
     g4.Material.addVecPropertyPint = addVecPropertyPint
     g4.solid.OpticalSurface.addVecPropertyPint = addVecPropertyPint
 
-    def addConstPropertyPint(self, name, value):  # noqa: N802
+    def addConstPropertyPint(self, name, value):
         vunit, value = _val_pint_to_gdml(value)
 
         if name in ["SCINTILLATIONYIELD"]:

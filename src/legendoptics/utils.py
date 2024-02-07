@@ -30,9 +30,8 @@ def readdatafile(filename: str) -> tuple[Quantity, Quantity]:
     # parse header
     header = lines[0].lstrip()
     if header[0] != "#":
-        raise RuntimeError(
-            "input data file does not seem to contain header with (pint) units"
-        )
+        msg = "input data file does not seem to contain header with (pint) units"
+        raise RuntimeError(msg)
 
     units = header.lstrip("#").split()
 
@@ -44,7 +43,8 @@ def readdatafile(filename: str) -> tuple[Quantity, Quantity]:
 
         val = line.split()
         if len(val) < 2:
-            raise RuntimeError(f"could not parse line {lineno}: '{line}'")
+            msg = f"could not parse line {lineno}: '{line}'"
+            raise RuntimeError(msg)
 
         x.append(float(val[0]))
         y.append(float(val[1]))

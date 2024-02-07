@@ -1,4 +1,5 @@
 """Test the attaching of all properties to Geant4 materials."""
+from __future__ import annotations
 
 import pint
 import pyg4ometry.geant4 as g4

@@ -35,7 +35,7 @@ This example demonstrates how to use the :py:mod:`legendoptics.lar` submodule to
     _liquidargon = g4.Material(
         name="LiquidArgon",
         state="liquid",
-        [...]
+        # [...]
         registry=g4_registry,
     )
 
