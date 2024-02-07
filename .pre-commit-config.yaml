@@ -40,7 +40,7 @@ repos:
     args: ["--py36-plus"]
 
 - repo: https://github.com/psf/black
-  rev: "23.12.1"
+  rev: "24.1.1"
   hooks:
   - id: black
 
@@ -58,7 +58,7 @@ repos:
     args: ["--all"]
 
 - repo: https://github.com/PyCQA/flake8
-  rev: "6.1.0"
+  rev: "7.0.0"
   hooks:
   - id: flake8
     additional_dependencies: [
@@ -70,7 +70,7 @@ repos:
     args: ["--docstring-convention", "numpy"]  # or google, change me
 
 - repo: https://github.com/kynan/nbstripout
-  rev: "0.6.1"
+  rev: "0.7.1"
   hooks:
     - id: nbstripout
       args: ["--strip-empty-cells",

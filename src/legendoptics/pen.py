@@ -10,6 +10,7 @@
 .. [Ouchi2006] I. Ouchi et al. “Features of Fluorescence Spectra of Polyethylene 2,6-Naphthalate Films”
     In: Journal of Applied Polymer Science, Vol. 105, 114–121 (2007), https://doi.org/10.1002/app.26085
 """
+
 from __future__ import annotations
 
 import logging

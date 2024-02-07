@@ -3,6 +3,7 @@ Tetratex reflector.
 
 .. [Janacek2012] M. Janacek, "Reflectivity spectra for commonly used reflectors", https://www.osti.gov/servlets/purl/1184400
 """
+
 from __future__ import annotations
 
 import logging

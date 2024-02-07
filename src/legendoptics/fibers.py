@@ -3,6 +3,7 @@ Scinillating fibers BCF91-A from Saint Gobain.
 
 .. [SaintGobainDataSheet] https://www.crystals.saint-gobain.com/sites/hps-mac3-cma-crystals/files/2021-11/Fiber-Product-Sheet.pdf
 """
+
 from __future__ import annotations
 
 import logging
