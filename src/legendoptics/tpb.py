@@ -133,7 +133,8 @@ def pyg4_tpb_attach_wls(
     from legendoptics.pyg4utils import pyg4_sample_λ
 
     if emission_spectrum not in ["default", "polystyrene_matrix"]:
-        raise ValueError("invalid parameter value of emission_spectrum")
+        msg = "invalid parameter value of emission_spectrum"
+        raise ValueError(msg)
 
     emission_fn = tpb_wls_emission
     if emission_spectrum == "polystyrene_matrix":

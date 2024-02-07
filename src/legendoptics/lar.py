@@ -5,7 +5,7 @@
 .. [Doke1976] Doke et al. “Estimation of Fano factors in liquid argon, krypton, xenon and
     xenon-doped liquid argon.” NIM 134 (1976)353, https://doi.org/10.1016/0029-554X(76)90292-5
 .. [Bideau-Mehu1980] Bideau-Mehu et al. “Measurement of refractive indices of neon, argon, krypton
-    and xenon in the 253.7–140.4 nm wavelength range. Dispersion relations and
+    and xenon in the 253.7-140.4 nm wavelength range. Dispersion relations and
     estimated oscillator strengths of the resonance lines.” In: Journal of Quantitative
     Spectroscopy and Radiative Transfer 25.5 (1981)).
     https://doi.org/10.1016/0022-4073(81)90057-1
@@ -19,7 +19,7 @@
 .. [Doke2002] T. Doke et al. “Absolute Scintillation Yields in Liquid Argon and Xenon for Various Particles”
     Jpn. J. Appl. Phys. 41 1538, https://doi.org/10.1143/JJAP.41.1538
 .. [Hitachi1983] A. Hitachi et al. “Effect of ionization density on the time dependence of luminescence
-    from liquid argon and xenon.” In: Phys. Rev. B 27 (9 May 1983), pp. 5279–5285,
+    from liquid argon and xenon.” In: Phys. Rev. B 27 (9 May 1983), pp. 5279-5285,
     https://doi.org/10.1103/PhysRevB.27.5279
 """
 
@@ -59,10 +59,12 @@ def lar_dielectric_constant_bideau_mehu(
     .. optics-plot:: {'call_x': True}
     """
     if not λ.check("[length]"):
-        raise ValueError("input does not look like a wavelength")
+        msg = "input does not look like a wavelength"
+        raise ValueError(msg)
 
     if np.any(λ < 110 * u.nm):
-        raise ValueError(f"this parametrization is not meaningful below {110*u.nm}")
+        msg = f"this parametrization is not meaningful below {110*u.nm}"
+        raise ValueError(msg)
 
     # equation for n-1
     ϵ = 1.2055e-2 * (
@@ -87,15 +89,15 @@ def lar_dielectric_constant_cern2020(
     .. optics-plot:: {'call_x': True}
     """
     if not λ.check("[length]"):
-        raise ValueError("input does not look like a wavelength")
+        msg = "input does not look like a wavelength"
+        raise ValueError(msg)
 
     λ_uv = 106.6 * u.nm
     λ_ir = 908.3 * u.nm
 
     if np.any(λ < λ_uv + 1 * u.nm) or np.any(λ > λ_ir - 1 * u.nm):
-        raise ValueError(
-            f"this parametrization holds only between {λ_uv+1*u.nm} and {λ_ir-1*u.nm}"
-        )
+        msg = f"this parametrization holds only between {λ_uv+1*u.nm} and {λ_ir-1*u.nm}"
+        raise ValueError(msg)
 
     x = 0.334 + ((0.100 * λ**2) / (λ**2 - λ_uv**2) + (0.008 * λ**2) / (λ**2 - λ_ir**2))
 
@@ -112,9 +114,10 @@ def lar_dielectric_constant(λ: Quantity, method: str = "cern2020") -> Quantity:
     """
     if method == "bideau-mehu":
         return lar_dielectric_constant_bideau_mehu(λ)
-    elif method == "cern2020":
+    if method == "cern2020":
         return lar_dielectric_constant_cern2020(λ)
-    raise ValueError(f"Unknown LAr dielectric constant method {method}")
+    msg = f"Unknown LAr dielectric constant method {method}"
+    raise ValueError(msg)
 
 
 def lar_refractive_index(λ: Quantity, method: str = "cern2020") -> Quantity:
@@ -138,13 +141,11 @@ def lar_emission_spectrum(λ: Quantity) -> Quantity:
     heindl = readdatafile("lar_emission_heindl2010.dat")
 
     # sample the measured emission spectrum and avoid the fluctuations below 115 nm.
-    scint_em = InterpolatingGraph(
+    return InterpolatingGraph(
         *heindl,
         min_idx=115 * u.nm,
         max_idx=150 * u.nm,
     )(λ)
-
-    return scint_em
 
 
 def lar_fano_factor() -> float:
@@ -175,7 +176,8 @@ def lar_rayleigh(
     .. optics-plot:: {'call_x': True}
     """
     if not temperature.check("[temperature]"):
-        raise ValueError("input does not look like a temperature")
+        msg = "input does not look like a temperature"
+        raise ValueError(msg)
 
     dyne = 1.0e-5 * u.newton
     κ = 2.18e-10 * u.cm**2 / dyne  # LAr isothermal compressibility
@@ -189,9 +191,8 @@ def lar_rayleigh(
     inv_l /= λ**4
     inv_l *= (2 / 3 * np.pi) ** 3
 
-    assert not np.any(inv_l < 1 / (10.0 * u.km)) and not np.any(
-        inv_l > 1 / (0.1 * u.nm)
-    )
+    assert not np.any(inv_l < 1 / (10.0 * u.km))
+    assert not np.any(inv_l > 1 / (0.1 * u.nm))
 
     return (1 / inv_l).to("cm")  # simplify units
 
@@ -219,11 +220,12 @@ def lar_peak_attenuation_length(
     if isinstance(attenuation_method, str):
         if attenuation_method == "legend200-llama":
             return 30 * u.cm
-        else:
-            raise ValueError(f"unknown attenuation_method {attenuation_method}")
-    else:
-        assert attenuation_method.check("[length]")
-        return attenuation_method
+
+        msg = f"unknown attenuation_method {attenuation_method}"
+        raise ValueError(msg)
+
+    assert attenuation_method.check("[length]")
+    return attenuation_method
 
 
 def lar_lifetimes(
@@ -238,9 +240,8 @@ def lar_lifetimes(
         if triplet_lifetime_method == "legend200-llama":
             triplet = 1.3 * u.us
         else:
-            raise ValueError(
-                f"unknown triplet_lifetime_method {triplet_lifetime_method}"
-            )
+            msg = f"unknown triplet_lifetime_method {triplet_lifetime_method}"
+            raise ValueError(msg)
     else:
         triplet = triplet_lifetime_method * u.us
 

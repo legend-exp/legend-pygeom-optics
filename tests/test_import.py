@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 import pint
 
@@ -5,7 +7,7 @@ u = pint.get_application_registry()
 
 
 def test_import():
-    import legendoptics  # noqa: F401
+    import legendoptics
     import legendoptics.copper
     import legendoptics.fibers
     import legendoptics.germanium

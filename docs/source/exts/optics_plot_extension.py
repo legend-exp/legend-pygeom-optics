@@ -66,18 +66,16 @@ def do_plot(
         x = x.magnitude
 
     # plot all supplied data vectors
-    i = 0
-    for y in ys:
-        if isinstance(y, pint.Quantity):
-            ax.set_ylabel(y.u)
-            y = y.magnitude
+    for i, val in enumerate(ys):
+        if isinstance(val, pint.Quantity):
+            ax.set_ylabel(val.u)
+            y = val.magnitude
 
         plotoptions = {}
         if "labels" in options:
             plotoptions["label"] = options["labels"][i]
 
         plt.plot(x, y, marker=".", markersize=2, linewidth=0.5, **plotoptions)
-        i += 1
 
     if len(ys) > 1 and "labels" in options:
         plt.legend()
@@ -116,16 +114,22 @@ def do_const(obj: Callable) -> list[str]:
     elif isinstance(const, float):
         description = f":math:`{const}`"
     else:
-        raise ValueError("")
+        msg = ""
+        raise ValueError(msg)
 
     if description is None:
         return [""]
-    else:
-        return [f":returns: constant value {description}"]
+
+    return [f":returns: constant value {description}"]
 
 
 def process_docstring(
-    app: Sphinx, what: str, name: str, obj: Any, options: Any, lines: list[str]
+    app: Sphinx,
+    what: str,
+    name: str,
+    obj: Any,
+    options: Any,
+    lines: list[str],
 ) -> None:
     if inspect.isclass(obj) or what != "function":
         return
@@ -166,4 +170,4 @@ def process_docstring(
 def setup(app: Sphinx) -> dict[str, bool]:
     """Register this sphinx extension."""
     app.connect("autodoc-process-docstring", process_docstring)
-    return dict(parallel_read_safe=True)
+    return {"parallel_read_safe": True}
