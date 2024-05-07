@@ -189,6 +189,10 @@ def pyg4_pen_attach_scintillation(mat, reg) -> None:
 
     mat.addConstPropertyPint("SCINTILLATIONTIMECONSTANT1", pen_scint_timeconstant())
 
+    # We do not know the PEN fano factor. Geant4 calculates σ = RESOLUTIONSCALE × √mean,
+    # so we set it to 1; otherwise Geant4 will crash.
+    mat.addConstPropertyPint("RESOLUTIONSCALE", 1)
+
     # setup scintillation response just for electrons.
     scint_config = ScintConfig(
         flat_top=pen_scint_light_yield(),
