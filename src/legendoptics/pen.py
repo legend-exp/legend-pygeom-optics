@@ -4,9 +4,6 @@
     for the LEGEND-200 experiment”. In: JINST 17 P09007 (2022), https://doi.org/10.1088/1748-0221/17/09/P09007
 .. [Hong2017] N. Hong et al. “Mueller matrix characterization of flexible plastic substrates”.
     In: Applied Surface Science, 421:518-528 (2017), https://doi.org/10.1016/j.apsusc.2017.01.276
-.. [Mary1997] D. Mary et al. “Understanding optical emissions from electrically stressed insulating polymers:
-    electroluminescence in poly(ethylene terephthalate) and poly(ethylene 2,6-naphthalate) films”
-    In: J. Phys. D: Appl. Phys. 30 171 (1997), https://doi.org/10.1088/0022-3727/30/2/004
 .. [Ouchi2006] I. Ouchi et al. “Features of Fluorescence Spectra of Polyethylene 2,6-Naphthalate Films”
     In: Journal of Applied Polymer Science, Vol. 105, 114-121 (2007), https://doi.org/10.1002/app.26085
 """
@@ -69,7 +66,11 @@ def pen_scint_light_yield() -> Quantity:
 
 @store.register_pluggable
 def pen_wls_emission() -> tuple[Quantity, Quantity]:
-    """WLS Emission spectrum, from [Mary1997]_.
+    """WLS Emission spectrum.
+
+    [Leonhardt2024]_ measure the emission spectrum of a PEN sample made from the same pellets as
+    in LEGEMD-200 sample at an excitation wavelength of 128nm and at 87K, so exactly in our
+    experimental conditions.
 
     .. optics-plot::
     """
