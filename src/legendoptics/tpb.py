@@ -12,6 +12,9 @@ Tetraphenyl-Butadiene wavelength shifter.
     the quantum eﬀiciency of tetraphenyl butadiene and polyethylene naphthalate in
     liquid argon.” In: The European Physical Journal C 82.5 (May 2022).
     https://doi.org/10.1140/epjc/s10052-022-10383-0
+.. [Leonhardt2024] A. Leonhardt et al. “A novel cryogenic VUV spectrofluorometer for the
+    characterization of wavelength shifters”. In: JINST 19 C05020 (2024).
+    https://doi.org/10.1088/1748-0221/19/05/C05020
 .. [MolbaseTPB] http://www.molbase.com/en/overview_1450-63-1-moldata-77892.html
 """
 
@@ -64,14 +67,13 @@ def tpb_wls_timeconstant() -> Quantity:
 def tpb_wls_emission() -> tuple[Quantity, Quantity]:
     """WLS Emission spectrum.
 
-    [Francini2013]_ measure the emission spectrum of TPB (~160 um thick layer) on VM2000
+    [Leonhardt2024]_ measure the emission spectrum of TPB on a LEGEND-200 WLSR sample
     at an excitation wavelength of 128nm and at 87K, so exactly in our experimental
-    conditions. The major differences brougth by the LAr temperature are the vibronic
-    structures that modify the shape of the spectrum.
+    conditions.
 
     .. optics-plot::
     """
-    return readdatafile("tpb_vm2000_wlscomponent.dat")
+    return readdatafile("tpb_wlsr_wlscomponent.dat")
 
 
 @store.register_pluggable
