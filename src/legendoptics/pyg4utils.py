@@ -62,8 +62,8 @@ def pyg4_def_scint_by_particle_type(mat, scint_cfg: ScintConfig) -> None:
 
 @pint.register_unit_format("gdml")
 def _gdml_format(unit, registry, **options):
-    proc = {u.replace("µ", "u"): e for u, e in unit.items()}
-    return pint.formatter(
+    proc = {ureg._get_symbol(u).replace("µ", "u"): e for u, e in unit.items()}
+    return pint.formatting.formatter(
         proc.items(),
         as_ratio=True,
         single_denominator=False,
@@ -89,7 +89,7 @@ def _patch_g4_pint_unit_support() -> None:
 
         base_unit = v.units
 
-        unit = f"{base_unit:~gdml}"
+        unit = f"{base_unit:gdml}"
         assert unit == f"{base_unit:~}".replace(" ", "").replace("µ", "u")
         msg = f"Unit pint->gdml: {unit} - {base_unit}"
         log.debug(msg)
