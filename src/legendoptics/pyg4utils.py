@@ -89,6 +89,7 @@ def _patch_g4_pint_unit_support() -> None:
 
         base_unit = v.units
 
+        # TODO: drop the extra check for dimensionless quantities after dropping support for pint <= 0.23
         unit = "" if v.check("1") else f"{base_unit:gdml}"
         assert unit == f"{base_unit:~}".replace(" ", "").replace("µ", "u")
         assert "dimensionless" not in unit
