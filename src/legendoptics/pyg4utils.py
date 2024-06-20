@@ -89,8 +89,10 @@ def _patch_g4_pint_unit_support() -> None:
 
         base_unit = v.units
 
-        unit = f"{base_unit:gdml}"
+        unit = "" if v.check("1") else f"{base_unit:gdml}"
         assert unit == f"{base_unit:~}".replace(" ", "").replace("µ", "u")
+        assert "dimensionless" not in unit
+
         msg = f"Unit pint->gdml: {unit} - {base_unit}"
         log.debug(msg)
 
