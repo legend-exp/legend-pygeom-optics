@@ -30,7 +30,7 @@ def _get_scint_yield_vector(yield_per_mev: Quantity):
     To fulfill this we use a simple linear function.
     """
     ye = ureg.Quantity(np.array([1, 10e6]), ureg.eV)
-    yv = [f"{(e*yield_per_mev).to_reduced_units():~}" for e in ye]
+    yv = [(e * yield_per_mev).to_reduced_units().m for e in ye]
     return ye, yv
 
 
@@ -38,6 +38,10 @@ def _def_scint_particle(
     mat, particle: str, y: Quantity, yield_factor: float, exc_ratio: float | None
 ) -> None:
     """Define a single particle type used by Geant4's ScintillationByParticleType."""
+    if not y.check("1/[energy]"):
+        msg = "Scintillation yield must have dimensionality 1/energy"
+        raise ValueError(msg)
+
     mat.addVecPropertyPint(
         particle + "SCINTILLATIONYIELD", *_get_scint_yield_vector(y * yield_factor)
     )
@@ -62,14 +66,14 @@ def pyg4_def_scint_by_particle_type(mat, scint_cfg: ScintConfig) -> None:
 
 @pint.register_unit_format("gdml")
 def _gdml_format(unit, registry, **options):
-    proc = {ureg._get_symbol(u).replace("µ", "u"): e for u, e in unit.items()}
+    proc = {u.replace("µ", "u"): e for u, e in unit.items()}
     return pint.formatting.formatter(
         proc.items(),
         as_ratio=True,
         single_denominator=False,
         product_fmt="*",
         division_fmt="/",
-        power_fmt="{}{}",  # TODO: validate only validate power units (e.g. mm2) get through.
+        power_fmt="{}{}",  # TODO: validate only GDML-valid power units (e.g. mm2) get through.
         parentheses_fmt="({})",
         **options,
     )
@@ -89,8 +93,7 @@ def _patch_g4_pint_unit_support() -> None:
 
         base_unit = v.units
 
-        # TODO: drop the extra check for dimensionless quantities after dropping support for pint <= 0.23
-        unit = "" if v.check("1") else f"{base_unit:gdml}"
+        unit = f"{base_unit:~gdml}"
         assert unit == f"{base_unit:~}".replace(" ", "").replace("µ", "u")
         assert "dimensionless" not in unit
 
@@ -116,6 +119,9 @@ def _patch_g4_pint_unit_support() -> None:
         eunit, e = _val_pint_to_gdml(e)
         v = np.array(v)
         e = np.array(e)
+        # assert that we have only numeric data after this:
+        assert e.dtype.kind in "uif"
+        assert v.dtype.kind in "uif"
 
         if name in length_props and vunit not in length_u:
             log.warning("Wrong unit %s for property %s", vunit, name)
