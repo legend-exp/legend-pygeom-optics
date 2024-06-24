@@ -31,9 +31,8 @@ classifiers = [
 ]
 requires-python = ">=3.9"
 dependencies = [
-    "numpy<2.0 ; python_version <= '3.9'",
-    "numpy ; python_version >= '3.10'",
-    "pint",
+    "numpy",
+    "pint >= 0.24.1",
     "pyg4ometry",
     "pylegendmeta>=v0.9.0a2",
     "pyarrow",
