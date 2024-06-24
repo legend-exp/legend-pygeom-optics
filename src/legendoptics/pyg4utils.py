@@ -93,7 +93,7 @@ def _patch_g4_pint_unit_support() -> None:
 
         base_unit = v.units
 
-        unit = "{base_unit:~gdml}"
+        unit = f"{base_unit:~gdml}"
         assert unit == f"{base_unit:~}".replace(" ", "").replace("µ", "u")
         assert "dimensionless" not in unit
 
