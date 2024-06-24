@@ -66,7 +66,7 @@ def pyg4_def_scint_by_particle_type(mat, scint_cfg: ScintConfig) -> None:
 
 @pint.register_unit_format("gdml")
 def _gdml_format(unit, registry, **options):
-    proc = {ureg._get_symbol(u).replace("µ", "u"): e for u, e in unit.items()}
+    proc = {u.replace("µ", "u"): e for u, e in unit.items()}
     return pint.formatting.formatter(
         proc.items(),
         as_ratio=True,
@@ -93,8 +93,7 @@ def _patch_g4_pint_unit_support() -> None:
 
         base_unit = v.units
 
-        # TODO: drop the extra check for dimensionless quantities after dropping support for pint <= 0.23
-        unit = "" if v.check("1") else f"{base_unit:gdml}"
+        unit = "{base_unit:~gdml}"
         assert unit == f"{base_unit:~}".replace(" ", "").replace("µ", "u")
         assert "dimensionless" not in unit
 
