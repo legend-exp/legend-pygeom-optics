@@ -126,6 +126,8 @@ ignore = [
   "ISC001",   # Conflicts with formatter
   "PT011",    # too picky pytest.raises() complaint
   "PLC2401",  # we like greek letters
+  "PLC2403",  # we _still_ like greek letters
+  "RUF003",   # we like greek letters ("σ" _of course_ totally looks like an "o"...) and math symbols like "×"
 ]
 isort.required-imports = ["from __future__ import annotations"]
 
