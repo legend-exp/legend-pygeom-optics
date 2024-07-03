@@ -19,10 +19,9 @@ import numpy as np
 import pint
 from pint import Quantity
 
+from legendoptics.scintillate import ScintConfig, ScintParticle
 from legendoptics.utils import (
     InterpolatingGraph,
-    ScintConfig,
-    ScintParticle,
     g4gps_write_emission_spectrum,
     readdatafile,
 )
@@ -98,6 +97,23 @@ def pen_wls_absorption() -> tuple[Quantity, Quantity]:
     absorp = np.array([1e3, 2e-8, 2e-8, 1e3]) * u.m  # 1e3 is "infinity"
     assert absorp.check("[length]")
     return wvl, absorp
+
+
+def pen_scintillation_params() -> ScintConfig:
+    """Get a :class:`ScintConfig` object for PEN.
+
+    See Also
+    --------
+    .pen_scint_light_yield
+    """
+    # setup scintillation response just for electrons.
+    return ScintConfig(
+        flat_top=pen_scint_light_yield(),
+        fano_factor=None,
+        particles=[
+            ScintParticle("electron", yield_factor=1, exc_ratio=None),
+        ],
+    )
 
 
 def pyg4_pen_attach_rindex(mat, reg) -> None:
@@ -194,14 +210,7 @@ def pyg4_pen_attach_scintillation(mat, reg) -> None:
     # so we set it to 1; otherwise Geant4 will crash.
     mat.addConstPropertyPint("RESOLUTIONSCALE", 1)
 
-    # setup scintillation response just for electrons.
-    scint_config = ScintConfig(
-        flat_top=pen_scint_light_yield(),
-        particles=[
-            ScintParticle("electron", yield_factor=1, exc_ratio=None),
-        ],
-    )
-    pyg4_def_scint_by_particle_type(mat, scint_config)
+    pyg4_def_scint_by_particle_type(mat, pen_scintillation_params())
 
 
 def g4gps_pen_emissions_spectrum(filename: str) -> None:

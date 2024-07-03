@@ -34,10 +34,9 @@ import numpy as np
 import pint
 from pint import Quantity
 
+from legendoptics.scintillate import ScintConfig, ScintParticle
 from legendoptics.utils import (
     InterpolatingGraph,
-    ScintConfig,
-    ScintParticle,
     g4gps_write_emission_spectrum,
     readdatafile,
 )
@@ -52,6 +51,9 @@ ArLifetimeMethods = Literal["legend200-llama"]
 class ArScintLiftime(NamedTuple):
     singlet: Quantity
     triplet: Quantity
+
+    def as_tuple(self) -> tuple[Quantity, Quantity]:
+        return (self.singlet, self.triplet)
 
 
 def lar_dielectric_constant_bideau_mehu(
@@ -263,7 +265,9 @@ def lar_lifetimes(
     return ArScintLiftime(singlet=5.95 * u.ns, triplet=triplet)
 
 
-def lar_scintillation_params(flat_top_yield: Quantity = 31250 / u.MeV) -> ScintConfig:
+def lar_scintillation_params(
+    flat_top_yield: Quantity = 31250 / u.MeV,
+) -> ScintConfig:
     r"""Scintillation yield (approx. inverse of the mean energy to produce a UV photon).
 
     This depends on the nature of the impinging particles, the field configuration
@@ -288,9 +292,14 @@ def lar_scintillation_params(flat_top_yield: Quantity = 31250 / u.MeV) -> ScintC
     Excitation ratio:
     For example, for nuclear recoils it should be 0.75
     nominal value for electrons and gammas: 0.23 (WArP data)
+
+    See Also
+    --------
+    .lar_fano_factor
     """
     return ScintConfig(
         flat_top=flat_top_yield,
+        fano_factor=lar_fano_factor(),
         particles=[
             ScintParticle("electron", yield_factor=0.8, exc_ratio=0.23),
             ScintParticle("alpha", yield_factor=0.7, exc_ratio=1),
@@ -426,7 +435,6 @@ def pyg4_lar_attach_scintillation(
     See Also
     --------
     .lar_scintillation_params
-    .lar_fano_factor
     .lar_emission_spectrum
     .lar_lifetimes
     """
@@ -450,12 +458,14 @@ def pyg4_lar_attach_scintillation(
     lar_mat.addConstPropertyPint("SCINTILLATIONTIMECONSTANT1", lifetimes.singlet)
     lar_mat.addConstPropertyPint("SCINTILLATIONTIMECONSTANT2", lifetimes.triplet)
 
+    scint_params = lar_scintillation_params(flat_top_yield)
+
     # the fano factor is the ratio between variance and mean. Geant4 calculates
     # σ = RESOLUTIONSCALE × √mean, so we have to take the root of the fano factor
     # here to keep it consistent.
-    lar_mat.addConstPropertyPint("RESOLUTIONSCALE", np.sqrt(lar_fano_factor()))
+    lar_mat.addConstPropertyPint("RESOLUTIONSCALE", np.sqrt(scint_params.fano_factor))
 
-    pyg4_def_scint_by_particle_type(lar_mat, lar_scintillation_params(flat_top_yield))
+    pyg4_def_scint_by_particle_type(lar_mat, scint_params)
 
 
 def g4gps_lar_emissions_spectrum(filename: str) -> None:

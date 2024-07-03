@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from typing import NamedTuple
 
 import numpy as np
 import pint
@@ -106,21 +105,6 @@ class InterpolatingGraph:
         if pts > self.d_max:
             return self.vals.iloc[-1]
         return self.fn(pts.to(self.idx.u).m) * self.vals.u
-
-
-class ScintParticle(NamedTuple):
-    """Configuration for the scintillation yield relative to the flat-top yield."""
-
-    name: str
-    yield_factor: float
-    exc_ratio: float | None
-
-
-class ScintConfig(NamedTuple):
-    """Scintillation yield parameters, depending on the particle types."""
-
-    flat_top: Quantity
-    particles: list[ScintParticle]
 
 
 def g4gps_write_emission_spectrum(
