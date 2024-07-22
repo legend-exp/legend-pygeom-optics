@@ -36,6 +36,7 @@ dependencies = [
     "pyg4ometry",
     "pylegendmeta>=v0.9.0a2",
     "pyarrow",
+    "scipy",
 ]
 dynamic = [
     "version",
