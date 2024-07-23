@@ -26,7 +26,7 @@
 from __future__ import annotations
 
 import logging
-from typing import NamedTuple
+from typing import Literal, NamedTuple
 
 import numpy as np
 import pint
@@ -41,6 +41,9 @@ from legendoptics.utils import (
 
 log = logging.getLogger(__name__)
 u = pint.get_application_registry()
+
+ArDielectricMethods = Literal["cern2020", "bideau-mehu"]
+ArLifetimeMethods = Literal["legend200-llama"]
 
 
 class ArScintLiftime(NamedTuple):
@@ -105,7 +108,9 @@ def lar_dielectric_constant_cern2020(
     return (3 + 2 * x) / (3 - x)
 
 
-def lar_dielectric_constant(λ: Quantity, method: str = "cern2020") -> Quantity:
+def lar_dielectric_constant(
+    λ: Quantity, method: ArDielectricMethods = "cern2020"
+) -> Quantity:
     """Calculate the dielectric constant of LAr for a given photon wavelength.
 
     See Also
@@ -120,7 +125,9 @@ def lar_dielectric_constant(λ: Quantity, method: str = "cern2020") -> Quantity:
     raise ValueError(msg)
 
 
-def lar_refractive_index(λ: Quantity, method: str = "cern2020") -> Quantity:
+def lar_refractive_index(
+    λ: Quantity, method: ArDielectricMethods = "cern2020"
+) -> Quantity:
     """Calculate the refractive index of LAr for a given photon wavelength.
 
     See Also
@@ -160,7 +167,9 @@ def lar_fano_factor() -> float:
 
 
 def lar_rayleigh(
-    λ: Quantity, temperature: Quantity = 90 * u.K, method: str = "cern2020"
+    λ: Quantity,
+    temperature: Quantity = 90 * u.K,
+    method: ArDielectricMethods = "cern2020",
 ) -> Quantity:
     """Calculate the Rayleigh scattering length using the equations given in [Seidel2002]_.
 
@@ -214,7 +223,7 @@ def lar_abs_length(λ: Quantity) -> Quantity:
 
 
 def lar_peak_attenuation_length(
-    attenuation_method: str | Quantity = "legend200-llama",
+    attenuation_method: ArLifetimeMethods | Quantity = "legend200-llama",
 ) -> Quantity:
     """Attenuation length in the LEGEND-argon, as measured with LLAMA."""
     if isinstance(attenuation_method, str):
@@ -229,7 +238,7 @@ def lar_peak_attenuation_length(
 
 
 def lar_lifetimes(
-    triplet_lifetime_method: float | str = "legend200-llama",
+    triplet_lifetime_method: float | ArLifetimeMethods = "legend200-llama",
 ) -> ArScintLiftime:
     """Singlet and triplet lifetimes of liquid argon.
 
@@ -285,7 +294,7 @@ def lar_scintillation_params(flat_top_yield: Quantity = 31250 / u.MeV) -> ScintC
 
 
 def pyg4_lar_attach_rindex(
-    lar_mat, reg, lar_dielectric_method: str = "cern2020"
+    lar_mat, reg, lar_dielectric_method: ArDielectricMethods = "cern2020"
 ) -> None:
     """Attach the refractive index to the given LAr material instance.
 
@@ -312,8 +321,8 @@ def pyg4_lar_attach_attenuation(
     lar_mat,
     reg,
     lar_temperature: Quantity,
-    lar_dielectric_method: str = "cern2020",
-    attenuation_method_or_length: str | Quantity = "legend200-llama",
+    lar_dielectric_method: ArDielectricMethods = "cern2020",
+    attenuation_method_or_length: ArLifetimeMethods | Quantity = "legend200-llama",
     rayleigh_enabled_or_length: bool | Quantity = True,
     absorption_enabled_or_length: bool | Quantity = True,
 ) -> None:
@@ -395,7 +404,7 @@ def pyg4_lar_attach_scintillation(
     lar_mat,
     reg,
     flat_top_yield: Quantity = 31250 / u.MeV,
-    triplet_lifetime_method: float | str = "legend200-llama",
+    triplet_lifetime_method: float | ArLifetimeMethods = "legend200-llama",
 ) -> None:
     """Attach all properties for LAr scintillation response to the given LAr material instance.
 
