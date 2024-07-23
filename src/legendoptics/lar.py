@@ -21,6 +21,8 @@
 .. [Hitachi1983] A. Hitachi et al. “Effect of ionization density on the time dependence of luminescence
     from liquid argon and xenon.” In: Phys. Rev. B 27 (9 May 1983), pp. 5279-5285,
     https://doi.org/10.1103/PhysRevB.27.5279
+.. [Schwarz2024] M. Schwarz “Tracing impurities and illuminating their impact: Surveying and characterizing
+    liquid argon with LLAMA for LEGEND and beyond” (PhD thesis). https://mediatum.ub.tum.de/?id=1741523
 """
 
 from __future__ import annotations
@@ -225,10 +227,12 @@ def lar_abs_length(λ: Quantity) -> Quantity:
 def lar_peak_attenuation_length(
     attenuation_method: ArLifetimeMethods | Quantity = "legend200-llama",
 ) -> Quantity:
-    """Attenuation length in the LEGEND-argon, as measured with LLAMA."""
+    """Attenuation length in the LEGEND-argon, as measured with LLAMA,
+    see [Schwarz2024]_ (p. 124).
+    """
     if isinstance(attenuation_method, str):
         if attenuation_method == "legend200-llama":
-            return 30 * u.cm
+            return 33 * u.cm
 
         msg = f"unknown attenuation_method {attenuation_method}"
         raise ValueError(msg)
@@ -242,12 +246,13 @@ def lar_lifetimes(
 ) -> ArScintLiftime:
     """Singlet and triplet lifetimes of liquid argon.
 
-    Singlet time from [Hitachi1983]_ and triplet time as measured by LLAMA in LEGEND-200.
+    Singlet time from [Hitachi1983]_ and triplet time as measured by LLAMA in LEGEND-200,
+    see [Schwarz2024]_ (p. 117).
     """
     triplet = 1 * u.us
     if isinstance(triplet_lifetime_method, str):
         if triplet_lifetime_method == "legend200-llama":
-            triplet = 1.3 * u.us
+            triplet = 1.16 * u.us
         else:
             msg = f"unknown triplet_lifetime_method {triplet_lifetime_method}"
             raise ValueError(msg)
