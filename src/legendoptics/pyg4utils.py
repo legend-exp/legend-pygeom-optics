@@ -7,7 +7,7 @@ import pint
 import pyg4ometry.geant4 as g4
 from pint import Quantity
 
-from .utils import ScintConfig
+from .scintillate import ScintConfig
 
 log = logging.getLogger(__name__)
 ureg = pint.get_application_registry().get()
@@ -55,6 +55,12 @@ def _def_scint_particle(
 def pyg4_def_scint_by_particle_type(mat, scint_cfg: ScintConfig) -> None:
     """Define a full set of particles for scintillation."""
     for particle in scint_cfg.particles:
+        if not particle.valid_geant_particle():
+            msg = (
+                f"Unknown particle type {particle.name} for ScintillationByParticleType"
+            )
+            raise ValueError(msg)
+
         _def_scint_particle(
             mat,
             particle.name.upper(),
