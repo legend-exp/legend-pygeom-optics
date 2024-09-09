@@ -23,6 +23,7 @@ from legendoptics.utils import (
     InterpolatingGraph,
     ScintConfig,
     ScintParticle,
+    g4gps_write_emission_spectrum,
     readdatafile,
 )
 
@@ -201,3 +202,23 @@ def pyg4_pen_attach_scintillation(mat, reg) -> None:
         ],
     )
     pyg4_def_scint_by_particle_type(mat, scint_config)
+
+
+def g4gps_pen_emissions_spectrum(filename: str) -> None:
+    """Write a PEN emission energy spectrum for G4GeneralParticleSource.
+
+    See Also
+    --------
+    .pen_wls_emission
+    utils.g4gps_write_emission_spectrum
+    """
+    from legendoptics.pyg4utils import pyg4_sample_λ
+
+    # sample the measured emission spectrum.
+    λ_scint = pyg4_sample_λ(350 * u.nm, 650 * u.nm, 200)
+    scint_em = InterpolatingGraph(*pen_wls_emission(), min_idx=350 * u.nm)(λ_scint)
+    # make sure that the scintillation spectrum is zero at the boundaries.
+    scint_em[0] = 0
+    scint_em[-1] = 0
+
+    g4gps_write_emission_spectrum(filename, λ_scint, scint_em)

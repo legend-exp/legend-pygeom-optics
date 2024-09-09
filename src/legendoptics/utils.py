@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from typing import NamedTuple
 
 import numpy as np
@@ -8,6 +9,7 @@ import scipy.interpolate
 from importlib_resources import files
 from pint import Quantity
 
+log = logging.getLogger(__name__)
 u = pint.get_application_registry()
 
 
@@ -119,3 +121,27 @@ class ScintConfig(NamedTuple):
 
     flat_top: Quantity
     particles: list[ScintParticle]
+
+
+def g4gps_write_emission_spectrum(
+    filename: str, λ_peak: Quantity, scint_em: Quantity
+) -> None:
+    """Write a energy spectrum for use with G4GeneralParticleSource
+
+    It can be used like this in a Geant4 macro:
+
+    .. code ::
+
+        /gps/ene/type     Arb
+        /gps/ene/diffspec true
+        /gps/hist/type    arb
+        /gps/hist/file    <filename>
+        /gps/hist/inter   Lin
+    """
+    with u.context("sp"):
+        pointwise = np.array([λ_peak.to("MeV").m, scint_em.m]).T
+
+    if pointwise.shape[0] > 1024:
+        log.warning("G4GeneralParticleSource spectrum can only have 1024 bins.")
+
+    np.savetxt(filename, pointwise)
