@@ -38,6 +38,7 @@ from legendoptics.utils import (
     InterpolatingGraph,
     ScintConfig,
     ScintParticle,
+    g4gps_write_emission_spectrum,
     readdatafile,
 )
 
@@ -455,3 +456,24 @@ def pyg4_lar_attach_scintillation(
     lar_mat.addConstPropertyPint("RESOLUTIONSCALE", np.sqrt(lar_fano_factor()))
 
     pyg4_def_scint_by_particle_type(lar_mat, lar_scintillation_params(flat_top_yield))
+
+
+def g4gps_lar_emissions_spectrum(filename: str) -> None:
+    """Write a LAr emission energy spectrum for G4GeneralParticleSource.
+
+    See Also
+    --------
+    .lar_emission_spectrum
+    utils.g4gps_write_emission_spectrum
+    """
+    from legendoptics.pyg4utils import pyg4_sample_λ
+
+    λ_peak = pyg4_sample_λ(116 * u.nm, 141 * u.nm)
+
+    # sample the measured emission spectrum.
+    scint_em = lar_emission_spectrum(λ_peak)
+    # make sure that the scintillation spectrum is zero at the boundaries.
+    scint_em[0] = 0
+    scint_em[-1] = 0
+
+    g4gps_write_emission_spectrum(filename, λ_peak, scint_em)
