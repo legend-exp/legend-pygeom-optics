@@ -173,10 +173,12 @@ def _patch_g4_pint_unit_support() -> None:
     g4.solid.OpticalSurface.addConstPropertyPint = addConstPropertyPint
 
     # those units are supported by G4, but not by pyg4ometry...
-    if "nanometer" not in gdml_u.units:
-        gdml_u.units["nanometer"] = gdml_u.units["nm"]
-    if "micrometer" not in gdml_u.units:
-        gdml_u.units["micrometer"] = gdml_u.units["um"]
+    # the first check is ugly, but necessary: we have a mock import of gdml_u for the docs build.
+    if isinstance(gdml_u.units, dict):
+        if "nanometer" not in gdml_u.units:
+            gdml_u.units["nanometer"] = gdml_u.units["nm"]
+        if "micrometer" not in gdml_u.units:
+            gdml_u.units["micrometer"] = gdml_u.units["um"]
 
 
 _patch_g4_pint_unit_support()
