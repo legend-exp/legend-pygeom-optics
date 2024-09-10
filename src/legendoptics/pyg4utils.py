@@ -4,6 +4,7 @@ import logging
 
 import numpy as np
 import pint
+import pyg4ometry.gdml.Units as gdml_u
 import pyg4ometry.geant4 as g4
 from pint import Quantity
 
@@ -70,9 +71,19 @@ def pyg4_def_scint_by_particle_type(mat, scint_cfg: ScintConfig) -> None:
         )
 
 
+def _gdml_unit(u: str) -> str:
+    # Only as of Geant4 11.1.0, `um` and `nm` are supported.
+    u = u.replace("µ", "u")
+    if u == "nm":
+        u = "nanometer"
+    if u == "um":
+        u = "micrometer"
+    return u
+
+
 @pint.register_unit_format("gdml")
 def _gdml_format(unit, registry, **options):
-    proc = {u.replace("µ", "u"): e for u, e in unit.items()}
+    proc = {_gdml_unit(u): e for u, e in unit.items()}
     return pint.formatting.formatter(
         proc.items(),
         as_ratio=True,
@@ -100,7 +111,7 @@ def _patch_g4_pint_unit_support() -> None:
         base_unit = v.units
 
         unit = f"{base_unit:~gdml}"
-        assert unit == f"{base_unit:~}".replace(" ", "").replace("µ", "u")
+        # assert unit == f"{base_unit:~}".replace(" ", "").replace("µ", "u")
         assert "dimensionless" not in unit
 
         msg = f"Unit pint->gdml: {unit} - {base_unit}"
@@ -110,13 +121,17 @@ def _patch_g4_pint_unit_support() -> None:
         return unit, v
 
     # Only as of Geant4 11.1.0, `um` and `nm` are supported.
-    length_u = ["km", "m", "cm", "mm", "um", "nm"]
+    length_u = ["km", "m", "cm", "mm", "nanometer", "micrometer"]
     dimless_props = [
         "RINDEX",
         "WLSCOMPONENT",
         "REFLECTIVITY",
         "REALRINDEX",
         "IMAGINARYRINDEX",
+        "SPECULARLOBECONSTANT",
+        "SPECULARSPIKECONSTANT",
+        "BACKSCATTERCONSTANT",
+        "EFFICIENCY",
     ]
     length_props = ["ABSLENGTH", "WLSABSLENGTH", "RAYLEIGH"]
 
@@ -156,6 +171,14 @@ def _patch_g4_pint_unit_support() -> None:
 
     g4.Material.addConstPropertyPint = addConstPropertyPint
     g4.solid.OpticalSurface.addConstPropertyPint = addConstPropertyPint
+
+    # those units are supported by G4, but not by pyg4ometry...
+    # the first check is ugly, but necessary: we have a mock import of gdml_u for the docs build.
+    if isinstance(gdml_u.units, dict):
+        if "nanometer" not in gdml_u.units:
+            gdml_u.units["nanometer"] = gdml_u.units["nm"]
+        if "micrometer" not in gdml_u.units:
+            gdml_u.units["micrometer"] = gdml_u.units["um"]
 
 
 _patch_g4_pint_unit_support()
