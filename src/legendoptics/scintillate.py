@@ -39,7 +39,23 @@ ParticleIndex = NewType("ParticleIndex", int)
 ComputedScintParams = NewType(
     "ComputedScintParams", tuple[float, float, np.ndarray, np.ndarray]
 )
-PARTICLE_INDICES = {"electron": 0, "alpha": 1, "ion": 2, "deuteron": 3, "triton": 4}
+PARTICLE_INDEX_ELECTRON = 0
+PARTICLE_INDEX_ALPHA = 1
+PARTICLE_INDEX_ION = 2
+PARTICLE_INDEX_DEUTERON = 3
+PARTICLE_INDEX_TRITON = 4
+PARTICLE_INDICES = {
+    "electron": PARTICLE_INDEX_ELECTRON,
+    "alpha": PARTICLE_INDEX_ALPHA,
+    "ion": PARTICLE_INDEX_ION,
+    "deuteron": PARTICLE_INDEX_DEUTERON,
+    "triton": PARTICLE_INDEX_TRITON,
+}
+
+
+def particle_to_index(particle: str) -> ParticleIndex:
+    """Converts the given G4 scintillation particle name to a module-internal index."""
+    return PARTICLE_INDICES[particle.lower()]
 
 
 def precompute_scintillation_params(
@@ -60,7 +76,8 @@ def precompute_scintillation_params(
 
     electron = scint_config.get_particle("electron")
     if electron is None:
-        raise ValueError()
+        msg = "missing electron scintillation particle component (used as fallback for all other)"
+        raise ValueError(msg)
     for k, v in PARTICLE_INDICES.items():
         p = scint_config.get_particle(k)
         p = electron if p is None else p
@@ -73,11 +90,6 @@ def precompute_scintillation_params(
     fano = scint_config.fano_factor if scint_config.fano_factor is not None else 1
 
     return scint_config.flat_top.to("1/keV").m, fano, time_components, particles
-
-
-def particle_to_index(particle: str) -> ParticleIndex:
-    """Converts the given G4 scintillation particle name to a module-internal index."""
-    return PARTICLE_INDICES[particle.lower()]
 
 
 @njit
