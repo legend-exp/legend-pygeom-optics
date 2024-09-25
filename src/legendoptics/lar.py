@@ -34,6 +34,7 @@ import numpy as np
 import pint
 from pint import Quantity
 
+from legendoptics import store
 from legendoptics.scintillate import ScintConfig, ScintParticle
 from legendoptics.utils import (
     InterpolatingGraph,
@@ -113,6 +114,7 @@ def lar_dielectric_constant_cern2020(
     return (3 + 2 * x) / (3 - x)
 
 
+@store.register_pluggable
 def lar_dielectric_constant(
     λ: Quantity, method: ArDielectricMethods = "cern2020"
 ) -> Quantity:
@@ -130,6 +132,7 @@ def lar_dielectric_constant(
     raise ValueError(msg)
 
 
+@store.register_pluggable
 def lar_refractive_index(
     λ: Quantity, method: ArDielectricMethods = "cern2020"
 ) -> Quantity:
@@ -145,6 +148,7 @@ def lar_refractive_index(
     return np.sqrt(lar_dielectric_constant(λ, method))
 
 
+@store.register_pluggable
 def lar_emission_spectrum(λ: Quantity) -> Quantity:
     """Return the LAr emission spectrum, adapted from [Heindl2010]_.
 
@@ -160,6 +164,7 @@ def lar_emission_spectrum(λ: Quantity) -> Quantity:
     )(λ)
 
 
+@store.register_pluggable
 def lar_fano_factor() -> float:
     """Fano factor.
 
@@ -171,6 +176,7 @@ def lar_fano_factor() -> float:
     return 0.11
 
 
+@store.register_pluggable
 def lar_rayleigh(
     λ: Quantity,
     temperature: Quantity = 90 * u.K,
@@ -211,6 +217,7 @@ def lar_rayleigh(
     return (1 / inv_l).to("cm")  # simplify units
 
 
+@store.register_pluggable
 def lar_abs_length(λ: Quantity) -> Quantity:
     """Absorption length (not correctly scaled).
 
@@ -227,6 +234,7 @@ def lar_abs_length(λ: Quantity) -> Quantity:
     return np.minimum(absl, 100000 * u.cm)  # avoid large numbers
 
 
+@store.register_pluggable
 def lar_peak_attenuation_length(
     attenuation_method: ArLifetimeMethods | Quantity = "legend200-llama",
 ) -> Quantity:
@@ -244,6 +252,7 @@ def lar_peak_attenuation_length(
     return attenuation_method
 
 
+@store.register_pluggable
 def lar_lifetimes(
     triplet_lifetime_method: float | ArLifetimeMethods = "legend200-llama",
 ) -> ArScintLiftime:
@@ -265,6 +274,7 @@ def lar_lifetimes(
     return ArScintLiftime(singlet=5.95 * u.ns, triplet=triplet)
 
 
+@store.register_pluggable
 def lar_scintillation_params(
     flat_top_yield: Quantity = 31250 / u.MeV,
 ) -> ScintConfig:
@@ -308,6 +318,7 @@ def lar_scintillation_params(
     )
 
 
+@store.register_pluggable
 def pyg4_lar_attach_rindex(
     lar_mat, reg, lar_dielectric_method: ArDielectricMethods = "cern2020"
 ) -> None:
@@ -332,6 +343,7 @@ def pyg4_lar_attach_rindex(
         lar_mat.addVecPropertyPint("RINDEX", λ_full.to("eV"), rindex)
 
 
+@store.register_pluggable
 def pyg4_lar_attach_attenuation(
     lar_mat,
     reg,

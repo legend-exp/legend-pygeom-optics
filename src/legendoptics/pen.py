@@ -19,6 +19,7 @@ import numpy as np
 import pint
 from pint import Quantity
 
+from legendoptics import store
 from legendoptics.scintillate import ScintConfig, ScintParticle
 from legendoptics.utils import (
     InterpolatingGraph,
@@ -30,6 +31,7 @@ log = logging.getLogger(__name__)
 u = pint.get_application_registry()
 
 
+@store.register_pluggable
 def pen_quantum_efficiency() -> float:
     """Quantum efficiency, from [Araujo2022]_ at LAr temperature.
 
@@ -38,6 +40,7 @@ def pen_quantum_efficiency() -> float:
     return 0.69
 
 
+@store.register_pluggable
 def pen_refractive_index() -> float:
     """Refractive index from [Hong2017]_.
 
@@ -46,6 +49,7 @@ def pen_refractive_index() -> float:
     return 1.51
 
 
+@store.register_pluggable
 def pen_scint_timeconstant() -> Quantity:
     """Time constant, from [Manzanillas2022]_.
 
@@ -54,6 +58,7 @@ def pen_scint_timeconstant() -> Quantity:
     return 25.3 * u.ns
 
 
+@store.register_pluggable
 def pen_scint_light_yield() -> Quantity:
     """PEN scintillation yield for electrons, from [Manzanillas2022]_.
 
@@ -62,6 +67,7 @@ def pen_scint_light_yield() -> Quantity:
     return 5440 / u.MeV
 
 
+@store.register_pluggable
 def pen_wls_emission() -> tuple[Quantity, Quantity]:
     """WLS Emission spectrum, from [Mary1997]_.
 
@@ -70,6 +76,7 @@ def pen_wls_emission() -> tuple[Quantity, Quantity]:
     return readdatafile("pen_wlscomponent.dat")
 
 
+@store.register_pluggable
 def pen_absorption() -> tuple[Quantity, Quantity]:
     """Bulk absorption reported in [Manzanillas2022]_.
 
@@ -80,6 +87,7 @@ def pen_absorption() -> tuple[Quantity, Quantity]:
     return wvl, absorp
 
 
+@store.register_pluggable
 def pen_wls_absorption() -> tuple[Quantity, Quantity]:
     """WLS absorption of PEN.
 
@@ -99,6 +107,7 @@ def pen_wls_absorption() -> tuple[Quantity, Quantity]:
     return wvl, absorp
 
 
+@store.register_pluggable
 def pen_scintillation_params() -> ScintConfig:
     """Get a :class:`ScintConfig` object for PEN.
 

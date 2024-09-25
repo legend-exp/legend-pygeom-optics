@@ -14,12 +14,14 @@ import logging
 import pint
 from pint import Quantity
 
+from legendoptics import store
 from legendoptics.utils import readdatafile
 
 log = logging.getLogger(__name__)
 u = pint.get_application_registry()
 
 
+@store.register_pluggable
 def germanium_reflectivity() -> tuple[Quantity, Quantity]:
     """Reflectivity of germanium surfaces.
 

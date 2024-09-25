@@ -17,12 +17,14 @@ import numpy as np
 import pint
 from pint import Quantity
 
+from legendoptics import store
 from legendoptics.utils import readdatafile
 
 log = logging.getLogger(__name__)
 u = pint.get_application_registry()
 
 
+@store.register_pluggable
 def nylon_refractive_index() -> float:
     """Refractive index in near-UV range, from [Benziger2007]_.
 
@@ -31,6 +33,7 @@ def nylon_refractive_index() -> float:
     return 1.53
 
 
+@store.register_pluggable
 def nylon_absorption() -> tuple[Quantity, Quantity]:
     """Values reported in [Agostini2018]_.
 
