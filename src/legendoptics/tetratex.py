@@ -11,12 +11,14 @@ import logging
 import pint
 from pint import Quantity
 
+from legendoptics import store
 from legendoptics.utils import readdatafile
 
 log = logging.getLogger(__name__)
 u = pint.get_application_registry()
 
 
+@store.register_pluggable
 def tetratex_reflectivity() -> tuple[Quantity, Quantity]:
     """Tetratex reflectivity from [Janacek2012]_.
 

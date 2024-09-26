@@ -12,12 +12,14 @@ import numpy as np
 import pint
 from pint import Quantity
 
+from legendoptics import store
 from legendoptics.utils import InterpolatingGraph, readdatafile
 
 log = logging.getLogger(__name__)
 u = pint.get_application_registry()
 
 
+@store.register_pluggable
 def fiber_cladding2_refractive_index() -> float:
     """Refractive index of second fiber cladding material [SaintGobainDataSheet]_.
 
@@ -26,6 +28,7 @@ def fiber_cladding2_refractive_index() -> float:
     return 1.42
 
 
+@store.register_pluggable
 def fiber_cladding1_refractive_index() -> float:
     """Refractive index of first fiber cladding material [SaintGobainDataSheet]_.
 
@@ -34,6 +37,7 @@ def fiber_cladding1_refractive_index() -> float:
     return 1.49
 
 
+@store.register_pluggable
 def fiber_core_refractive_index() -> float:
     """Refractive index of fiber core material [SaintGobainDataSheet]_.
 
@@ -42,6 +46,7 @@ def fiber_core_refractive_index() -> float:
     return 1.6
 
 
+@store.register_pluggable
 def fiber_wls_absorption(
     abs_at_400nm: Quantity = 0.7 * u.mm,
 ) -> tuple[Quantity, Quantity]:
@@ -76,6 +81,7 @@ def fiber_wls_absorption(
     return wvl, absorp
 
 
+@store.register_pluggable
 def fiber_wls_emission() -> tuple[Quantity, Quantity]:
     """[SaintGobainDataSheet]_ reports the emission spectrum for BCF-91A.
 
@@ -84,6 +90,7 @@ def fiber_wls_emission() -> tuple[Quantity, Quantity]:
     return readdatafile("psfibers_wlscomponent.dat")
 
 
+@store.register_pluggable
 def fiber_wls_timeconstant() -> Quantity:
     """WLS time constant [SaintGobainDataSheet]_.
 
@@ -92,6 +99,7 @@ def fiber_wls_timeconstant() -> Quantity:
     return 12 * u.ns
 
 
+@store.register_pluggable
 def fiber_absorption_length() -> Quantity:
     """Absorption length of fiber [SaintGobainDataSheet]_. Note this is a macroscopical value for a 1 mm fiber.
 
@@ -105,6 +113,7 @@ def fiber_absorption_length() -> Quantity:
     return 3.5 * u.m
 
 
+@store.register_pluggable
 def fiber_absorption_path_length() -> Quantity:
     """Absorption length of fiber [SaintGobainDataSheet]_, corrected for the geometry of a 1 mm square fiber.
 

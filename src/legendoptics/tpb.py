@@ -23,12 +23,14 @@ import numpy as np
 import pint
 from pint import Quantity
 
+from legendoptics import store
 from legendoptics.utils import InterpolatingGraph, readdatafile
 
 log = logging.getLogger(__name__)
 u = pint.get_application_registry()
 
 
+@store.register_pluggable
 def tpb_quantum_efficiency() -> float:
     """Quantum efficiency.
 
@@ -40,6 +42,7 @@ def tpb_quantum_efficiency() -> float:
     return 0.85
 
 
+@store.register_pluggable
 def tpb_refractive_index() -> float:
     """Refractive index from [MolbaseTPB]_.
 
@@ -48,6 +51,7 @@ def tpb_refractive_index() -> float:
     return 1.635
 
 
+@store.register_pluggable
 def tpb_wls_timeconstant() -> Quantity:
     """Time constant: arbitrary small.
 
@@ -56,6 +60,7 @@ def tpb_wls_timeconstant() -> Quantity:
     return 0.01 * u.ns
 
 
+@store.register_pluggable
 def tpb_wls_emission() -> tuple[Quantity, Quantity]:
     """WLS Emission spectrum.
 
@@ -69,6 +74,7 @@ def tpb_wls_emission() -> tuple[Quantity, Quantity]:
     return readdatafile("tpb_vm2000_wlscomponent.dat")
 
 
+@store.register_pluggable
 def tpb_polystyrene_wls_emission() -> tuple[Quantity, Quantity]:
     """WLS Emission spectrum for TPB in a polystyrene matrix.
 
@@ -82,6 +88,7 @@ def tpb_polystyrene_wls_emission() -> tuple[Quantity, Quantity]:
     return readdatafile("tpb_polystyrene_wlscomponent.dat")
 
 
+@store.register_pluggable
 def tpb_wls_absorption() -> tuple[Quantity, Quantity]:
     """Values reported in [Benson2018]_ for TPB evaporated on utraviolet-transmitting acrylic substrate.
 
