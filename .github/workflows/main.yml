@@ -34,7 +34,7 @@ jobs:
       - name: Install non-python (homebrew) dependencies
         if: ${{ matrix.os == 'macOS-latest' }}
         run: |
-          brew install opencascade cgal gmp mpfr boost vtk
+          brew install opencascade cgal gmp mpfr boost
       - name: Get dependencies and install legendoptics
         run: |
           python -m pip install --upgrade pip wheel setuptools
