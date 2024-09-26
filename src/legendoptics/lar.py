@@ -340,7 +340,7 @@ def pyg4_lar_attach_attenuation(
     attenuation_method_or_length: ArLifetimeMethods | Quantity = "legend200-llama",
     rayleigh_enabled_or_length: bool | Quantity = True,
     absorption_enabled_or_length: bool | Quantity = True,
-) -> None:
+) -> tuple[Quantity, Quantity]:
     """Attach all attenuation-related optical properties to the given LAr material instance.
 
     Parameters
@@ -351,7 +351,7 @@ def pyg4_lar_attach_attenuation(
         Choose which calculation method is used for calculation of the dielectric
         function, which is used for deriving the rayleigh scattering length.
     attenuation_method_or_length
-        Change the method/measurement used to define the LAr triplet state lifetime.
+        Change the method/measurement used to define the LAr attenuation length.
         If set to a length-Quantity, this value is used directly as attenuation length at
         the scintillation peak.
     rayleigh_enabled_or_length
@@ -366,10 +366,15 @@ def pyg4_lar_attach_attenuation(
         If set to a length-Quantity, the given value will be used as the absorption length at
         the scintillation peak.
 
+    Returns
+    -------
+    A tuple of the calculated rayleigh scattering and absorption lengths, at the
+    scintillation peak.
+
     Notes
     -----
     If all three of rayleigh length, absorption length and attenuation length are set via the function
-    parameters, the parameter on total attenuation length will be ignored!
+    parameters, the parameter defining the total attenuation length will be ignored!
 
     See Also
     --------
@@ -390,29 +395,34 @@ def pyg4_lar_attach_attenuation(
 
     λ_full = pyg4_sample_λ(112 * u.nm, 650 * u.nm)
 
-    # rayleigh scattern is a (theoretically) defined property.
+    # rayleigh scattering is a (theoretically) defined property, that - in principle -
+    # does not need to be scaled.
     rayleigh = lar_rayleigh(λ_full, lar_temperature, lar_dielectric_method)
     peak_rayleigh_length = lar_rayleigh(126.8 * u.nm, lar_temperature)
     if isinstance(rayleigh_enabled_or_length, Quantity):
         assert rayleigh_enabled_or_length.check("[length]")
-        peak_abs_length = rayleigh_enabled_or_length
+        rayleigh *= rayleigh_enabled_or_length / peak_rayleigh_length
+        peak_rayleigh_length = rayleigh_enabled_or_length
 
-    # absorption length and rayleigh add up inversely to the measured attenuation length.
     peak_att_length = lar_peak_attenuation_length(attenuation_method_or_length)
-
+    # absorption length and rayleigh add up inversely to the measured attenuation length.
     peak_abs_length = 1 / (1 / peak_att_length - 1 / peak_rayleigh_length)
+
     if isinstance(absorption_enabled_or_length, Quantity):
         assert absorption_enabled_or_length.check("[length]")
         peak_abs_length = absorption_enabled_or_length
 
+    # absorption length is _not_ correctly scaled yet.
     absl_scale = peak_abs_length / lar_abs_length(126.8 * u.nm)
     abslength = lar_abs_length(λ_full) * absl_scale
 
     with u.context("sp"):
-        if rayleigh_enabled_or_length is not False:
+        if rayleigh_enabled_or_length is not False and lar_mat is not None:
             lar_mat.addVecPropertyPint("RAYLEIGH", λ_full.to("eV"), rayleigh)
-        if absorption_enabled_or_length is not False:
+        if absorption_enabled_or_length is not False and lar_mat is not None:
             lar_mat.addVecPropertyPint("ABSLENGTH", λ_full.to("eV"), abslength)
+
+    return peak_rayleigh_length, peak_abs_length
 
 
 def pyg4_lar_attach_scintillation(
