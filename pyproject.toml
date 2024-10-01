@@ -69,6 +69,9 @@ test = [
     "pytest-cov",
 ]
 
+[project.scripts]
+legend-pygeom-optics = "legendoptics.cli:optics_cli"
+
 [tool.setuptools]
 include-package-data = true
 zip-safe = false

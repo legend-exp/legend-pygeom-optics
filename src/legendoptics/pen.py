@@ -222,7 +222,7 @@ def pyg4_pen_attach_scintillation(mat, reg) -> None:
     pyg4_def_scint_by_particle_type(mat, pen_scintillation_params())
 
 
-def g4gps_pen_emissions_spectrum(filename: str) -> None:
+def g4gps_pen_emissions_spectrum(filename: str, output_macro: bool) -> None:
     """Write a PEN emission energy spectrum for G4GeneralParticleSource.
 
     See Also
@@ -239,4 +239,6 @@ def g4gps_pen_emissions_spectrum(filename: str) -> None:
     scint_em[0] = 0
     scint_em[-1] = 0
 
-    g4gps_write_emission_spectrum(filename, λ_scint, scint_em)
+    g4gps_write_emission_spectrum(
+        filename, output_macro, λ_scint, scint_em, "pen_emissions_spectrum"
+    )

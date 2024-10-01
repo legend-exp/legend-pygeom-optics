@@ -490,7 +490,7 @@ def pyg4_lar_attach_scintillation(
     pyg4_def_scint_by_particle_type(lar_mat, scint_params)
 
 
-def g4gps_lar_emissions_spectrum(filename: str) -> None:
+def g4gps_lar_emissions_spectrum(filename: str, output_macro: bool) -> None:
     """Write a LAr emission energy spectrum for G4GeneralParticleSource.
 
     See Also
@@ -508,4 +508,6 @@ def g4gps_lar_emissions_spectrum(filename: str) -> None:
     scint_em[0] = 0
     scint_em[-1] = 0
 
-    g4gps_write_emission_spectrum(filename, λ_peak, scint_em)
+    g4gps_write_emission_spectrum(
+        filename, output_macro, λ_peak, scint_em, "lar_emissions_spectrum"
+    )
