@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 
 import numpy as np
 import pint
@@ -108,7 +109,11 @@ class InterpolatingGraph:
 
 
 def g4gps_write_emission_spectrum(
-    filename: str, λ_peak: Quantity, scint_em: Quantity
+    filename: str,
+    output_macro: bool,
+    λ_peak: Quantity,
+    scint_em: Quantity,
+    quantity_name: str,
 ) -> None:
     """Write a energy spectrum for use with G4GeneralParticleSource
 
@@ -125,7 +130,23 @@ def g4gps_write_emission_spectrum(
     with u.context("sp"):
         pointwise = np.array([λ_peak.to("MeV").m, scint_em.m]).T
 
+    # reorder the values to be in ascending energy order.
+    sort = np.argsort(pointwise[:, 0])
+    pointwise[:, 0] = pointwise[:, 0][sort]
+    pointwise[:, 1] = pointwise[:, 1][sort]
+
     if pointwise.shape[0] > 1024:
         log.warning("G4GeneralParticleSource spectrum can only have 1024 bins.")
 
-    np.savetxt(filename, pointwise)
+    if not output_macro:
+        np.savetxt(filename, pointwise)
+        return
+
+    with Path.open(filename, "wt") as f:
+        f.write(f"# {quantity_name} | legendoptics\n\n")
+        f.write("/gps/ene/type     Arb\n")
+        f.write("/gps/ene/diffspec true\n")
+        f.write("/gps/hist/type    arb\n")
+        f.write("/gps/hist/inter   Lin\n")
+        for point in pointwise:
+            f.write(f"/gps/hist/point   {point[0]} {point[1]}\n")
