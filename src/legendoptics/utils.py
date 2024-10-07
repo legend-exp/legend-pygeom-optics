@@ -146,7 +146,7 @@ def g4gps_write_emission_spectrum(
         f.write(f"# {quantity_name} | legendoptics\n\n")
         f.write("/gps/ene/type     Arb\n")
         f.write("/gps/ene/diffspec true\n")
-        f.write("/gps/hist/type    arb\n")
-        f.write("/gps/hist/inter   Lin\n")
+        f.write("/gps/hist/type    arb\n\n")
         for point in pointwise:
             f.write(f"/gps/hist/point   {point[0]} {point[1]}\n")
+        f.write("\n/gps/hist/inter   Lin\n")
