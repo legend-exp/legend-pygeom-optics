@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import logging
+from importlib.resources import files
 from pathlib import Path
 
 import numpy as np
 import pint
 import scipy.interpolate
-from importlib.resources import files
 from pint import Quantity
 
 log = logging.getLogger(__name__)
