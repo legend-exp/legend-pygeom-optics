@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 import pint
 import scipy.interpolate
-from importlib_resources import files
+from importlib.resources import files
 from pint import Quantity
 
 log = logging.getLogger(__name__)
