@@ -23,15 +23,18 @@ def readdatafile(filename: str) -> tuple[Quantity, Quantity]:
         0.49678 3.6841
         ...
 
+    After the first line, comments are also allowed after a ``#`` character.
+
     Units in the header must be parseable as :mod:`pint` units.
     """
     x = []
     y = []
     lines = files("legendoptics.data").joinpath(filename).read_text().split("\n")
+    lines = [line.strip() for line in lines]
 
     # parse header
-    header = lines[0].lstrip()
-    if header[0] != "#":
+    header = lines[0]
+    if header[0] != "#" or len(header.lstrip("#").split()) != 2:
         msg = "input data file does not seem to contain header with (pint) units"
         raise RuntimeError(msg)
 
@@ -40,11 +43,11 @@ def readdatafile(filename: str) -> tuple[Quantity, Quantity]:
     lineno = 0
     for line in lines[1:-1]:
         lineno += 1
-        if not line:
+        if not line or line[0] == "#":  # skip empty lines and lines with comments.
             continue
 
         val = line.split()
-        if len(val) < 2:
+        if len(val) != 2:
             msg = f"could not parse line {lineno}: '{line}'"
             raise RuntimeError(msg)
 
