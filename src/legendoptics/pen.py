@@ -69,8 +69,12 @@ def pen_wls_emission() -> tuple[Quantity, Quantity]:
     """WLS Emission spectrum.
 
     [Leonhardt2024]_ measure the emission spectrum of a PEN sample made from the same pellets as
-    in LEGEMD-200 sample at an excitation wavelength of 128nm and at 87K, so exactly in our
+    in LEGEND-200 sample at an excitation wavelength of 128nm and at 87K, so exactly in our
     experimental conditions.
+
+    .. note::
+        Data points below 375 nm are an ad-hoc continuation of the measured data to zero, avoiding
+        a steep step. They are not based on actual measurements.
 
     .. optics-plot::
     """
@@ -96,7 +100,6 @@ def pen_wls_absorption() -> tuple[Quantity, Quantity]:
         There is no measurement of PEN similar to ours available, so this step-function is improvised.
         For geometries with thick PEN objects, the absorption length should not matter too much—in a
         certain range, all light will be absorbed anyway.
-
 
     The absorbing range and approximate magnitude have been extracted from [Ouchi2006]_, figure 1.
 
