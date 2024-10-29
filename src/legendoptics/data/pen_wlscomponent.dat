@@ -1,4 +1,11 @@
 # nm       dimensionless
+
+# ad-hoc data points added by legend-pygeom-optics
+358.000000 0.000000
+365.000000 0.000080
+370.000000 0.000297
+
+# from here on data from [Leonhardt2024]_
 375.016000 0.000594
 375.808000 0.000690
 376.600000 0.000767
