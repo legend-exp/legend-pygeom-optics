@@ -37,7 +37,7 @@ def pyg4_tetratex_attach_reflectivity(mat, reg, reflectivity_scale: float = 1) -
 
     Parameters
     ----------
-    tetratex_refl_scale
+    reflectivity_scale
         Global scale for tetratex reflectivity.
 
     See Also
