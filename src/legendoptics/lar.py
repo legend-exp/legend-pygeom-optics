@@ -447,7 +447,7 @@ def pyg4_lar_attach_scintillation(
 
     Parameters
     ----------
-    flat_top_yield_per_mev
+    flat_top_yield
         Change the flat-top light yield of the scintillation response. Note that for
         different particle types, the value might be lower (see :func:`lar_scintillation_params`).
     triplet_lifetime_method
