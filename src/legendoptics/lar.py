@@ -380,8 +380,7 @@ def pyg4_lar_attach_attenuation(
 
     Returns
     -------
-    A tuple of the calculated rayleigh scattering and absorption lengths, at the
-    scintillation peak.
+    A tuple of the calculated rayleigh scattering and absorption lengths, at the scintillation peak.
 
     Notes
     -----
