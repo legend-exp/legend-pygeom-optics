@@ -184,4 +184,4 @@ def _patch_g4_pint_unit_support() -> None:
 _patch_g4_pint_unit_support()
 
 
-__all__ = ["pyg4_sample_λ", "pyg4_def_scint_by_particle_type"]
+__all__ = ["pyg4_def_scint_by_particle_type", "pyg4_sample_λ"]
