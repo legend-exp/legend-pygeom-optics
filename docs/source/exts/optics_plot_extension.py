@@ -40,12 +40,18 @@ def do_plot(
             Differing from the default behavior above, the function will be called with an
             x vector of wavelengths in the optical range (as :py:class:`pint.Quantity`).
             All return values are interpreted as y vectors.
+        standalone
+            if True, do not output the return value preamble (i.e. to embed more than one plot)
+        ret_offset
+            use the argument numbered by this (default: 0) as the first argument that will
+            be treated as an x or y vector.
     """
     # init plot
     fig = plt.figure(figsize=(4, 2))
     ax = plt.gca()
     plt.grid()
 
+    ret_offset = options.get("ret_offset", 0)
     if "call_x" in options:
         # special case for LAr properties
         lim = [112 * u.nm, 650 * u.nm]
@@ -53,13 +59,14 @@ def do_plot(
             lim = [xl * u.nm for xl in options["xlim"]]
         x = np.linspace(*lim, num=200)
         ys = obj(x)
+        ys = ys[ret_offset:]
         # wrap the result in a tuple, if needed
         ys = ys if isinstance(ys, tuple) else (ys,)
     else:
         data = obj()
-        x = data[0]
+        x = data[ret_offset]
         # ys holds one or more
-        ys = data[1:]
+        ys = data[ret_offset + 1 :]
 
     if isinstance(x, pint.Quantity):
         ax.set_xlabel(x.u)
@@ -94,8 +101,13 @@ def do_plot(
     fig.tight_layout(pad=0.3)
     fig.savefig(plots_dir / (safe_name + ".png"), dpi=300)
 
+    plt.close()
+
+    lines = []
+    if not options.get("standalone", False):
+        lines += [":returns:"]
     return [
-        ":returns:",
+        *lines,
         f"    .. image:: plots/{safe_name}.png",
         "        :width: 400px",
     ]
@@ -143,21 +155,25 @@ def process_docstring(
     const_token = ".. optics-const::"
 
     i = 0
+    plot_idx = 0
     orig_lines = lines.copy()
     for line in orig_lines:
         if line.startswith(plot_token):
             plots_dir.mkdir(exist_ok=True, parents=True)
             safe_name = "".join(c for c in name if c.isalnum() or c in (".", "-", "_"))
+            safe_name += f"_{plot_idx}"
 
             opt_string = line[len(plot_token) :]
-            opts = []
+            opts = {}
             if opt_string != "":
                 opts = ast.literal_eval(opt_string)
+            assert isinstance(opts, dict)
 
             # replace the custom 'directive' with an actually supported reST directive.
             replace = do_plot(obj, plots_dir, safe_name, opts)
             lines[i : i + 1] = replace
             i += len(replace)
+            plot_idx += 1
         elif line.startswith(const_token):
             # replace the custom 'directive' with actually supported reST content.
             replace = do_const(obj)

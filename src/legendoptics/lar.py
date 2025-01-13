@@ -254,12 +254,12 @@ def lar_peak_attenuation_length(
 
 @store.register_pluggable
 def lar_calculate_attenuation(
-    lar_temperature: Quantity,
+    lar_temperature: Quantity = 88.8 * u.K,
     lar_dielectric_method: ArDielectricMethods = "cern2020",
     attenuation_method_or_length: ArLifetimeMethods | Quantity = "legend200-llama",
     rayleigh_enabled_or_length: bool | Quantity = True,
     absorption_enabled_or_length: bool | Quantity = True,
-) -> tuple[Quantity, Quantity]:
+) -> tuple[Quantity, Quantity, Quantity, Quantity, Quantity]:
     """Calculate all attenuation-related optical properties to the given LAr material instance.
 
     Parameters
@@ -292,11 +292,18 @@ def lar_calculate_attenuation(
     sampled wavelengths λ
     rayleigh length at all points in λ
     absorption length at all points in λ
+    attenuation length at all points in λ
+
+    Important
+    ---------
+    If all three of rayleigh length, absorption length and attenuation length are set via the function
+    parameters, the parameter defining the total attenuation length will be ignored!
 
     Notes
     -----
-    If all three of rayleigh length, absorption length and attenuation length are set via the function
-    parameters, the parameter defining the total attenuation length will be ignored!
+    This functions calculates and returns output similar to this (here for 88.8 K LAr temperature):
+    .. optics-plot:: {'ret_offset': 2, 'standalone': True, 'labels': ['rayleigh', 'absorption', 'attenuation'], 'yscale': 'log'}
+    .. optics-plot:: {'ret_offset': 2, 'standalone': True, 'labels': ['rayleigh', 'absorption', 'attenuation'], 'ylim': [0, 200], 'xlim': [100, 150]}
 
     See Also
     --------
@@ -343,11 +350,22 @@ def lar_calculate_attenuation(
     abslength = lar_abs_length(λ_full) * absl_scale
 
     if rayleigh_enabled_or_length is False:
+        attenuation = abslength
         rayleigh = None
-    if absorption_enabled_or_length is False:
+    elif absorption_enabled_or_length is False:
+        attenuation = rayleigh
         abslength = None
+    else:
+        attenuation = 1 / (1 / rayleigh + 1 / abslength)
 
-    return peak_rayleigh_length, peak_abs_length, λ_full, rayleigh, abslength
+    return (
+        peak_rayleigh_length,
+        peak_abs_length,
+        λ_full,
+        rayleigh,
+        abslength,
+        attenuation,
+    )
 
 
 @store.register_pluggable
@@ -478,10 +496,11 @@ def pyg4_lar_attach_attenuation(
 
     Returns
     -------
-    A tuple of the calculated rayleigh scattering and absorption lengths, at the scintillation peak.
+    calculated rayleigh scattering length at the scintillation peak (λ = 126.8 nm)
+    calculated absorption length at the scintillation peak (λ = 126.8 nm)
 
-    Notes
-    -----
+    Important
+    ---------
     If all three of rayleigh length, absorption length and attenuation length are set via the function
     parameters, the parameter defining the total attenuation length will be ignored!
 
@@ -492,7 +511,7 @@ def pyg4_lar_attach_attenuation(
     .lar_abs_length
     .lar_calculate_attenuation
     """
-    peak_rayleigh_length, peak_abs_length, λ_full, rayleigh, abslength = (
+    peak_rayleigh_length, peak_abs_length, λ_full, rayleigh, abslength, _attenuation = (
         lar_calculate_attenuation(
             lar_temperature,
             lar_dielectric_method,
