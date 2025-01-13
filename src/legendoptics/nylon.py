@@ -45,7 +45,7 @@ def nylon_absorption() -> tuple[Quantity, Quantity]:
 
 
 def pyg4_nylon_attach_rindex(mat, reg) -> None:
-    """Attach the refractive index to the given fiber core material instance.
+    """Attach the refractive index to the given nylon material instance.
 
     See Also
     --------
