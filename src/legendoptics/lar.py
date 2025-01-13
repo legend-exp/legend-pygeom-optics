@@ -253,6 +253,104 @@ def lar_peak_attenuation_length(
 
 
 @store.register_pluggable
+def lar_calculate_attenuation(
+    lar_temperature: Quantity,
+    lar_dielectric_method: ArDielectricMethods = "cern2020",
+    attenuation_method_or_length: ArLifetimeMethods | Quantity = "legend200-llama",
+    rayleigh_enabled_or_length: bool | Quantity = True,
+    absorption_enabled_or_length: bool | Quantity = True,
+) -> tuple[Quantity, Quantity]:
+    """Calculate all attenuation-related optical properties to the given LAr material instance.
+
+    Parameters
+    ----------
+    lar_temperature
+        liquid phase temperature for rayleigh scattering length calculation.
+    lar_dielectric_method
+        Choose which calculation method is used for calculation of the dielectric
+        function, which is used for deriving the rayleigh scattering length.
+    attenuation_method_or_length
+        Change the method/measurement used to define the LAr attenuation length.
+        If set to a length-Quantity, this value is used directly as attenuation length at
+        the scintillation peak.
+    rayleigh_enabled_or_length
+        If set to a boolean value, it enables or disables the default rayleigh scattering.
+
+        If set to a length-Quantity, the given value will be used as the scattering length at
+        the scintillation peak.
+    absorption_enabled_or_length
+        If set to a boolean value, the default absorption length is used (i.e. it is derived
+        from the scattering length and the total attenuation length).
+
+        If set to a length-Quantity, the given value will be used as the absorption length at
+        the scintillation peak.
+
+    Returns
+    -------
+    calculated rayleigh scattering length at the scintillation peak (λ = 126.8 nm)
+    calculated absorption length at the scintillation peak (λ = 126.8 nm)
+    sampled wavelengths λ
+    rayleigh length at all points in λ
+    absorption length at all points in λ
+
+    Notes
+    -----
+    If all three of rayleigh length, absorption length and attenuation length are set via the function
+    parameters, the parameter defining the total attenuation length will be ignored!
+
+    See Also
+    --------
+    .lar_rayleigh
+    .lar_peak_attenuation_length
+    .lar_abs_length
+    """
+    from legendoptics.pyg4utils import pyg4_sample_λ
+
+    if rayleigh_enabled_or_length is False and absorption_enabled_or_length is False:
+        msg = "cannot disable rayleigh and absorption at the same time"
+        raise ValueError(msg)
+
+    if (
+        isinstance(absorption_enabled_or_length, Quantity)
+        and isinstance(rayleigh_enabled_or_length, Quantity)
+        and isinstance(attenuation_method_or_length, Quantity)
+    ):
+        log.warning(
+            "All three of attenuation, absorption and rayleigh scattering length are constrained manually. The specified attenuation length will be ignored."
+        )
+
+    λ_full = pyg4_sample_λ(112 * u.nm, 650 * u.nm)
+
+    # rayleigh scattering is a (theoretically) defined property, that - in principle -
+    # does not need to be scaled.
+    rayleigh = lar_rayleigh(λ_full, lar_temperature, lar_dielectric_method)
+    peak_rayleigh_length = lar_rayleigh(126.8 * u.nm, lar_temperature)
+    if isinstance(rayleigh_enabled_or_length, Quantity):
+        assert rayleigh_enabled_or_length.check("[length]")
+        rayleigh *= rayleigh_enabled_or_length / peak_rayleigh_length
+        peak_rayleigh_length = rayleigh_enabled_or_length
+
+    peak_att_length = lar_peak_attenuation_length(attenuation_method_or_length)
+    # absorption length and rayleigh add up inversely to the measured attenuation length.
+    peak_abs_length = 1 / (1 / peak_att_length - 1 / peak_rayleigh_length)
+
+    if isinstance(absorption_enabled_or_length, Quantity):
+        assert absorption_enabled_or_length.check("[length]")
+        peak_abs_length = absorption_enabled_or_length
+
+    # absorption length is _not_ correctly scaled yet.
+    absl_scale = peak_abs_length / lar_abs_length(126.8 * u.nm)
+    abslength = lar_abs_length(λ_full) * absl_scale
+
+    if rayleigh_enabled_or_length is False:
+        rayleigh = None
+    if absorption_enabled_or_length is False:
+        abslength = None
+
+    return peak_rayleigh_length, peak_abs_length, λ_full, rayleigh, abslength
+
+
+@store.register_pluggable
 def lar_lifetimes(
     triplet_lifetime_method: float | ArLifetimeMethods = "legend200-llama",
 ) -> ArScintLiftime:
@@ -392,45 +490,22 @@ def pyg4_lar_attach_attenuation(
     .lar_rayleigh
     .lar_peak_attenuation_length
     .lar_abs_length
+    .lar_calculate_attenuation
     """
-    from legendoptics.pyg4utils import pyg4_sample_λ
-
-    if (
-        isinstance(absorption_enabled_or_length, Quantity)
-        and isinstance(rayleigh_enabled_or_length, Quantity)
-        and isinstance(attenuation_method_or_length, Quantity)
-    ):
-        log.warning(
-            "All three of attenuation, absorption and rayleigh scattering length are constrained manually. The specified attenuation length will be ignored."
+    peak_rayleigh_length, peak_abs_length, λ_full, rayleigh, abslength = (
+        lar_calculate_attenuation(
+            lar_temperature,
+            lar_dielectric_method,
+            attenuation_method_or_length,
+            rayleigh_enabled_or_length,
+            absorption_enabled_or_length,
         )
-
-    λ_full = pyg4_sample_λ(112 * u.nm, 650 * u.nm)
-
-    # rayleigh scattering is a (theoretically) defined property, that - in principle -
-    # does not need to be scaled.
-    rayleigh = lar_rayleigh(λ_full, lar_temperature, lar_dielectric_method)
-    peak_rayleigh_length = lar_rayleigh(126.8 * u.nm, lar_temperature)
-    if isinstance(rayleigh_enabled_or_length, Quantity):
-        assert rayleigh_enabled_or_length.check("[length]")
-        rayleigh *= rayleigh_enabled_or_length / peak_rayleigh_length
-        peak_rayleigh_length = rayleigh_enabled_or_length
-
-    peak_att_length = lar_peak_attenuation_length(attenuation_method_or_length)
-    # absorption length and rayleigh add up inversely to the measured attenuation length.
-    peak_abs_length = 1 / (1 / peak_att_length - 1 / peak_rayleigh_length)
-
-    if isinstance(absorption_enabled_or_length, Quantity):
-        assert absorption_enabled_or_length.check("[length]")
-        peak_abs_length = absorption_enabled_or_length
-
-    # absorption length is _not_ correctly scaled yet.
-    absl_scale = peak_abs_length / lar_abs_length(126.8 * u.nm)
-    abslength = lar_abs_length(λ_full) * absl_scale
+    )
 
     with u.context("sp"):
-        if rayleigh_enabled_or_length is not False and lar_mat is not None:
+        if rayleigh is not None:
             lar_mat.addVecPropertyPint("RAYLEIGH", λ_full.to("eV"), rayleigh)
-        if absorption_enabled_or_length is not False and lar_mat is not None:
+        if abslength is not None:
             lar_mat.addVecPropertyPint("ABSLENGTH", λ_full.to("eV"), abslength)
 
     return peak_rayleigh_length, peak_abs_length
