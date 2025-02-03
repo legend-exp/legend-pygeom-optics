@@ -13,7 +13,9 @@ log = logging.getLogger(__name__)
 u = pint.get_application_registry()
 
 
-def readdatafile(filename: str) -> tuple[Quantity, Quantity]:
+def readdatafile(
+    filename: str, pkg: str = "legendoptics.data"
+) -> tuple[Quantity, Quantity]:
     """Read ``(x, y)`` data points from `filename` with units.
 
     Accepted file format ::
@@ -26,10 +28,18 @@ def readdatafile(filename: str) -> tuple[Quantity, Quantity]:
     After the first line, comments are also allowed after a ``#`` character.
 
     Units in the header must be parseable as :mod:`pint` units.
+
+    Parameters
+    ----------
+    filename
+        (relative) file name of the data file, including extension.
+    pkg
+        python package name used to access data files. Only needs to be set to access
+        data files in other packages.
     """
     x = []
     y = []
-    lines = files("legendoptics.data").joinpath(filename).read_text().split("\n")
+    lines = files(pkg).joinpath(filename).read_text().split("\n")
     lines = [line.strip() for line in lines]
 
     # parse header
@@ -118,7 +128,7 @@ def g4gps_write_emission_spectrum(
     scint_em: Quantity,
     quantity_name: str,
 ) -> None:
-    """Write a energy spectrum for use with G4GeneralParticleSource
+    """Write a energy spectrum for use with G4GeneralParticleSource.
 
     It can be used like this in a Geant4 macro:
 
