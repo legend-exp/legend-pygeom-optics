@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 from pkg_resources import get_distribution
+from sphinx.ext.napoleon.docstring import GoogleDocstring, NumpyDocstring
 
 sys.path.insert(0, Path(__file__).parents[2].resolve().as_posix())
 # Add local extension directory.
@@ -52,6 +53,9 @@ autodoc_default_options = {
 napoleon_numpy_docstring = True
 napoleon_google_docstring = False
 napoleon_use_ivar = True
+
+# fix napoleon "Returns" section to not need an actual type.
+NumpyDocstring._consume_returns_section = GoogleDocstring._consume_returns_section
 
 # intersphinx
 intersphinx_mapping = {

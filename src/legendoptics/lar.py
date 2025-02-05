@@ -287,12 +287,12 @@ def lar_calculate_attenuation(
 
     Returns
     -------
-    calculated rayleigh scattering length at the scintillation peak (λ = 126.8 nm)
-    calculated absorption length at the scintillation peak (λ = 126.8 nm)
-    sampled wavelengths λ
-    rayleigh length at all points in λ
-    absorption length at all points in λ
-    attenuation length at all points in λ
+    * calculated rayleigh scattering length at the scintillation peak (λ = 126.8 nm)
+    * calculated absorption length at the scintillation peak (λ = 126.8 nm)
+    * sampled wavelengths λ
+    * rayleigh length at all points in λ
+    * absorption length at all points in λ
+    * attenuation length at all points in λ
 
     Important
     ---------
@@ -496,8 +496,8 @@ def pyg4_lar_attach_attenuation(
 
     Returns
     -------
-    calculated rayleigh scattering length at the scintillation peak (λ = 126.8 nm)
-    calculated absorption length at the scintillation peak (λ = 126.8 nm)
+    * calculated rayleigh scattering length at the scintillation peak (λ = 126.8 nm)
+    * calculated absorption length at the scintillation peak (λ = 126.8 nm)
 
     Important
     ---------
