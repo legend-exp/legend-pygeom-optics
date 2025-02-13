@@ -79,6 +79,7 @@ class InterpolatingGraph:
         vals: Quantity,
         min_idx: Quantity | None = None,
         max_idx: Quantity | None = None,
+        zero_outside: bool = False,
     ):
         # Filter the supplied data points.
         f = np.full(idx.shape, True)
@@ -97,6 +98,9 @@ class InterpolatingGraph:
         assert min(vals).m >= 0  # We only want positive values in the spectra
         self.fn = scipy.interpolate.interp1d(idx.m, vals.m)
 
+        self.val_min = self.vals[0].m if not zero_outside else 0
+        self.val_max = self.vals[-1].m if not zero_outside else 0
+
     def __call__(self, pts: Quantity) -> Quantity:
         # return first/last value if pts out of defined range
         if isinstance(pts.m, np.ndarray):
@@ -109,15 +113,15 @@ class InterpolatingGraph:
                         ((p >= self.d_min.m) & (p <= self.d_max.m)),
                         p > self.d_max.m,
                     ],
-                    [self.vals[0].m, self.fn, self.vals[-1].m],
+                    [self.val_min, self.fn, self.val_max],
                 ),
                 self.vals.u,
             )
 
         if pts < self.d_min:
-            return self.vals.iloc[0]
+            return self.val_min * self.vals.u
         if pts > self.d_max:
-            return self.vals.iloc[-1]
+            return self.val_max * self.vals.u
         return self.fn(pts.to(self.idx.u).m) * self.vals.u
 
 
