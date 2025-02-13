@@ -81,6 +81,16 @@ class InterpolatingGraph:
         max_idx: Quantity | None = None,
         zero_outside: bool = False,
     ):
+        if not isinstance(idx, Quantity) or not isinstance(vals, Quantity):
+            msg = "only pint Quantities can be used as index or value"
+            raise ValueError(msg)
+        if len(idx.shape) != 1 or len(vals.shape) != 1:
+            msg = "only 1-dimensional data can be used as index or value"
+            raise ValueError(msg)
+        if idx.shape != vals.shape:
+            msg = "only and index and values of the same shape can be used"
+            raise ValueError(msg)
+
         # Filter the supplied data points.
         f = np.full(idx.shape, True)
         if min_idx is not None:
@@ -95,7 +105,10 @@ class InterpolatingGraph:
         self.d_min = min(idx)
         self.d_max = max(idx)
         self.n = len(idx)
-        assert min(vals).m >= 0  # We only want positive values in the spectra
+        if min(vals).m < 0:
+            msg = f"data to be interpolated can only contain positive values. min={min(vals).m}"
+            raise ValueError(msg)
+
         self.fn = scipy.interpolate.interp1d(idx.m, vals.m)
 
         self.val_min = self.vals[0].m if not zero_outside else 0
