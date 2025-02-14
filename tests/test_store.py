@@ -12,9 +12,11 @@ def test_store():
     assert fiber_core_refractive_index.is_original()
 
     # test replacing the implementation.
+    orig = fiber_core_refractive_index.original_impl()
     fiber_core_refractive_index.replace_implementation(lambda: 1234)
     assert fiber_core_refractive_index() == 1234
     assert not fiber_core_refractive_index.is_original()
+    assert fiber_core_refractive_index.original_impl() is orig
 
     fiber_cladding1_refractive_index.replace_implementation(lambda: 1)
 
