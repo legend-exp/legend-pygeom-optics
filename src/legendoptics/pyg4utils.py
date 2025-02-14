@@ -148,7 +148,7 @@ def _patch_g4_pint_unit_support() -> None:
             log.warning("Wrong unit %s for property %s", vunit, name)
         if name in dimless_props and vunit != "":
             log.warning("Wrong unit %s for property %s", vunit, name)
-        if eunit not in ["", "eV", "keV", "MeV", "GeV", "TeV", "PeV"]:
+        if eunit not in ["eV", "keV", "MeV", "GeV", "TeV", "PeV"]:
             log.warning("Wrong energy unit %s", eunit)
 
         # reorder the values to be in ascending energy order.
