@@ -22,6 +22,43 @@ def test_pyg4_attach_lar() -> None:
     legendoptics.lar.pyg4_lar_attach_rindex(mat, reg)
     legendoptics.lar.pyg4_lar_attach_attenuation(mat, reg, 90 * u.K)
     legendoptics.lar.pyg4_lar_attach_scintillation(mat, reg)
+    reg, mat = _create_dummy_mat()
+    legendoptics.lar.pyg4_lar_attach_attenuation(
+        mat, reg, 90 * u.K, attenuation_method_or_length=10 * u.cm
+    )
+    reg, mat = _create_dummy_mat()
+    legendoptics.lar.pyg4_lar_attach_attenuation(
+        mat,
+        reg,
+        90 * u.K,
+        attenuation_method_or_length=10 * u.cm,
+        rayleigh_enabled_or_length=90 * u.cm,
+    )
+    legendoptics.lar.pyg4_lar_attach_scintillation(
+        mat, reg, triplet_lifetime_method=1.1
+    )
+    reg, mat = _create_dummy_mat()
+    legendoptics.lar.pyg4_lar_attach_attenuation(
+        mat, reg, 90 * u.K, absorption_enabled_or_length=False
+    )
+    reg, mat = _create_dummy_mat()
+    legendoptics.lar.pyg4_lar_attach_attenuation(
+        mat, reg, 90 * u.K, absorption_enabled_or_length=30 * u.cm
+    )
+    reg, mat = _create_dummy_mat()
+    legendoptics.lar.pyg4_lar_attach_attenuation(
+        mat,
+        reg,
+        90 * u.K,
+        absorption_enabled_or_length=10 * u.cm,
+        rayleigh_enabled_or_length=90 * u.cm,
+    )
+    assert "ABSORPTION" not in mat.properties
+    reg, mat = _create_dummy_mat()
+    legendoptics.lar.pyg4_lar_attach_attenuation(
+        mat, reg, 90 * u.K, rayleigh_enabled_or_length=False
+    )
+    assert "RAYLEIGH" not in mat.properties
 
 
 def test_pyg4_attach_tpb() -> None:
@@ -30,6 +67,10 @@ def test_pyg4_attach_tpb() -> None:
     reg, mat = _create_dummy_mat()
     legendoptics.tpb.pyg4_tpb_attach_rindex(mat, reg)
     legendoptics.tpb.pyg4_tpb_attach_wls(mat, reg)
+    reg, mat = _create_dummy_mat()
+    legendoptics.tpb.pyg4_tpb_attach_wls(mat, reg, 0.1)
+    reg, mat = _create_dummy_mat()
+    legendoptics.tpb.pyg4_tpb_attach_wls(mat, reg, True, "polystyrene_matrix")
 
 
 def test_pyg4_attach_fibers() -> None:
@@ -38,11 +79,10 @@ def test_pyg4_attach_fibers() -> None:
     reg, mat = _create_dummy_mat()
     legendoptics.fibers.pyg4_fiber_cladding1_attach_rindex(mat, reg)
     reg, mat = _create_dummy_mat()
-    legendoptics.fibers.pyg4_fiber_cladding1_attach_rindex(mat, reg)
+    legendoptics.fibers.pyg4_fiber_cladding2_attach_rindex(mat, reg)
     reg, mat = _create_dummy_mat()
     legendoptics.fibers.pyg4_fiber_core_attach_rindex(mat, reg)
     legendoptics.fibers.pyg4_fiber_core_attach_wls(mat, reg)
-    legendoptics.fibers.pyg4_fiber_core_attach_absorption(mat, reg)
 
 
 def test_pyg4_attach_tetratex() -> None:
@@ -89,3 +129,5 @@ def test_pyg4_attach_pen() -> None:
     legendoptics.pen.pyg4_pen_attach_attenuation(mat, reg)
     legendoptics.pen.pyg4_pen_attach_wls(mat, reg)
     legendoptics.pen.pyg4_pen_attach_scintillation(mat, reg)
+    reg, mat = _create_dummy_mat()
+    legendoptics.pen.pyg4_pen_attach_wls(mat, reg, 0.1)
