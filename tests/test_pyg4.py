@@ -83,6 +83,11 @@ def test_pyg4_attach_fibers() -> None:
     reg, mat = _create_dummy_mat()
     legendoptics.fibers.pyg4_fiber_core_attach_rindex(mat, reg)
     legendoptics.fibers.pyg4_fiber_core_attach_wls(mat, reg)
+    legendoptics.fibers.pyg4_fiber_core_attach_absorption(mat, reg)
+    reg, mat = _create_dummy_mat()
+    legendoptics.fibers.pyg4_fiber_core_attach_absorption(
+        mat, reg, use_geometrical_absorption=False
+    )
 
 
 def test_pyg4_attach_tetratex() -> None:
