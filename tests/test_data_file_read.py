@@ -51,6 +51,19 @@ def test_interpolating_options():
         *data, zero_outside=True, min_idx=380 * u.nm, max_idx=500 * u.nm
     )
 
+    graphs = (
+        interp_default,
+        interp_zero,
+        interp_bound_min,
+        interp_bound_max,
+        interp_bound_max,
+    )
+
+    def _assert_pointwise_equality(interp, points):
+        """Test that the single-point call always returns the same as the array call."""
+        for i in interp:
+            assert np.all(np.array([i(p) for p in points]) == i(points))
+
     # the shared interval is (380 nm, 500 nm) - all graphs should be equal there.
     points = pyg4_sample_λ(381 * u.nm, 499 * u.nm)
     assert np.all(interp_default(points) == interp_zero(points))
@@ -58,6 +71,7 @@ def test_interpolating_options():
     assert np.all(interp_default(points) == interp_bound_max(points))
 
     assert np.all(interp_zero_bounds(points) > 0)
+    _assert_pointwise_equality(graphs, points)
 
     # test left boundary.
     points = pyg4_sample_λ(360 * u.nm, 499 * u.nm)
@@ -66,6 +80,7 @@ def test_interpolating_options():
     assert np.all(interp_default(points) == interp_bound_max(points))
 
     assert np.all((interp_zero_bounds(points) > 0) == (points > 380.56 * u.nm))
+    _assert_pointwise_equality(graphs, points)
 
     # test right boundary.
     points = pyg4_sample_λ(381 * u.nm, 650 * u.nm)
@@ -74,6 +89,7 @@ def test_interpolating_options():
     assert np.all(interp_default(points) <= interp_bound_max(points))
 
     assert np.all((interp_zero_bounds(points) > 0) == (points < 499.99 * u.nm))
+    _assert_pointwise_equality(graphs, points)
 
 
 def test_interpolating_linear():
