@@ -74,7 +74,7 @@ def pyg4_water_attach_rindex(mat, reg) -> None:
     --------
     .water_refractive_index
     """
-    λ = np.array([206.6, 1240]) * u.nm
+    λ = np.array([100, 600]) * u.nm
     r = [water_refractive_index()] * 2
     with u.context("sp"):
         mat.addVecPropertyPint("RINDEX", λ.to("eV"), r)
