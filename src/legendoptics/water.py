@@ -1,6 +1,8 @@
 """
 High puritiy water for LEGEND-200 watertank.
 
+.. [Mason2016] John D. Mason, Michael T. Cone, and Edward S. Fry, “Ultraviolet (250-550 nm) absorption
+    spectrum of pure water”. In: Appl. Opt. 55, 7163-7172 (2016). https://doi.org/10.1364/AO.55.007163
 """
 
 from __future__ import annotations
