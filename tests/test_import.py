@@ -70,8 +70,5 @@ def test_import():
     legendoptics.pen.pen_wls_absorption()
 
     legendoptics.water.water_refractive_index()
-<<<<<<< HEAD
     legendoptics.water.water_absorption()
-=======
-    legendoptics.water.water_refractive_absorption()
->>>>>>> 8dc5e86 (Add ultra pure water for watertank.)
+    legendoptics.water.water_absorption()
