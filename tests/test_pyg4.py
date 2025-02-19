@@ -142,10 +142,5 @@ def test_pyg4_attach_water() -> None:
     import legendoptics.water
 
     reg, mat = _create_dummy_mat()
-<<<<<<< HEAD
     legendoptics.water.pyg4_water_attach_rindex(mat, reg)
     legendoptics.water.pyg4_water_attach_absorption(mat, reg)
-=======
-    legendoptics.nylon.pyg4_water_attach_rindex(mat, reg)
-    legendoptics.nylon.pyg4_water_attach_absorption(mat, reg)
->>>>>>> 8dc5e86 (Add ultra pure water for watertank.)
