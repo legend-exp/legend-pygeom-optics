@@ -70,4 +70,4 @@ def test_import():
     legendoptics.pen.pen_wls_absorption()
 
     legendoptics.water.water_refractive_index()
-    legendoptics.water.water_refractive_absorption()
+    legendoptics.water.water_absorption()
