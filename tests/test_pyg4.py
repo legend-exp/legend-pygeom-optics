@@ -136,3 +136,11 @@ def test_pyg4_attach_pen() -> None:
     legendoptics.pen.pyg4_pen_attach_scintillation(mat, reg)
     reg, mat = _create_dummy_mat()
     legendoptics.pen.pyg4_pen_attach_wls(mat, reg, 0.1)
+
+
+def test_pyg4_attach_water() -> None:
+    import legendoptics.water
+
+    reg, mat = _create_dummy_mat()
+    legendoptics.nylon.pyg4_water_attach_rindex(mat, reg)
+    legendoptics.nylon.pyg4_water_attach_absorption(mat, reg)
