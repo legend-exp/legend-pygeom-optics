@@ -28,8 +28,7 @@ def water_refractive_index() -> float:
 
 @store.register_pluggable
 def water_absorption() -> tuple[Quantity, Quantity]:
-    """Ultra pure water absorption lengths.
-    John D. Mason, Michael T. Cone, and Edward S. Fry, "Ultraviolet (250-550 nm) absorption spectrum of pure water," Appl. Opt. 55, 7163-7172 (2016)
+    """Ultra pure water absorption lengths, from [Mason2016]_.
 
     .. optics-plot::
     """
