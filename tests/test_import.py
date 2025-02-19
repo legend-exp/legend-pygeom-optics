@@ -17,6 +17,7 @@ def test_import():
     import legendoptics.silicon
     import legendoptics.tetratex
     import legendoptics.tpb
+    import legendoptics.water
 
     legendoptics.lar.lar_fano_factor()
     λ_peak = np.arange(116, 141, 20) * u.nm
@@ -67,3 +68,6 @@ def test_import():
     legendoptics.pen.pen_wls_absorption()
     legendoptics.pen.pen_wls_absorption()
     legendoptics.pen.pen_wls_absorption()
+
+    legendoptics.water.water_refractive_index()
+    legendoptics.water.water_absorption()
