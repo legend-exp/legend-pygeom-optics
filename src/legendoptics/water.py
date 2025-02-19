@@ -1,11 +1,8 @@
 """
 High puritiy water for LEGEND-200 watertank.
 
-<<<<<<< HEAD
 .. [Mason2016] John D. Mason, Michael T. Cone, and Edward S. Fry, “Ultraviolet (250-550 nm) absorption
     spectrum of pure water”. In: Appl. Opt. 55, 7163-7172 (2016). https://doi.org/10.1364/AO.55.007163
-=======
->>>>>>> 8dc5e86 (Add ultra pure water for watertank.)
 """
 
 from __future__ import annotations
@@ -33,12 +30,8 @@ def water_refractive_index() -> float:
 
 @store.register_pluggable
 def water_absorption() -> tuple[Quantity, Quantity]:
-<<<<<<< HEAD
+
     """Ultra pure water absorption lengths, from [Mason2016]_.
-=======
-    """Ultra pure water absorption lengths.
-    John D. Mason, Michael T. Cone, and Edward S. Fry, "Ultraviolet (250-550 nm) absorption spectrum of pure water," Appl. Opt. 55, 7163-7172 (2016)
->>>>>>> 8dc5e86 (Add ultra pure water for watertank.)
 
     .. optics-plot::
     """
@@ -82,11 +75,7 @@ def pyg4_water_attach_rindex(mat, reg) -> None:
     --------
     .water_refractive_index
     """
-<<<<<<< HEAD
     λ = np.array([100, 600]) * u.nm
-=======
-    λ = np.array([206.6, 1240]) * u.nm
->>>>>>> 8dc5e86 (Add ultra pure water for watertank.)
     r = [water_refractive_index()] * 2
     with u.context("sp"):
         mat.addVecPropertyPint("RINDEX", λ.to("eV"), r)
