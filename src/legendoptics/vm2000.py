@@ -145,7 +145,7 @@ def pyg4_vm2000_attach_absorption_length(mat, reg) -> None:
     .vm2000_absorption_length
     """
     λ = np.array([100, 600]) * u.nm
-    r = np.array([vm2000_absorption_length(), vm2000_absorption_length()]) * u.m
+    r = np.full_like(λ, vm2000_absorption_length())
 
     with u.context("sp"):
         mat.addVecPropertyPint("ABSLENGTH", λ.to("eV"), r)
