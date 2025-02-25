@@ -73,7 +73,7 @@ def test_import():
     legendoptics.water.water_refractive_index()
     legendoptics.water.water_absorption()
 
-    legendoptics.vm2000.vm2000_calculate_wls_mfp()
+    legendoptics.vm2000.vm2000_calculate_wls_mfp(0.075)
     legendoptics.vm2000.vm2000_refractive_index()
     legendoptics.vm2000.vm2000_absorption_length()
     legendoptics.vm2000.vm2000_parameters()
