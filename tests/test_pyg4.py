@@ -154,4 +154,5 @@ def test_pyg4_attach_vm2000() -> None:
     legendoptics.vm2000.pyg4_vm2000_attach_absorption_length(mat, reg)
     legendoptics.vm2000.pyg4_vm2000_attach_particle_scintillationyields(mat, reg)
     legendoptics.vm2000.pyg4_vm2000_attach_wls(mat, reg)
+    reg, mat = _create_dummy_mat()
     legendoptics.vm2000.pyg4_vm2000_attach_border_params(mat, reg)
