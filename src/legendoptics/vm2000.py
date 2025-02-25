@@ -54,7 +54,7 @@ def vm2000_absorption_length() -> Quantity:
 
     .. optics-const::
     """
-    return 50.0
+    return 50.0 * u.m
 
 
 @store.register_pluggable
