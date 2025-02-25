@@ -16,7 +16,7 @@ import numpy as np
 import pint
 from pint import Quantity
 
-from legendoptics import store
+from legendoptics import pyg4utils, store
 from legendoptics.utils import InterpolatingGraph, readdatafile
 
 log = logging.getLogger(__name__)
@@ -29,9 +29,9 @@ def vm2000_calculate_wls_mfp(yield_value):
 
     # Handle edge cases
     if yield_value == 0:
-        return 10.0  # 10 m,  Large mean free path, no absorption
+        return 10.0 * u.m  # Large mean free path, no absorption
     if yield_value == 1:
-        return 0.01e-3  # 0.01 mm, Very small mean free path, 100% absorption
+        return 0.01e-3 * u.m  # 0.01 mm, Very small mean free path, 100% absorption
 
     # Calculate mean free path for valid yield values
     help_value = math.log(1.0 - yield_value)
@@ -49,38 +49,12 @@ def vm2000_refractive_index() -> float:
 
 
 @store.register_pluggable
-def vm2000_absorption_length() -> float:
+def vm2000_absorption_length() -> Quantity:
     """Absorption length.
 
     .. optics-const::
     """
     return 50.0
-
-
-@store.register_pluggable
-def vm2000_particle_scintillationyields() -> (
-    tuple[Quantity, Quantity, Quantity, Quantity, Quantity, Quantity]
-):
-    """Set all particle Scintillations yields to 0 (except of electron scintillation yield).
-
-    .. optics-plot::
-    """
-
-    scintillation_params_energy = [1.0, 10000000.0]
-    vm2000_protonscintillation_yield = [0.0, 0.0]
-    vm2000_alphascintillation_yield = [0.0, 0.0]
-    vm2000_deuteronscintillation_yield = [0.0, 0.0]
-    vm2000_ionscintillation_yield = [0.0, 0.0]
-    vm2000_tritonscintillation_yield = [0.0, 0.0]
-
-    return (
-        scintillation_params_energy,
-        vm2000_protonscintillation_yield,
-        vm2000_alphascintillation_yield,
-        vm2000_deuteronscintillation_yield,
-        vm2000_ionscintillation_yield,
-        vm2000_tritonscintillation_yield,
-    )
 
 
 @store.register_pluggable
@@ -123,9 +97,8 @@ def vm2000_parameters() -> tuple[Quantity, Quantity, Quantity, Quantity, Quantit
                 1.0 * u.m
             )  # Imperturbed, no absorption of visible light
 
-    g = InterpolatingGraph(
-        *readdatafile("vm2000_em_spec.dat", pkg="l200geom.materials"), zero_outside=True
-    )
+    g = InterpolatingGraph(*readdatafile("vm2000_em_spec.dat"), zero_outside=True)
+
     wls_emission = g(vm2000_energy_range.to("nm")).to("dimensionless")
 
     # Copy the first element to 0th position
@@ -172,7 +145,7 @@ def pyg4_vm2000_attach_absorption_length(mat, reg) -> None:
     .vm2000_absorption_length
     """
     λ = np.array([100, 600]) * u.nm
-    r = [vm2000_absorption_length()] * 2 * u.m
+    r = np.array([vm2000_absorption_length(), vm2000_absorption_length()]) * u.m
 
     with u.context("sp"):
         mat.addVecPropertyPint("ABSLENGTH", λ.to("eV"), r)
@@ -185,18 +158,12 @@ def pyg4_vm2000_attach_particle_scintillationyields(mat, reg) -> None:
     --------
     .vm2000_particle_scintillationyields
     """
-    energy = vm2000_particle_scintillationyields()[0] * u.eV
-    proton_yield = vm2000_particle_scintillationyields()[1]
-    alpha_yield = vm2000_particle_scintillationyields()[2]
-    deuteron_yield = vm2000_particle_scintillationyields()[3]
-    ion_yield = vm2000_particle_scintillationyields()[4]
-    triton_yield = vm2000_particle_scintillationyields()[5]
 
-    mat.addVecPropertyPint("PROTONSCINTILLATIONYIELD", energy, proton_yield)
-    mat.addVecPropertyPint("ALPHASCINTILLATIONYIELD", energy, alpha_yield)
-    mat.addVecPropertyPint("DEUTERONSCINTILLATIONYIELD", energy, deuteron_yield)
-    mat.addVecPropertyPint("IONSCINTILLATIONYIELD", energy, ion_yield)
-    mat.addVecPropertyPint("TRITONSCINTILLATIONYIELD", energy, triton_yield)
+    pyg4utils._def_scint_particle(mat, "ALPHA", 0 / u.eV, 0.0, None)
+    pyg4utils._def_scint_particle(mat, "DEUTERON", 0 / u.eV, 0.0, None)
+    pyg4utils._def_scint_particle(mat, "ION", 0 / u.eV, 0.0, None)
+    pyg4utils._def_scint_particle(mat, "PROTON", 0 / u.eV, 0.0, None)
+    pyg4utils._def_scint_particle(mat, "TRITON", 0 / u.eV, 0.0, None)
 
 
 def pyg4_vm2000_attach_reflectivity(mat, reg) -> None:
@@ -206,8 +173,7 @@ def pyg4_vm2000_attach_reflectivity(mat, reg) -> None:
     --------
     .vm2000_parameters
     """
-    energy = vm2000_parameters()[0]
-    r = vm2000_parameters()[1]
+    energy, r, _, _, _ = vm2000_parameters()
 
     mat.addVecPropertyPint("REFLECTIVITY", energy, r)
 
