@@ -30,7 +30,6 @@ def water_refractive_index() -> float:
 
 @store.register_pluggable
 def water_absorption() -> tuple[Quantity, Quantity]:
-
     """Ultra pure water absorption lengths, from [Mason2016]_.
 
     .. optics-plot::
