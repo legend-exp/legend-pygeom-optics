@@ -1,8 +1,8 @@
 """
-VM2000 reflective film inside water tank.
+VM2000 reflective film inside water tank, mainly based on [Geis2017]_.
 
 .. [Geis2017] Ch. Geis et al. 2017 “Optical response of highly reflective film used in the water Cherenkov muon veto of
-    the XENON1T dark matter experiment” In: Journal of Instrumentation, Vol. 12, 2017, https://dx.doi.org/10.1088/1748-0221/12/06/P06017
+    the XENON1T dark matter experiment” In: Journal of Instrumentation, Vol. 12, 2017, https://doi.org/10.1088/1748-0221/12/06/P06017
 
 WLS properties taken from MaGe.
 """
@@ -153,10 +153,6 @@ def pyg4_vm2000_attach_absorption_length(mat, reg) -> None:
 
 def pyg4_vm2000_attach_particle_scintillationyields(mat, reg) -> None:
     """Attach the scintillation yiels (except of electron yield) to the given VM2000 material instance.
-
-    See Also
-    --------
-    .vm2000_particle_scintillationyields
     """
 
     pyg4utils._def_scint_particle(mat, "ALPHA", 0 / u.eV, 0.0, None)
