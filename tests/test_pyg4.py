@@ -156,3 +156,19 @@ def test_pyg4_attach_vm2000() -> None:
     legendoptics.vm2000.pyg4_vm2000_attach_wls(mat, reg)
     reg, mat = _create_dummy_mat()
     legendoptics.vm2000.pyg4_vm2000_attach_border_params(mat, reg)
+
+
+def test_pyg4_attach_pmts() -> None:
+    import legendoptics.pmts
+
+    reg, mat = _create_dummy_mat()
+    legendoptics.pmts.pyg4_pmt_attach_acryl_absorption_length(mat, reg)
+    legendoptics.pmts.pyg4_pmt_attach_acryl_rindex(mat, reg)
+    legendoptics.pmts.pyg4_pmt_attach_air_absorption_length(mat, reg)
+    legendoptics.pmts.pyg4_pmt_attach_air_rindex(mat, reg)
+    legendoptics.pmts.pyg4_pmt_attach_borosilicate_absorption_length(mat, reg)
+    legendoptics.pmts.pyg4_pmt_attach_borosilicate_rindex(mat, reg)
+    legendoptics.pmts.pyg4_pmt_attach_photocathode_efficiency(mat, reg)
+    legendoptics.pmts.pyg4_pmt_attach_photocathode_reflectivity(mat, reg)
+    legendoptics.pmts.pyg4_pmt_attach_steel_efficiency(mat, reg)
+    legendoptics.pmts.pyg4_pmt_attach_steel_reflectivity(mat, reg)
