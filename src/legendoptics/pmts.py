@@ -69,7 +69,7 @@ def pmt_borosilicate_refractive_index() -> float:
 
 @store.register_pluggable
 def pmt_borosilicate_absorption_length() -> tuple[Quantity, Quantity]:
-    """Absorption length (estimation).
+    """Absorption length.
 
     .. optics-plot::
     """
