@@ -69,7 +69,7 @@ def pmt_borosilicate_refractive_index() -> float:
 
 @store.register_pluggable
 def pmt_borosilicate_absorption_length() -> tuple[Quantity, Quantity]:
-    """Absorption length.
+    """Absorption length (estimation).
 
     .. optics-plot::
     """
@@ -112,9 +112,7 @@ def pmt_photocathode_efficiency() -> tuple[Quantity, Quantity]:
     .. optics-plot::
     """
 
-    wvl, pmt_qe = readdatafile("pmt_qe.dat")
-
-    return wvl, pmt_qe
+    return readdatafile("pmt_qe.dat")
 
 
 @store.register_pluggable
