@@ -14,6 +14,7 @@ def test_import():
     import legendoptics.lar
     import legendoptics.nylon
     import legendoptics.pen
+    import legendoptics.pmts
     import legendoptics.silicon
     import legendoptics.tetratex
     import legendoptics.tpb
@@ -78,3 +79,15 @@ def test_import():
     legendoptics.vm2000.vm2000_absorption_length()
     legendoptics.vm2000.vm2000_parameters()
     legendoptics.vm2000.vm2000_scint_timeconstant()
+
+    legendoptics.pmts.pmt_acryl_absorption_length()
+    legendoptics.pmts.pmt_acryl_refractive_index()
+    legendoptics.pmts.pmt_air_absorption_length()
+    legendoptics.pmts.pmt_air_refractive_index()
+    legendoptics.pmts.pmt_borosilicate_absorption_length()
+    legendoptics.pmts.pmt_borosilicate_refractive_index()
+    legendoptics.pmts.pmt_photocathode_collection_efficiency()
+    legendoptics.pmts.pmt_photocathode_efficiency()
+    legendoptics.pmts.pmt_photocathode_reflectivity()
+    legendoptics.pmts.pmt_steel_efficiency()
+    legendoptics.pmts.pmt_steel_reflectivity()
