@@ -77,6 +77,11 @@ def do_plot(
         if isinstance(val, pint.Quantity):
             ax.set_ylabel(val.u)
             y = val.magnitude
+        elif isinstance(val, (np.ndarray, list)):
+            y = val
+        else:
+            msg = f"unsupported y-vector type {type(val)} for plot {safe_name}"
+            raise ValueError(msg)
 
         plotoptions = {}
         if "labels" in options:
@@ -150,7 +155,7 @@ def process_docstring(
 
     plots_dir = Path(app.srcdir) / "api" / "plots"
 
-    # this only appears to be a sphix directive, but the parsing here is very simple.
+    # this only appears to be a sphinx directive, but the parsing here is very simple.
     plot_token = ".. optics-plot::"
     const_token = ".. optics-const::"
 
