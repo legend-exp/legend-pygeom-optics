@@ -254,7 +254,7 @@ def pyg4_pmt_attach_photocathode_reflectivity(mat, reg) -> None:
     wvl, refl = pmt_photocathode_reflectivity()
 
     with u.context("sp"):
-        mat.addVecPropertyPint("REFLECTIVITY", wvl, refl)
+        mat.addVecPropertyPint("REFLECTIVITY", wvl.to("eV"), refl)
 
 
 def pyg4_pmt_attach_photocathode_efficiency(mat, reg) -> None:
@@ -267,7 +267,7 @@ def pyg4_pmt_attach_photocathode_efficiency(mat, reg) -> None:
     """
 
     wvl, pmt_qe = pmt_photocathode_efficiency()
-    pmt_efficiency = pmt_qe * pmt_photocathode_collection_efficiency()
+    pmt_efficiency = pmt_qe / 100 * pmt_photocathode_collection_efficiency()
 
     with u.context("sp"):
-        mat.addVecPropertyPint("EFFICIENCY", wvl, pmt_efficiency)
+        mat.addVecPropertyPint("EFFICIENCY", wvl.to("eV"), pmt_efficiency)
