@@ -132,7 +132,7 @@ def pmt_photocathode_reflectivity() -> tuple[Quantity, Quantity]:
         (1 - pmt_borosilicate_refractive_index())
         / (1 + pmt_borosilicate_refractive_index())
     ) ** 2
-    reflectivity = [reflectivity_max - 0.01] * len(wvl)
+    reflectivity = np.full_like(wvl, reflectivity_max - 0.01)
     return wvl, reflectivity
 
 
