@@ -97,22 +97,46 @@ def pmt_steel_efficiency() -> float:
 
 
 @store.register_pluggable
-def pmt_photocathode_collection_efficiency() -> float:
-    """Collection efficiency photocathode.
+def pmt_etl9350kb_photocathode_collection_efficiency() -> float:
+    """Collection efficiency photocathode -Electron Tubes Limited 9350KB.
 
     .. optics-const::
     """
-    return 0.85
+    return 0.85  # estimation
 
 
 @store.register_pluggable
-def pmt_photocathode_efficiency() -> tuple[Quantity, Quantity]:
+def pmt_r7081_photocathode_collection_efficiency() -> float:
+    """Collection efficiency photocathode -Hamamatsu R7081.
+
+    .. optics-const::
+    """
+    return 0.9  # estimation
+
+
+@store.register_pluggable
+def pmt_etl9350kb_photocathode_efficiency() -> tuple[Quantity, Quantity]:
     """Efficiency.
+
+       The ETL9350KB PMTs.
 
     .. optics-plot::
     """
 
-    return readdatafile("pmt_qe.dat")
+    return readdatafile("pmt_etl9350kb_qe.dat")
+
+
+@store.register_pluggable
+def pmt_r7081_photocathode_efficiency() -> tuple[Quantity, Quantity]:
+    """Efficiency.
+
+       The R7081 Hamamatsu PMTs.
+       https://www.hamamatsu.com/us/en/product/optical-sensors/pmt/pmt_tube-alone/head-on-type/R7081.html
+
+    .. optics-plot::
+    """
+
+    return readdatafile("pmt_r7081_qe.dat")
 
 
 @store.register_pluggable
@@ -255,7 +279,7 @@ def pyg4_pmt_attach_photocathode_reflectivity(mat, reg) -> None:
         mat.addVecPropertyPint("REFLECTIVITY", wvl.to("eV"), refl)
 
 
-def pyg4_pmt_attach_photocathode_efficiency(mat, reg) -> None:
+def pyg4_pmt_attach_photocathode_efficiency(mat, reg, name="etl9350") -> None:
     """Attach the efficiency to the given PMT photocathode material instance.
 
     See Also
@@ -264,8 +288,17 @@ def pyg4_pmt_attach_photocathode_efficiency(mat, reg) -> None:
     .pmt_photocathode_collection_efficiency
     """
 
-    wvl, pmt_qe = pmt_photocathode_efficiency()
-    pmt_efficiency = pmt_qe / 100 * pmt_photocathode_collection_efficiency()
+    if "etl9350" in name.lower() or "gerda" in name.lower():
+        wvl, pmt_qe = pmt_etl9350kb_photocathode_efficiency()
+        pmt_efficiency = (
+            pmt_qe / 100 * pmt_etl9350kb_photocathode_collection_efficiency()
+        )
+    elif "r7081" in name.lower() or "l1000" in name.lower():
+        wvl, pmt_qe = pmt_r7081_photocathode_efficiency()
+        pmt_efficiency = pmt_qe / 100 * pmt_r7081_photocathode_efficiency()
+    else:
+        msg = "PMT name not known. There exists only R7081 or ETL9350 data."
+        raise ValueError(msg)
 
     with u.context("sp"):
         mat.addVecPropertyPint("EFFICIENCY", wvl.to("eV"), pmt_efficiency)
