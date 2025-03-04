@@ -1,7 +1,5 @@
 """
 Tyvek reflector.
-
-.. [Janacek2012] M. Janacek, "Reflectivity spectra for commonly used reflectors", https://www.osti.gov/servlets/purl/1184400
 """
 
 from __future__ import annotations
@@ -22,7 +20,8 @@ u = pint.get_application_registry()
 def tyvek_reflectivity() -> tuple[Quantity, Quantity]:
     """Tyvek reflectivity from [Janacek2012]_.
 
-       A little bit more conservative than in the Paper.
+       A little bit more conservative than in the paper
+       (-1% reflectivity compared to the values in the paper).
 
     .. optics-plot::
     """

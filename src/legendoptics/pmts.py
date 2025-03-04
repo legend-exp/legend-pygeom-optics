@@ -1,13 +1,18 @@
 """
-PMT components mainly based on [ETEL2010]_.
+PMT components incorporating data for different PMT models.
+Common parameters applicable to both models are included where relevant, like refractive index of borosilicate glass.
+Currently the photocathode efficiencies for the ETL9354KB [ETEL2010] and R7081 [HAMAMATSU2019] PMT models are included.
 
 .. [ETEL2010] ET Enterprises Limited 2010 “200 mm (8") photomultiplier 9354KB series data sheet”, 2010, http://lampes-et-tubes.info/pm/9354KB.pdf
+.. [HAMAMATSU2019] Hammamatsu Photonics 2019 "Large Area PMT data sheet"
+    https://www.hamamatsu.com/content/dam/hamamatsu-photonics/sites/documents/99_SALES_LIBRARY/etd/LARGE_AREA_PMT_TPMH1376E.pdf
 
 """
 
 from __future__ import annotations
 
 import logging
+from typing import Literal
 
 import numpy as np
 import pint
@@ -97,8 +102,8 @@ def pmt_steel_efficiency() -> float:
 
 
 @store.register_pluggable
-def pmt_etl9350kb_photocathode_collection_efficiency() -> float:
-    """Collection efficiency photocathode -Electron Tubes Limited 9350KB.
+def pmt_etl9354kb_photocathode_collection_efficiency() -> float:
+    """Collection efficiency photocathode for ETL9354KB.
 
     .. optics-const::
     """
@@ -107,7 +112,7 @@ def pmt_etl9350kb_photocathode_collection_efficiency() -> float:
 
 @store.register_pluggable
 def pmt_r7081_photocathode_collection_efficiency() -> float:
-    """Collection efficiency photocathode -Hamamatsu R7081.
+    """Collection efficiency photocathode for Hamamatsu R7081.
 
     .. optics-const::
     """
@@ -115,23 +120,18 @@ def pmt_r7081_photocathode_collection_efficiency() -> float:
 
 
 @store.register_pluggable
-def pmt_etl9350kb_photocathode_efficiency() -> tuple[Quantity, Quantity]:
-    """Efficiency.
-
-       The ETL9350KB PMTs.
+def pmt_etl9354kb_photocathode_efficiency() -> tuple[Quantity, Quantity]:
+    """Efficiency for ETL9354KB.
 
     .. optics-plot::
     """
 
-    return readdatafile("pmt_etl9350kb_qe.dat")
+    return readdatafile("pmt_etl9354kb_qe.dat")
 
 
 @store.register_pluggable
 def pmt_r7081_photocathode_efficiency() -> tuple[Quantity, Quantity]:
-    """Efficiency.
-
-       The R7081 Hamamatsu PMTs.
-       https://www.hamamatsu.com/us/en/product/optical-sensors/pmt/pmt_tube-alone/head-on-type/R7081.html
+    """Efficiency for Hamamatsu R7081.
 
     .. optics-plot::
     """
@@ -150,7 +150,7 @@ def pmt_photocathode_reflectivity() -> tuple[Quantity, Quantity]:
     .borosilicate_refractive_index
     """
 
-    wvl, _ = readdatafile("pmt_etl9350kb_qe.dat")
+    wvl = np.array([270, 700]) * u.nm
 
     reflectivity_max = (
         (1 - pmt_borosilicate_refractive_index())
@@ -279,7 +279,9 @@ def pyg4_pmt_attach_photocathode_reflectivity(mat, reg) -> None:
         mat.addVecPropertyPint("REFLECTIVITY", wvl.to("eV"), refl)
 
 
-def pyg4_pmt_attach_photocathode_efficiency(mat, reg, name="etl9350") -> None:
+def pyg4_pmt_attach_photocathode_efficiency(
+    mat, reg, name: Literal["etl9354", "gerda", "r7081", "l1000"] = "etl9354"
+) -> None:
     """Attach the efficiency to the given PMT photocathode material instance.
 
     See Also
@@ -288,16 +290,16 @@ def pyg4_pmt_attach_photocathode_efficiency(mat, reg, name="etl9350") -> None:
     .pmt_photocathode_collection_efficiency
     """
 
-    if "etl9350" in name.lower() or "gerda" in name.lower():
-        wvl, pmt_qe = pmt_etl9350kb_photocathode_efficiency()
+    if name in {"etl9354", "gerda"}:
+        wvl, pmt_qe = pmt_etl9354kb_photocathode_efficiency()
         pmt_efficiency = (
-            pmt_qe / 100 * pmt_etl9350kb_photocathode_collection_efficiency()
+            pmt_qe / 100 * pmt_etl9354kb_photocathode_collection_efficiency()
         )
-    elif "r7081" in name.lower() or "l1000" in name.lower():
+    elif name in {"r7081", "l1000"}:
         wvl, pmt_qe = pmt_r7081_photocathode_efficiency()
-        pmt_efficiency = pmt_qe / 100 * pmt_r7081_photocathode_efficiency()
+        pmt_efficiency = pmt_qe / 100 * pmt_r7081_photocathode_collection_efficiency()
     else:
-        msg = "PMT name not known. There exists only R7081 or ETL9350 data."
+        msg = f"PMT name {name} not known. There exists only r7081 or etl9354 data."
         raise ValueError(msg)
 
     with u.context("sp"):
