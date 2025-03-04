@@ -97,6 +97,13 @@ def test_pyg4_attach_tetratex() -> None:
     legendoptics.tetratex.pyg4_tetratex_attach_reflectivity(mat, reg)
 
 
+def test_pyg4_attach_tyvek() -> None:
+    import legendoptics.tyvek
+
+    reg, mat = _create_dummy_mat()
+    legendoptics.tyvek.pyg4_tyvek_attach_reflectivity(mat, reg)
+
+
 def test_pyg4_attach_germanium() -> None:
     import legendoptics.germanium
 
@@ -172,6 +179,18 @@ def test_pyg4_attach_pmts() -> None:
     legendoptics.pmts.pyg4_pmt_attach_borosilicate_rindex(mat, reg)
     reg, mat = _create_dummy_mat()
     legendoptics.pmts.pyg4_pmt_attach_photocathode_efficiency(mat, reg)
+    legendoptics.pmts.pyg4_pmt_attach_photocathode_reflectivity(mat, reg)
+    reg, mat = _create_dummy_mat()
+    legendoptics.pmts.pyg4_pmt_attach_photocathode_efficiency(mat, reg, name="etl9354")
+    legendoptics.pmts.pyg4_pmt_attach_photocathode_reflectivity(mat, reg)
+    reg, mat = _create_dummy_mat()
+    legendoptics.pmts.pyg4_pmt_attach_photocathode_efficiency(mat, reg, name="gerda")
+    legendoptics.pmts.pyg4_pmt_attach_photocathode_reflectivity(mat, reg)
+    reg, mat = _create_dummy_mat()
+    legendoptics.pmts.pyg4_pmt_attach_photocathode_efficiency(mat, reg, name="r7081")
+    legendoptics.pmts.pyg4_pmt_attach_photocathode_reflectivity(mat, reg)
+    reg, mat = _create_dummy_mat()
+    legendoptics.pmts.pyg4_pmt_attach_photocathode_efficiency(mat, reg, name="l1000")
     legendoptics.pmts.pyg4_pmt_attach_photocathode_reflectivity(mat, reg)
     reg, mat = _create_dummy_mat()
     legendoptics.pmts.pyg4_pmt_attach_steel_efficiency(mat, reg)

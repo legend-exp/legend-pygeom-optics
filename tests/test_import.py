@@ -18,6 +18,7 @@ def test_import():
     import legendoptics.silicon
     import legendoptics.tetratex
     import legendoptics.tpb
+    import legendoptics.tyvek
     import legendoptics.vm2000
     import legendoptics.water
 
@@ -51,6 +52,7 @@ def test_import():
     legendoptics.fibers.fiber_absorption_path_length()
 
     legendoptics.tetratex.tetratex_reflectivity()
+    legendoptics.tyvek.tyvek_reflectivity()
 
     legendoptics.germanium.germanium_reflectivity()
 
@@ -86,8 +88,10 @@ def test_import():
     legendoptics.pmts.pmt_air_refractive_index()
     legendoptics.pmts.pmt_borosilicate_absorption_length()
     legendoptics.pmts.pmt_borosilicate_refractive_index()
-    legendoptics.pmts.pmt_photocathode_collection_efficiency()
-    legendoptics.pmts.pmt_photocathode_efficiency()
+    legendoptics.pmts.pmt_etl9354kb_photocathode_collection_efficiency()
+    legendoptics.pmts.pmt_r7081_photocathode_collection_efficiency()
+    legendoptics.pmts.pmt_etl9354kb_photocathode_efficiency()
+    legendoptics.pmts.pmt_r7081_photocathode_efficiency()
     legendoptics.pmts.pmt_photocathode_reflectivity()
     legendoptics.pmts.pmt_steel_efficiency()
     legendoptics.pmts.pmt_steel_reflectivity()
