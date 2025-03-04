@@ -1,6 +1,4 @@
-"""
-Tyvek reflector.
-"""
+"""Tyvek reflector."""
 
 from __future__ import annotations
 
@@ -18,7 +16,7 @@ u = pint.get_application_registry()
 
 @store.register_pluggable
 def tyvek_reflectivity() -> tuple[Quantity, Quantity]:
-    """Tyvek reflectivity from [Janacek2012]_.
+    """Tyvek reflectivity from [Janecek2012]_.
 
        A little bit more conservative than in the paper
        (-1% reflectivity compared to the values in the paper).
