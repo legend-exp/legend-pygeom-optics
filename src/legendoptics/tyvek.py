@@ -28,7 +28,7 @@ def tyvek_reflectivity() -> tuple[Quantity, Quantity]:
     return readdatafile("tyvek_reflectivity.dat")
 
 
-def pyg4_tyvek_attach_border_params(mat, reg, reflectivity_scale: float = 1) -> None:
+def pyg4_tyvek_attach_reflectivity(mat, reg, reflectivity_scale: float = 1) -> None:
     """Attach the optical reflectivity to the given material instance.
 
     Parameters

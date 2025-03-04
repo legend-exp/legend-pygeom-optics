@@ -101,7 +101,7 @@ def test_pyg4_attach_tyvek() -> None:
     import legendoptics.tyvek
 
     reg, mat = _create_dummy_mat()
-    legendoptics.tyvek.pyg4_tyvek_attach_border_params(mat, reg)
+    legendoptics.tyvek.pyg4_tyvek_attach_reflectivity(mat, reg)
 
 
 def test_pyg4_attach_germanium() -> None:
