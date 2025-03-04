@@ -150,7 +150,7 @@ def pmt_photocathode_reflectivity() -> tuple[Quantity, Quantity]:
     .borosilicate_refractive_index
     """
 
-    wvl, _ = readdatafile("pmt_qe.dat")
+    wvl, _ = readdatafile("pmt_etl9350kb_qe.dat")
 
     reflectivity_max = (
         (1 - pmt_borosilicate_refractive_index())
