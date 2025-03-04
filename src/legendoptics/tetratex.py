@@ -1,7 +1,7 @@
 """
 Tetratex reflector.
 
-.. [Janacek2012] M. Janacek, "Reflectivity spectra for commonly used reflectors", https://www.osti.gov/servlets/purl/1184400
+.. [Janecek2012] M. Janecek, "Reflectivity spectra for commonly used reflectors", https://www.osti.gov/servlets/purl/1184400
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ u = pint.get_application_registry()
 
 @store.register_pluggable
 def tetratex_reflectivity() -> tuple[Quantity, Quantity]:
-    """Tetratex reflectivity from [Janacek2012]_.
+    """Tetratex reflectivity from [Janecek2012]_.
 
     He measures the reflectivity of 2 and 4 superimposed layers of 160um thick
     Tetratex. As our layer in GERDA/LEGEND is 254um thick I'm taking here his results
