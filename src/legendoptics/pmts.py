@@ -1,7 +1,7 @@
 """
 PMT components incorporating data for different PMT models.
 Common parameters applicable to both models are included where relevant, like refractive index of borosilicate glass.
-Currently the photocathode efficiencies for the ETL9354KB [ETEL2010] and R7081 [HAMAMATSU2019] PMT models are included.
+Currently the photocathode efficiencies for the ETL9354KB [ETEL2010]_ and R7081 [HAMAMATSU2019]_ PMT models are included.
 
 .. [ETEL2010] ET Enterprises Limited 2010 “200 mm (8") photomultiplier 9354KB series data sheet”, 2010, http://lampes-et-tubes.info/pm/9354KB.pdf
 .. [HAMAMATSU2019] Hammamatsu Photonics 2019 "Large Area PMT data sheet"
