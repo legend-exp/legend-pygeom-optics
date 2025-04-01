@@ -33,7 +33,7 @@ def tetratex_reflectivity() -> tuple[Quantity, Quantity]:
 
 
 def pyg4_tetratex_attach_reflectivity(mat, reg, reflectivity_scale: float = 1) -> None:
-    """Attach the optical reflectivity to the given germanium material instance.
+    """Attach the optical reflectivity to the given tetratex material instance.
 
     Parameters
     ----------
