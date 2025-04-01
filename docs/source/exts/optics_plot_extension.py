@@ -5,10 +5,10 @@ import inspect
 from pathlib import Path
 from typing import Any, Callable
 
-import matplotlib.pyplot as plt
-import numpy as np
 import pint
 from sphinx.application import Sphinx
+
+from legendoptics.plot import plot_callable
 
 u = pint.get_application_registry()
 
@@ -24,89 +24,14 @@ def do_plot(
     Other Parameters
     ----------------
     options
-        Change the behaviour of the plot.
+        Change the behaviour of the plot. see :meth:`plot_callable`
 
-        xlim
-            Set the plot's x axis limits, see :py:func:`matplotlib.pyplot.xlim`
-        ylim
-            Set the plot's y axis limits, see :py:func:`matplotlib.pyplot.ylim`
-        xscale
-            Set the plot's x axis scaling, see :py:func:`matplotlib.pyplot.xscale`
-        yscale
-            Set the plot's y axis scaling, see :py:func:`matplotlib.pyplot.yscale`
-        labels
-            Tuple of labels that will be applied if more than one y vector is returned.
-        call_x
-            Differing from the default behavior above, the function will be called with an
-            x vector of wavelengths in the optical range (as :py:class:`pint.Quantity`).
-            All return values are interpreted as y vectors.
         standalone
             if True, do not output the return value preamble (i.e. to embed more than one plot)
-        ret_offset
-            use the argument numbered by this (default: 0) as the first argument that will
-            be treated as an x or y vector.
     """
-    # init plot
-    fig = plt.figure(figsize=(4, 2))
-    ax = plt.gca()
-    plt.grid()
+    file = plots_dir / (safe_name + ".png")
 
-    ret_offset = options.get("ret_offset", 0)
-    if "call_x" in options:
-        # special case for LAr properties
-        lim = [112 * u.nm, 650 * u.nm]
-        if "xlim" in options:
-            lim = [xl * u.nm for xl in options["xlim"]]
-        x = np.linspace(*lim, num=200)
-        ys = obj(x)
-        ys = ys[ret_offset:]
-        # wrap the result in a tuple, if needed
-        ys = ys if isinstance(ys, tuple) else (ys,)
-    else:
-        data = obj()
-        x = data[ret_offset]
-        # ys holds one or more
-        ys = data[ret_offset + 1 :]
-
-    if isinstance(x, pint.Quantity):
-        ax.set_xlabel(x.u)
-        x = x.magnitude
-
-    # plot all supplied data vectors
-    for i, val in enumerate(ys):
-        if isinstance(val, pint.Quantity):
-            ax.set_ylabel(val.u)
-            y = val.magnitude
-        elif isinstance(val, (np.ndarray, list)):
-            y = val
-        else:
-            msg = f"unsupported y-vector type {type(val)} for plot {safe_name}"
-            raise ValueError(msg)
-
-        plotoptions = {}
-        if "labels" in options:
-            plotoptions["label"] = options["labels"][i]
-
-        plt.plot(x, y, marker=".", markersize=2, linewidth=0.5, **plotoptions)
-
-    if len(ys) > 1 and "labels" in options:
-        plt.legend()
-
-    # adjust plotting options
-    if "ylim" in options:
-        ax.set_ylim(options["ylim"])
-    if "xlim" in options:
-        ax.set_xlim(options["xlim"])
-    if "yscale" in options:
-        ax.set_yscale(options["yscale"])
-    if "xscale" in options:
-        ax.set_xscale(options["xscale"])
-
-    # export figure to the filesystem
-    fig.tight_layout(pad=0.3)
-    fig.savefig(plots_dir / (safe_name + ".png"), dpi=300)
-
-    plt.close()
+    plot_callable(obj, file, options)
 
     lines = []
     if not options.get("standalone", False):
