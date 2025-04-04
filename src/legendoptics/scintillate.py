@@ -34,6 +34,23 @@ class ScintConfig(NamedTuple):
                 return p
         return None
 
+    def __to_optics_const__(self) -> list[str]:
+        lines = ["", ""]
+        lines.append(f"* flat-top: :math:`{self.flat_top.m}\\ {self.flat_top.u:L~}`")
+        lines.append(
+            f"* fano factor: :math:`{self.fano_factor}`)"
+            if self.fano_factor is not None
+            else ""
+        )
+        for p in self.particles:
+            exc_ratio = (
+                f", excitation ratio: {p.exc_ratio}" if p.exc_ratio is not None else ""
+            )
+            ly = f"Y_\\textrm{{{p.name}}}=Y\\times{p.yield_factor}"
+            lines.append(f"* {p.name}: :math:`{ly}`{exc_ratio}")
+
+        return [f"    {li}" if li != "" else li for li in lines]
+
 
 ParticleIndex = NewType("ParticleIndex", int)
 ComputedScintParams = NewType(

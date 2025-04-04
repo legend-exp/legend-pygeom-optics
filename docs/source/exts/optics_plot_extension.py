@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ast
 import inspect
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Callable
 
@@ -55,13 +56,17 @@ def do_const(obj: Callable) -> list[str]:
         description = f":math:`{const.m}\\ {const.u:L~}`"
     elif isinstance(const, float):
         description = f":math:`{const}`"
+    elif hasattr(const, "__to_optics_const__"):
+        description = const.__to_optics_const__()
     else:
-        msg = ""
-        raise ValueError(msg)
+        msg = f"unsupported type {type(const)}"
+        raise RuntimeError(msg)
 
     if description is None:
         return [""]
 
+    if isinstance(description, Iterable):
+        return [f":returns: constant value {description[0]}", *description[1:]]
     return [f":returns: constant value {description}"]
 
 

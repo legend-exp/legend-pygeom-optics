@@ -45,7 +45,7 @@ html_title = f"{project} {version}"
 autodoc_default_options = {
     "ignore-module-all": True,
     # ignore some common members from NamedTuples.
-    "exclude-members": "_asdict, _fields, _field_defaults, _make, _replace",
+    "exclude-members": "_asdict, _fields, _field_defaults, _make, _replace, __to_optics_const__",
 }
 
 # sphinx-napoleon

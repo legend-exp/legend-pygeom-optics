@@ -115,6 +115,8 @@ def pen_wls_absorption() -> tuple[Quantity, Quantity]:
 def pen_scintillation_params() -> ScintConfig:
     """Get a :class:`ScintConfig` object for PEN.
 
+    .. optics-const::
+
     See Also
     --------
     .pen_scint_light_yield
