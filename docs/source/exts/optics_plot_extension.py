@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import ast
 import inspect
-from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Callable
 
@@ -65,7 +64,7 @@ def do_const(obj: Callable) -> list[str]:
     if description is None:
         return [""]
 
-    if isinstance(description, Iterable):
+    if not isinstance(description, str):
         return [f":returns: constant value {description[0]}", *description[1:]]
     return [f":returns: constant value {description}"]
 
