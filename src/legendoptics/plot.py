@@ -69,7 +69,7 @@ def plot_callable(
     options: dict[str, Any],
     *,
     ax=None,
-    plotoptions: dict = None,
+    plotoptions: dict | None = None,
 ) -> list[str]:
     """Create a plot from the given optical property function.
 
