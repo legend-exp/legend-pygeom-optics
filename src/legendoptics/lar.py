@@ -56,6 +56,12 @@ class ArScintLiftime(NamedTuple):
     def as_tuple(self) -> tuple[Quantity, Quantity]:
         return (self.singlet, self.triplet)
 
+    def __to_optics_const__(self) -> str:
+        return (
+            f"| singlet: :math:`{self.singlet.m}\\ {self.singlet.u:L~}` "
+            + f"triplet: :math:`{self.triplet.m}\\ {self.triplet.u:L~}`"
+        )
+
 
 def lar_dielectric_constant_bideau_mehu(
     λ: Quantity,
@@ -376,6 +382,8 @@ def lar_lifetimes(
 
     Singlet time from [Hitachi1983]_ and triplet time as measured by LLAMA in LEGEND-200,
     see [Schwarz2024]_ (p. 117).
+
+    .. optics-const::
     """
     triplet = 1 * u.us
     if isinstance(triplet_lifetime_method, str):
@@ -418,6 +426,8 @@ def lar_scintillation_params(
     Excitation ratio:
     For example, for nuclear recoils it should be 0.75
     nominal value for electrons and gammas: 0.23 (WArP data)
+
+    .. optics-const::
 
     See Also
     --------
