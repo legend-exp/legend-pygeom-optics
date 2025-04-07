@@ -64,7 +64,12 @@ def plot_discrete_prop(ax: plt.Axes, prop: Callable, param_dict=None):
 
 
 def plot_callable(
-    obj: Callable, plot_file: Path, options: dict[str, Any], *, ax=None
+    obj: Callable,
+    plot_file: Path,
+    options: dict[str, Any],
+    *,
+    ax=None,
+    plotoptions: dict = None,
 ) -> list[str]:
     """Create a plot from the given optical property function.
 
@@ -101,6 +106,8 @@ def plot_callable(
         ax = plt.gca()
     ax.grid(True)
 
+    plotoptions = plotoptions if plotoptions is not None else {}
+
     ret_offset = options.get("ret_offset", 0)
     if "call_x" in options:
         # special case for LAr properties
@@ -136,11 +143,11 @@ def plot_callable(
             msg = f"unsupported y-vector type {type(y)} for plot {plot_file}"
             raise ValueError(msg)
 
-        plotoptions = {}
+        po = {"marker": ".", "markersize": 2, "linewidth": 0.5}
         if "labels" in options:
-            plotoptions["label"] = options["labels"][i]
+            po["label"] = options["labels"][i]
 
-        ax.plot(x, y, marker=".", markersize=2, linewidth=0.5, **plotoptions)
+        ax.plot(x, y, **(po | plotoptions))
 
     if len(ys) > 1 and "labels" in options:
         ax.legend()
