@@ -72,7 +72,7 @@ def lar_dielectric_constant_bideau_mehu(
         raise ValueError(msg)
 
     if np.any(λ < 110 * u.nm):
-        msg = f"this parametrization is not meaningful below {110*u.nm}"
+        msg = f"this parametrization is not meaningful below {110 * u.nm}"
         raise ValueError(msg)
 
     # equation for n-1
@@ -105,7 +105,7 @@ def lar_dielectric_constant_cern2020(
     λ_ir = 908.3 * u.nm
 
     if np.any(λ < λ_uv + 1 * u.nm) or np.any(λ > λ_ir - 1 * u.nm):
-        msg = f"this parametrization holds only between {λ_uv+1*u.nm} and {λ_ir-1*u.nm}"
+        msg = f"this parametrization holds only between {λ_uv + 1 * u.nm} and {λ_ir - 1 * u.nm}"
         raise ValueError(msg)
 
     x = 0.334 + ((0.100 * λ**2) / (λ**2 - λ_uv**2) + (0.008 * λ**2) / (λ**2 - λ_ir**2))
