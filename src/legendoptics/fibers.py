@@ -2,6 +2,7 @@
 Scinillating fibers BCF91-A from Saint Gobain.
 
 .. [SaintGobainDataSheet] https://www.crystals.saint-gobain.com/sites/hps-mac3-cma-crystals/files/2021-11/Fiber-Product-Sheet.pdf
+.. [Bae2025] W. Bae et al. ”Further Fiber Studies for LEGEND. Fiber-Alpha measurement” (Feb 18, 2025; LEGEND-internal)
 """
 
 from __future__ import annotations
@@ -136,27 +137,35 @@ def fiber_absorption_path_length() -> Quantity:
 
 @store.register_pluggable
 def fiber_core_scint_light_yield() -> Quantity:
-    """fiber scintillation yield for electrons, from TODO
+    """fiber scintillation yield for electrons, from [Bae2025]_.
 
     .. optics-const::
     """
-    return 8000 / u.MeV
+    return 1880 / u.MeV
 
 
 @store.register_pluggable
 def fiber_core_scintillation_params() -> ScintConfig:
     """Get a :class:`ScintConfig` object for fibers.
 
+    Light yield for different particle types from [Bae2025]_. The light yield for
+    ions/nuclear recoils is set to zero.
+
     See Also
     --------
     .fiber_core_scint_light_yield
     """
-    # setup scintillation response just for electrons.
     return ScintConfig(
         flat_top=fiber_core_scint_light_yield(),
         fano_factor=None,
         particles=[
+            # it is not possible to differentiate electrons and gammas, even though
+            # gammas should only yield 1680 ph/MeV.
             ScintParticle("electron", yield_factor=1, exc_ratio=None),
+            ScintParticle("alpha", yield_factor=0.14, exc_ratio=None),
+            # ion has to be added to simulate decays inside fibers (nuclear recoils).
+            # just set it to zero for now, as quenching for nuclear recoils should be high.
+            ScintParticle("ion", yield_factor=0, exc_ratio=None),
         ],
     )
 
