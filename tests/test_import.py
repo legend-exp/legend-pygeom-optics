@@ -50,6 +50,8 @@ def test_import():
     legendoptics.fibers.fiber_wls_timeconstant()
     legendoptics.fibers.fiber_absorption_length()
     legendoptics.fibers.fiber_absorption_path_length()
+    legendoptics.fibers.fiber_core_scint_light_yield()
+    legendoptics.fibers.fiber_core_scintillation_params()
 
     legendoptics.tetratex.tetratex_reflectivity()
     legendoptics.tyvek.tyvek_reflectivity()
@@ -72,6 +74,7 @@ def test_import():
     legendoptics.pen.pen_wls_absorption()
     legendoptics.pen.pen_wls_absorption()
     legendoptics.pen.pen_wls_absorption()
+    legendoptics.pen.pen_scintillation_params()
 
     legendoptics.water.water_refractive_index()
     legendoptics.water.water_absorption()
