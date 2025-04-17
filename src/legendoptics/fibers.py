@@ -269,7 +269,7 @@ def pyg4_fiber_core_attach_absorption(
 def pyg4_fiber_core_attach_scintillation(mat, reg) -> None:
     """Attach Geant4 properties for fiber scintillation response to the given material instance.
 
-    .. note:: This currently only adds scintillation for energy deposited by electrons.
+    .. note:: This currently only adds scintillation for energy deposited by electrons or alphas.
 
     See Also
     --------
