@@ -115,6 +115,7 @@ def scintillate_local(
     particle: ParticleIndex,
     edep_keV: float,
     rng: np.random.Generator,
+    emission_term_model: Literal["poisson", "normal_fano"] = "normal_fano",
 ) -> np.ndarray:
     """Generates a Poisson/Gauss-distributed number of photons according to the
     scintillation yield formula, as implemented in Geant4.
@@ -129,6 +130,9 @@ def scintillate_local(
         module-internal particle index, see :meth:`particle_to_index`.
     edep_keV
         energy deposition along this step, in units pf keV.
+    emission_term_model
+        switch between a Geant4-like photon number term (normal distribution with fano
+        factor) and a simplified model using a Poisson distribution.
 
     Returns
     -------
@@ -148,7 +152,7 @@ def scintillate_local(
     mean_num_phot = flat_top * yield_factor * edep_keV
 
     # derive the actual number of photons generated in this step.
-    if mean_num_phot > 10:
+    if mean_num_phot > 10 and emission_term_model != "poisson":
         sigma = np.sqrt(fano * mean_num_phot)
         num_photons = int(rng.normal(mean_num_phot, sigma) + 0.5)
     else:
@@ -183,6 +187,7 @@ def scintillate(
     particle_charge: int,
     edep_keV: float,
     rng: np.random.Generator,
+    emission_term_model: Literal["poisson", "normal_fano"] = "normal_fano",
 ):
     """Generates a Poisson/Gauss-distributed number of photons according to the
     scintillation yield formula, as implemented in Geant4, along the line segment
@@ -208,13 +213,20 @@ def scintillate(
         charge of the particle, in units of the elementary charge.
     edep_keV
         energy deposition along this step, in units pf keV.
+    emission_term_model
+        switch between a Geant4-like photon number term (normal distribution with fano
+        factor) and a simplified model using a Poisson distribution.
 
     Returns
     -------
     array of four-vectors containing time stamps (in nanoseconds) and global scintillation
     positions (in meter).
+
+    The emitted photons are distributed uniformly in space along the path and not ordered.
     """
-    delta_t_scint = scintillate_local(params, particle, edep_keV, rng)
+    delta_t_scint = scintillate_local(
+        params, particle, edep_keV, rng, emission_term_model
+    )
     # emission position for each single photon.
     if particle_charge != 0:
         λ = rng.uniform(size=delta_t_scint.shape[0])
