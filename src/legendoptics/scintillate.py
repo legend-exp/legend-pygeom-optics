@@ -13,7 +13,7 @@ u = pint.get_application_registry()
 class ScintParticle(NamedTuple):
     """Configuration for the scintillation yield relative to the flat-top yield."""
 
-    name: Literal["deuteron", "triton", "alpha", "ion", "electron"]
+    name: Literal["deuteron", "triton", "alpha", "ion", "electron", "proton"]
     yield_factor: float
     exc_ratio: Optional[float]  # noqa: UP007
 
@@ -61,12 +61,14 @@ PARTICLE_INDEX_ALPHA = 1
 PARTICLE_INDEX_ION = 2
 PARTICLE_INDEX_DEUTERON = 3
 PARTICLE_INDEX_TRITON = 4
+PARTICLE_INDEX_PROTON = 5
 PARTICLE_INDICES = {
     "electron": PARTICLE_INDEX_ELECTRON,
     "alpha": PARTICLE_INDEX_ALPHA,
     "ion": PARTICLE_INDEX_ION,
     "deuteron": PARTICLE_INDEX_DEUTERON,
     "triton": PARTICLE_INDEX_TRITON,
+    "proton": PARTICLE_INDEX_PROTON,
 }
 
 
