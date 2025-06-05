@@ -6,6 +6,8 @@
     In: Applied Surface Science, 421:518-528 (2017), https://doi.org/10.1016/j.apsusc.2017.01.276
 .. [Ouchi2006] I. Ouchi et al. “Features of Fluorescence Spectra of Polyethylene 2,6-Naphthalate Films”
     In: Journal of Applied Polymer Science, Vol. 105, 114-121 (2007), https://doi.org/10.1002/app.26085
+.. [Hackett2024] B. Hackett et al. “Light response of poly(ethylene 2,6-naphthalate) to neutrons”. In:
+    Nuclear Inst. and Methods in Physics Research, A (2024), https://doi.org/10.1016/j.nima.2024.169900
 """
 
 from __future__ import annotations
@@ -115,6 +117,10 @@ def pen_wls_absorption() -> tuple[Quantity, Quantity]:
 def pen_scintillation_params() -> ScintConfig:
     """Get a :class:`ScintConfig` object for PEN.
 
+    This implements the measured electron light yield. The light yield for other particle
+    types (protons, alphas, ions) is derived from the Birk's constant in [Hackett2024]_
+    assuming some common LET ranges. The quenching is not implemented in an energy-dependent way.
+
     .. optics-const::
 
     See Also
@@ -127,6 +133,15 @@ def pen_scintillation_params() -> ScintConfig:
         fano_factor=None,
         particles=[
             ScintParticle("electron", yield_factor=1, exc_ratio=None),
+            # more particle types have to be added to simulate decays in or nearby PEN plates.
+            # this is an ad-hoc guess from the Birk's constant in and common LET ranges from
+            # ASTAR/PSTAR/ESTAR. Ions should have a larger LET than alphas.
+            #
+            # TODO: implementing a full energy-dependency with this "scintillation by particle
+            # type" mechanism is impossible. Investigate the use of Birk's law in Geant4.
+            ScintParticle("proton", yield_factor=0.5, exc_ratio=None),
+            ScintParticle("alpha", yield_factor=0.1, exc_ratio=None),
+            ScintParticle("ion", yield_factor=0.05, exc_ratio=None),
         ],
     )
 
