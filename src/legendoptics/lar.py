@@ -423,9 +423,13 @@ def lar_scintillation_params(
 
         Y_\textrm{recoils} &= 0.2\textrm{--}0.4
 
+        Y_\textrm{proton} &= 0.8 Y
+
     Excitation ratio:
-    For example, for nuclear recoils it should be 0.75
-    nominal value for electrons and gammas: 0.23 (WArP data)
+
+    * For example, for nuclear recoils it should be 0.75
+    * nominal value for electrons and gammas: 0.23 (WArP data)
+    * for protons, the excitation ratio is unknown.
 
     .. optics-const::
 
@@ -440,6 +444,8 @@ def lar_scintillation_params(
             ScintParticle("electron", yield_factor=0.8, exc_ratio=0.23),
             ScintParticle("alpha", yield_factor=0.7, exc_ratio=1),
             ScintParticle("ion", yield_factor=0.3, exc_ratio=0.75),
+            # for protons, the exc_ratio is unknown.
+            ScintParticle("proton", yield_factor=0.8, exc_ratio=0.23),
         ],
     )
 
