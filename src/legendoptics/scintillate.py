@@ -196,7 +196,7 @@ def scintillate(
     between x0 and x1.
 
     In case x1 is not supplied the position along the step and the time offsets
-    are not considered. 
+    are not considered.
 
     Parameters
     ----------
@@ -233,7 +233,7 @@ def scintillate(
         params, particle, edep_keV, rng, emission_term_model
     )
     # emission position for each single photon.
-    if (x1_m is not None):
+    if x1_m is not None:
         if particle_charge != 0:
             λ = rng.uniform(size=delta_t_scint.shape[0])
         else:
@@ -241,20 +241,20 @@ def scintillate(
 
     x = np.empty((delta_t_scint.shape[0], 4))
     # spatial components along the line segment between x0 and x1.
-    if (x1_m is not None):
+    if x1_m is not None:
         x[:, 1] = x0_m[0] + λ * (x1_m[0] - x0_m[0])
         x[:, 2] = x0_m[1] + λ * (x1_m[1] - x0_m[1])
         x[:, 3] = x0_m[2] + λ * (x1_m[2] - x0_m[2])
     else:
-        x[:,1]=x0_m[0]
-        x[:,2]=x0_m[1]
-        x[:,3]=x0_m[2]
-    
+        x[:, 1] = x0_m[0]
+        x[:, 2] = x0_m[1]
+        x[:, 3] = x0_m[2]
+
     # time component along the velocity decrease between x0 and x1.
     if x1_m is not None:
         x[:, 0] = np.linalg.norm(x1_m - x0_m) / (v0_mpns + λ * (v1_mpns - v0_mpns) / 2)
     else:
-        x[:,0] = 0 
+        x[:, 0] = 0
 
     # add the global time offset and the emission time offset.
     x[:, 0] += t0_ns + delta_t_scint
