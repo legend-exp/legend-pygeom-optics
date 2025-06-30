@@ -15,10 +15,12 @@ def test_import():
     import legendoptics.nylon
     import legendoptics.pen
     import legendoptics.pmts
+    import legendoptics.silica
     import legendoptics.silicon
     import legendoptics.tetratex
     import legendoptics.tpb
     import legendoptics.tyvek
+    import legendoptics.ultem
     import legendoptics.vm2000
     import legendoptics.water
 
@@ -75,6 +77,11 @@ def test_import():
     legendoptics.pen.pen_wls_absorption()
     legendoptics.pen.pen_wls_absorption()
     legendoptics.pen.pen_scintillation_params()
+
+    legendoptics.ultem.ultem_refractive_index()
+
+    λ_silica = np.arange(200, 400, 20) * u.nm
+    legendoptics.silica.silica_refractive_index(λ_silica)
 
     legendoptics.water.water_refractive_index()
     legendoptics.water.water_absorption()

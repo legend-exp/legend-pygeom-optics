@@ -146,6 +146,20 @@ def test_pyg4_attach_pen() -> None:
     legendoptics.pen.pyg4_pen_attach_wls(mat, reg, 0.1)
 
 
+def test_pyg4_attach_ultem() -> None:
+    import legendoptics.ultem
+
+    reg, mat = _create_dummy_mat()
+    legendoptics.ultem.pyg4_ultem_attach_rindex(mat, reg)
+
+
+def test_pyg4_attach_silica() -> None:
+    import legendoptics.silica
+
+    reg, mat = _create_dummy_mat()
+    legendoptics.silica.pyg4_silica_attach_rindex(mat, reg)
+
+
 def test_pyg4_attach_water() -> None:
     import legendoptics.water
 
