@@ -155,11 +155,14 @@ def test_pyg4_attach_water() -> None:
 
 
 def test_pyg4_attach_vm2000() -> None:
+    import legendoptics.pen
     import legendoptics.vm2000
 
     reg, mat = _create_dummy_mat()
     legendoptics.vm2000.pyg4_vm2000_attach_reflectivity(mat, reg)
     legendoptics.vm2000.pyg4_vm2000_attach_absorption_length(mat, reg)
+    # VM2000 seem to consist of PMMA and PEN layers, so add both
+    legendoptics.pen.pyg4_pen_attach_scintillation(mat, reg)
     legendoptics.vm2000.pyg4_vm2000_attach_particle_scintillationyields(mat, reg)
     legendoptics.vm2000.pyg4_vm2000_attach_wls(mat, reg)
     reg, mat = _create_dummy_mat()
