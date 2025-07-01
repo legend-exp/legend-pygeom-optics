@@ -79,6 +79,7 @@ def test_import():
     legendoptics.pen.pen_scintillation_params()
 
     legendoptics.ultem.ultem_refractive_index()
+    legendoptics.ultem.ultem_absorption()
 
     λ_silica = np.arange(200, 400, 20) * u.nm
     legendoptics.silica.silica_refractive_index(λ_silica)
