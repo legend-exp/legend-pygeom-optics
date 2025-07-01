@@ -154,10 +154,7 @@ def pyg4_vm2000_attach_absorption_length(mat, reg) -> None:
 def pyg4_vm2000_attach_particle_scintillationyields(mat, reg) -> None:
     """Attach the scintillation yiels (except of electron yield) to the given VM2000 material instance."""
 
-    pyg4utils._def_scint_particle(mat, "ALPHA", 0 / u.eV, 0.0, None)
     pyg4utils._def_scint_particle(mat, "DEUTERON", 0 / u.eV, 0.0, None)
-    pyg4utils._def_scint_particle(mat, "ION", 0 / u.eV, 0.0, None)
-    pyg4utils._def_scint_particle(mat, "PROTON", 0 / u.eV, 0.0, None)
     pyg4utils._def_scint_particle(mat, "TRITON", 0 / u.eV, 0.0, None)
 
 
