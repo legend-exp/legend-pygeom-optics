@@ -151,6 +151,7 @@ def test_pyg4_attach_ultem() -> None:
 
     reg, mat = _create_dummy_mat()
     legendoptics.ultem.pyg4_ultem_attach_rindex(mat, reg)
+    legendoptics.ultem.pyg4_ultem_attach_absorption(mat, reg)
 
 
 def test_pyg4_attach_silica() -> None:
