@@ -2,7 +2,10 @@
 Scinillating fibers BCF91-A from Saint Gobain.
 
 .. [SaintGobainDataSheet] https://www.crystals.saint-gobain.com/sites/hps-mac3-cma-crystals/files/2021-11/Fiber-Product-Sheet.pdf
-.. [Bae2025] W. Bae et al. ”Further Fiber Studies for LEGEND. Fiber-Alpha measurement” (Feb 18, 2025; LEGEND-internal)
+.. [Bae2025] W. Bae et al. ”Further Fiber Studies for LEGEND. Fiber-Alpha measurement”
+    (Feb 18, 2025; LEGEND-internal)
+.. [Leverington2011] B.D. Leverington et al. ”A 1 mm Scintillating Fibre Tracker Readout
+    by a Multi-anode Photomultiplier” (2010), https://doi.org/10.48550/arXiv.1106.5649
 """
 
 from __future__ import annotations
@@ -148,8 +151,11 @@ def fiber_core_scint_light_yield() -> Quantity:
 def fiber_core_scintillation_params() -> ScintConfig:
     """Get a :class:`ScintConfig` object for fibers.
 
-    Light yield for different particle types from [Bae2025]_. The light yield for
-    ions/nuclear recoils is set to zero.
+    Light yield for different particle types (electrons, alphas) from [Bae2025]_.
+
+    The light yield for ions/nuclear recoils is set to zero. The light yield for protons
+    is derived from the Birk's constant similar as in [Leverington2011]_, assuming some
+    common LET ranges. The quenching is not implemented in an energy-dependent way.
 
     See Also
     --------
@@ -166,6 +172,10 @@ def fiber_core_scintillation_params() -> ScintConfig:
             # ion has to be added to simulate decays inside fibers (nuclear recoils).
             # just set it to zero for now, as quenching for nuclear recoils should be high.
             ScintParticle("ion", yield_factor=0, exc_ratio=None),
+            # more particle types have to be added to simulate decays in or nearby PEN plates.
+            # this is an ad-hoc guess from the Birk's constant in and common LET ranges from
+            # PSTAR.
+            ScintParticle("proton", yield_factor=0.5, exc_ratio=None),
         ],
     )
 
@@ -261,7 +271,7 @@ def pyg4_fiber_core_attach_absorption(
         if use_geometrical_absorption
         else fiber_absorption_length()
     )
-    absorption = np.array([length.m] * λ_full.shape[0]) * length.u
+    absorption = np.full_like(λ_full, length)
     with u.context("sp"):
         mat.addVecPropertyPint("ABSLENGTH", λ_full.to("eV"), absorption)
 
