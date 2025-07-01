@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import logging
 
+import numpy as np
 import pint
 from pint import Quantity
 from scipy.signal import savgol_filter
@@ -21,7 +22,9 @@ u = pint.get_application_registry()
 
 @store.register_pluggable
 def ultem_refractive_index() -> tuple[Quantity, Quantity]:
-    """Real refractive index reported in [Zhang2020]_, smoothed.
+    """Real refractive index reported for PEI in [Zhang2020]_, smoothed.
+
+    The data points below 400 nm are an ad-hoc extension.
 
     .. optics-plot::
     """
@@ -29,6 +32,9 @@ def ultem_refractive_index() -> tuple[Quantity, Quantity]:
 
     r_smoothed = savgol_filter(r.m, 30, 3, mode="mirror") * r.u
     r[λ > 500 * u.nm] = r_smoothed[λ > 500 * u.nm]
+
+    λ = np.insert(λ, 0, [350, 375] * u.nm, axis=0)
+    r = np.insert(r, 0, [1.684, 1.667], axis=0)
     return λ.to("nm"), r
 
 
