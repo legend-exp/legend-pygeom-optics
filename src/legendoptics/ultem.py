@@ -55,7 +55,12 @@ def ultem_absorption() -> tuple[Quantity, Quantity]:
     λ = np.insert(λ, 0, [350, 375] * u.nm, axis=0)
     κ = np.insert(κ, 0, [κ[0], κ[0]], axis=0)
 
-    α = λ.to("mm") / (4 * np.pi * κ)
+    λn, n = ultem_refractive_index()
+    assert np.all(λ == λn)
+
+    # convert to absorption length using the usual relation from em wave absorption.
+    # λ₀ = λ × n is the vacuum wavelength.
+    α = λ.to("mm") * n / (4 * np.pi * κ)
 
     return λ.to("nm"), α
 
