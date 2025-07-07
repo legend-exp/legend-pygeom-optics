@@ -15,7 +15,7 @@ class ScintParticle(NamedTuple):
 
     name: Literal["deuteron", "triton", "alpha", "ion", "electron", "proton"]
     yield_factor: float
-    exc_ratio: Optional[float]
+    exc_ratio: Optional[float]  # noqa: UP045
 
     def valid_geant_particle(self) -> bool:
         return self.name.lower() in get_args(get_type_hints(ScintParticle)["name"])
@@ -25,10 +25,10 @@ class ScintConfig(NamedTuple):
     """Scintillation yield parameters, depending on the particle types."""
 
     flat_top: Quantity
-    fano_factor: Optional[float]
+    fano_factor: Optional[float]  # noqa: UP045
     particles: list[ScintParticle]
 
-    def get_particle(self, name: str) -> Optional[ScintParticle]:
+    def get_particle(self, name: str) -> Optional[ScintParticle]:  # noqa: UP045
         for p in self.particles:
             if p.name.upper() == name.upper():
                 return p
