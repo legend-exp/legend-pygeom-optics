@@ -112,6 +112,104 @@ def precompute_scintillation_params(
 
 
 @njit
+def scintillate_numphot(
+    params: ComputedScintParams,
+    particle: ParticleIndex,
+    edep_keV: float,
+    rng: np.random.Generator,
+    emission_term_model: Literal["poisson", "normal_fano"] = "normal_fano",
+) -> int:
+    """Generates a Poisson/Gauss-distributed number of photons according to the
+    scintillation yield formula, as implemented in Geant4.
+
+    This function only calculates the number of emitted photons.
+
+    Parameters
+    ----------
+    params
+        scintillation parameter tuple, as created by :meth:`precompute_scintillation_params`.
+    particle
+        module-internal particle index, see :meth:`particle_to_index`.
+    edep_keV
+        energy deposition along this step, in units pf keV.
+    emission_term_model
+        switch between a Geant4-like photon number term (normal distribution with fano
+        factor) and a simplified model using a Poisson distribution.
+
+    Returns
+    -------
+    number of emitted scintillation photons.
+    """
+    flat_top, fano, time_components, particles = params
+
+    # get the particle scintillation info.
+    if particle < 0 or particle > particles.shape[0]:
+        msg = "unknown particle index"
+        raise IndexError(msg)
+    part = particles[particle]
+    yield_factor = part[0]
+
+    mean_num_phot = flat_top * yield_factor * edep_keV
+
+    # derive the actual number of photons generated in this step.
+    if mean_num_phot > 10 and emission_term_model != "poisson":
+        sigma = np.sqrt(fano * mean_num_phot)
+        num_photons = int(rng.normal(mean_num_phot, sigma) + 0.5)
+    else:
+        num_photons = rng.poisson(mean_num_phot)
+
+    return 0 if num_photons <= 0 else num_photons
+
+
+@njit
+def scintillate_times(
+    params: ComputedScintParams,
+    particle: ParticleIndex,
+    num_photons: int,
+    rng: np.random.Generator,
+) -> np.ndarray:
+    """Generates the scintillation emission time profile.
+
+    Parameters
+    ----------
+    params
+        scintillation parameter tuple, as created by :meth:`precompute_scintillation_params`.
+    particle
+        module-internal particle index, see :meth:`particle_to_index`.
+    num_photons
+        number of photons emitted in this step.
+
+    Returns
+    -------
+    array of scintillation time stamps in nanoseconds, relative to the point in
+    time of energy deposition.
+    """
+    _, _, time_components, particles = params
+
+    if num_photons <= 0:
+        return np.empty((0,))
+
+    if particle < 0 or particle > particles.shape[0]:
+        msg = "unknown particle index"
+        raise IndexError(msg)
+    part = particles[particle]
+    yields = part[1:]
+
+    # derive number of photons for all time components.
+    yields = (num_photons * yields).astype(np.int64)
+    yields[-1] = num_photons - np.sum(yields[0:-1])  # to keep the sum constant.
+
+    # now, calculate the timestamps of each generated photon.
+    times = np.log(rng.uniform(size=num_photons))
+    start = 0
+    for num_phot, scint_t in zip(yields, time_components):
+        times[start : start + num_phot] *= -scint_t
+        start += num_phot
+
+    return times
+
+
+@njit
 def scintillate_local(
     params: ComputedScintParams,
     particle: ParticleIndex,
@@ -141,40 +239,11 @@ def scintillate_local(
     array of scintillation time stamps in nanoseconds, relative to the point in
     time of energy deposition.
     """
-    flat_top, fano, time_components, particles = params
+    num_photons = scintillate_numphot(
+        params, particle, edep_keV, rng, emission_term_model
+    )
 
-    # get the particle scintillation info.
-    if particle < 0 or particle > particles.shape[0]:
-        msg = "unknown particle index"
-        raise IndexError(msg)
-    part = particles[particle]
-    yield_factor = part[0]
-    yields = part[1:]
-
-    mean_num_phot = flat_top * yield_factor * edep_keV
-
-    # derive the actual number of photons generated in this step.
-    if mean_num_phot > 10 and emission_term_model != "poisson":
-        sigma = np.sqrt(fano * mean_num_phot)
-        num_photons = int(rng.normal(mean_num_phot, sigma) + 0.5)
-    else:
-        num_photons = rng.poisson(mean_num_phot)
-
-    if num_photons <= 0:
-        return np.empty((0,))
-
-    # derive number of photons for all time components.
-    yields = (num_photons * yields).astype(np.int64)
-    yields[-1] = num_photons - np.sum(yields[0:-1])  # to keep the sum constant.
-
-    # now, calculate the timestamps of each generated photon.
-    times = np.log(rng.uniform(size=num_photons))
-    start = 0
-    for num_phot, scint_t in zip(yields, time_components):
-        times[start : start + num_phot] *= -scint_t
-        start += num_phot
-
-    return times
+    return scintillate_times(params, particle, num_photons, rng)
 
 
 @njit

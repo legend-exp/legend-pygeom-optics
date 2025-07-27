@@ -56,14 +56,20 @@ def test_scintillate_lar():
     part_e = sc.particle_to_index("electron")
     part_ion = sc.particle_to_index("ion")
 
-    with numba_unwrap(sc, "scintillate_local") as scintillate_local:
+    with numba_unwrap(
+        sc, "scintillate_local", ("scintillate_numphot", "scintillate_times")
+    ) as scintillate_local:
         scintillate_local(params, part_e, 10)
         scintillate_local(params, part_ion, 10)
 
     x0 = np.array([0, 0, 0], dtype=np.float64)
     x1 = np.array([0, 0, 1], dtype=np.float64)
 
-    with numba_unwrap(sc, "scintillate", ("scintillate_local",)) as scintillate:
+    with numba_unwrap(
+        sc,
+        "scintillate",
+        ("scintillate_local", "scintillate_numphot", "scintillate_times"),
+    ) as scintillate:
         scintillate(params, x0, x1, 0.1, 0.09, 1234.5, part_e, -1, 1000)
         scintillate(params, x0, x1, 0.1, 0.09, 1234.5, part_ion, -1, 1000)
 
@@ -76,14 +82,20 @@ def test_scintillate_point_like():
     part_e = sc.particle_to_index("electron")
     part_ion = sc.particle_to_index("ion")
 
-    with numba_unwrap(sc, "scintillate_local") as scintillate_local:
+    with numba_unwrap(
+        sc, "scintillate_local", ("scintillate_numphot", "scintillate_times")
+    ) as scintillate_local:
         scintillate_local(params, part_e, 10)
         scintillate_local(params, part_ion, 10)
 
     x0 = np.array([0, 0, 0], dtype=np.float64)
     # x1 = np.array([0, 0, 1], dtype=np.float64)
 
-    with numba_unwrap(sc, "scintillate", ("scintillate_local",)) as scintillate:
+    with numba_unwrap(
+        sc,
+        "scintillate",
+        ("scintillate_local", "scintillate_numphot", "scintillate_times"),
+    ) as scintillate:
         scintillate(params, x0, None, None, None, 1234.5, part_e, -1, 1000)
         scintillate(params, x0, None, None, None, 1234.5, part_ion, -1, 1000)
 
@@ -96,6 +108,8 @@ def test_scintillate_pen():
     part_e = sc.particle_to_index("electron")
     part_ion = sc.particle_to_index("ion")
 
-    with numba_unwrap(sc, "scintillate_local") as scintillate_local:
+    with numba_unwrap(
+        sc, "scintillate_local", ("scintillate_numphot", "scintillate_times")
+    ) as scintillate_local:
         scintillate_local(params, part_e, 10)
         scintillate_local(params, part_ion, 10)
