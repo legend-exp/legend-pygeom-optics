@@ -14,7 +14,7 @@ u = pint.get_application_registry()
 
 
 def readdatafile(
-    filename: str, pkg: str = "legendoptics.data", ncols: int = 2
+    filename: str, pkg: str = "legendoptics.data"
 ) -> tuple[Quantity, Quantity]:
     """Read ``(x, y)`` data points from `filename` with units.
 
@@ -36,17 +36,15 @@ def readdatafile(
     pkg
         python package name used to access data files. Only needs to be set to access
         data files in other packages.
-    ncols
-        number of columns to read.
     """
-    cols = [[] for _ in range(ncols)]
-    path = files(pkg).joinpath(filename) if pkg is not None else Path(filename)
-    lines = path.read_text().split("\n")
+    x = []
+    y = []
+    lines = files(pkg).joinpath(filename).read_text().split("\n")
     lines = [line.strip() for line in lines]
 
     # parse header
     header = lines[0]
-    if header[0] != "#" or len(header.lstrip("#").split()) != ncols:
+    if header[0] != "#" or len(header.lstrip("#").split()) != 2:
         msg = "input data file does not seem to contain header with (pint) units"
         raise RuntimeError(msg)
 
@@ -59,14 +57,14 @@ def readdatafile(
             continue
 
         val = line.split()
-        if len(val) != ncols:
+        if len(val) != 2:
             msg = f"could not parse line {lineno}: '{line}'"
             raise RuntimeError(msg)
 
-        for i in range(ncols):
-            cols[i].append(float(val[i]))
+        x.append(float(val[0]))
+        y.append(float(val[1]))
 
-    return tuple(cols[i] * u(units[i]) for i in range(ncols))
+    return (x * u(units[0]), y * u(units[1]))
 
 
 class InterpolatingGraph:
@@ -182,32 +180,3 @@ def g4gps_write_emission_spectrum(
         for point in pointwise:
             f.write(f"/gps/hist/point   {point[0]} {point[1]}\n")
         f.write("\n/gps/hist/inter   Lin\n")
-
-
-def load_user_material_code(python_file: str) -> None:
-    """Load a python file as a module for customizations to the material store.
-
-    .. warning::
-        this is potentially dangerous (i.e. against security best practices), as it loads
-        "untrusted" code form the user - but this should be fine in the context of a CLI
-        tool. We cannot restrict what this module can do, as it might require loading
-        spectra or other files.
-
-    .. note::
-        This should only be used in CLI tools. In user code, a proper way to import
-        python modules should be preferred.
-    """
-    import importlib.util
-
-    # always log as a warning, as this is a potentially dangerous operation.
-    log.warning("loading python module from file %s", python_file)
-
-    if not Path(python_file).exists():
-        msg = f"python file {python_file} does not exist"
-        raise RuntimeError(msg)
-
-    spec = importlib.util.spec_from_file_location(
-        "legendoptics.user_materials", python_file
-    )
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
