@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from legendoptics import store
 from legendoptics.fibers import (
     fiber_cladding1_refractive_index,
@@ -43,3 +45,16 @@ def test_store():
     assert fiber_cladding1_refractive_index() == 1.49  # now also reset.
     assert store.get_replaced() == []
     assert store.is_all_original()
+
+
+def test_store_cli():
+    assert store.is_all_original()
+
+    store.load_user_material_code(
+        Path(__file__).parent / "test_cfg" / "matprop_change.py"
+    )
+
+    assert not store.is_all_original()
+    assert fiber_core_refractive_index() == 1234
+
+    store.reset_all_to_original()
