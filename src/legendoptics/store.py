@@ -16,9 +16,13 @@ all registered pluggable functions.
 
 from __future__ import annotations
 
+import logging
 from functools import wraps
+from pathlib import Path
 from types import MethodType
 from typing import Callable
+
+log = logging.getLogger(__name__)
 
 _optical_property_store = []
 
@@ -76,3 +80,32 @@ def is_all_original() -> bool:
 def get_replaced() -> list[str]:
     """Get the names of all replaced pluggable material property functions."""
     return [p.__name__ for p in _optical_property_store if not p.is_original()]
+
+
+def load_user_material_code(python_file: str) -> None:
+    """Load a python file as a module for customizations to the material store.
+
+    .. warning::
+        this is potentially dangerous (i.e. against security best practices), as it loads
+        "untrusted" code form the user - but this should be fine in the context of a CLI
+        tool. We cannot restrict what this module can do, as it might require loading
+        spectra or other files.
+
+    .. note::
+        This should only be used in CLI tools. In user code, a proper way to import
+        python modules should be preferred.
+    """
+    import importlib.util
+
+    # always log as a warning, as this is a potentially dangerous operation.
+    log.warning("loading python module from file %s", python_file)
+
+    if not Path(python_file).exists():
+        msg = f"python file {python_file} does not exist"
+        raise RuntimeError(msg)
+
+    spec = importlib.util.spec_from_file_location(
+        "legendoptics.user_materials", python_file
+    )
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
