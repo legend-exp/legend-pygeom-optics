@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -139,7 +140,7 @@ def plot_callable(
                 y = y.to(options["yunit"])
             ax.set_ylabel(f"{y.u:~}")
             y = y.magnitude
-        elif not isinstance(y, (np.ndarray, list)):
+        elif not isinstance(y, np.ndarray | list):
             msg = f"unsupported y-vector type {type(y)} for plot {plot_file}"
             raise ValueError(msg)
 

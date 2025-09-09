@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal, NamedTuple, NewType, Optional, get_args, get_type_hints
+from typing import Literal, NamedTuple, NewType, get_args, get_type_hints
 
 import numpy as np
 import pint
@@ -15,7 +15,7 @@ class ScintParticle(NamedTuple):
 
     name: Literal["deuteron", "triton", "alpha", "ion", "electron", "proton"]
     yield_factor: float
-    exc_ratio: Optional[float]  # noqa: UP045
+    exc_ratio: float | None
 
     def valid_geant_particle(self) -> bool:
         return self.name.lower() in get_args(get_type_hints(ScintParticle)["name"])
@@ -25,10 +25,10 @@ class ScintConfig(NamedTuple):
     """Scintillation yield parameters, depending on the particle types."""
 
     flat_top: Quantity
-    fano_factor: Optional[float]  # noqa: UP045
+    fano_factor: float | None
     particles: list[ScintParticle]
 
-    def get_particle(self, name: str) -> Optional[ScintParticle]:  # noqa: UP045
+    def get_particle(self, name: str) -> ScintParticle | None:
         for p in self.particles:
             if p.name.upper() == name.upper():
                 return p
@@ -202,7 +202,7 @@ def scintillate_times(
     # now, calculate the timestamps of each generated photon.
     times = np.log(rng.uniform(size=num_photons))
     start = 0
-    for num_phot, scint_t in zip(yields, time_components):
+    for num_phot, scint_t in zip(yields, time_components):  # noqa: B905
         times[start : start + num_phot] *= -scint_t
         start += num_phot
 
