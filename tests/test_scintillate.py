@@ -32,13 +32,13 @@ def numba_unwrap(mod, fn: str, extra_fns: tuple[str, ...] = ()):
 
         # only replace the extra functions while the unwrapped function executes.
         extra_orig = [getattr(mod, extra_fn) for extra_fn in extra_fns]
-        for extra_numba_fn, extra_fn in zip(extra_orig, extra_fns):
+        for extra_numba_fn, extra_fn in zip(extra_orig, extra_fns, strict=True):
             setattr(mod, extra_fn, inspect.unwrap(extra_numba_fn))
 
         orig_ret = orig_f(*args, rng=np.random.default_rng(0), **kwargs)
 
         # rollback, so that the next numba invocation works.
-        for extra_numba_fn, extra_fn in zip(extra_orig, extra_fns):
+        for extra_numba_fn, extra_fn in zip(extra_orig, extra_fns, strict=True):
             setattr(mod, extra_fn, extra_numba_fn)
 
         assert np.allclose(numba_ret, orig_ret)
