@@ -25,34 +25,40 @@ Most materials expose convenience functions with the prefix
 (or optical surface) using pint-aware helpers that ensure correct units and
 sorting. Typical property names include:
 
-- RINDEX: refractive index (dimensionless)
-- ABSLENGTH: absorption length (length)
-- RAYLEIGH: Rayleigh scattering length (length)
-- REFLECTIVITY, EFFICIENCY: surface/optical parameters (dimensionless)
-- WLSABSLENGTH, WLSCOMPONENT, WLSTIMECONSTANT: wavelength-shifting properties
-- SCINTILLATIONCOMPONENT*, SCINTILLATIONTIMECONSTANT*, RESOLUTIONSCALE:
+- `RINDEX`: refractive index (dimensionless)
+- `ABSLENGTH`: absorption length (length)
+- `RAYLEIGH`: Rayleigh scattering length (length)
+- `REFLECTIVITY`, `EFFICIENCY`: surface/optical parameters (dimensionless)
+- `WLSABSLENGTH`, `WLSCOMPONENT`, `WLSTIMECONSTANT`: wavelength-shifting properties
+- `SCINTILLATIONCOMPONENT*`, `SCINTILLATIONTIMECONSTANT*`, `RESOLUTIONSCALE`:
   scintillation models
 
 Examples of high-level attachers:
 
-- Liquid argon (LAr): `lar.pyg4_lar_attach_rindex`,
-  `lar.pyg4_lar_attach_attenuation`, `lar.pyg4_lar_attach_scintillation`
-- PEN: `pen.pyg4_pen_attach_rindex`, `pen.pyg4_pen_attach_attenuation`,
-  `pen.pyg4_pen_attach_wls`, `pen.pyg4_pen_attach_scintillation`
-- TPB: `tpb.pyg4_tpb_attach_rindex`, `tpb.pyg4_tpb_attach_wls`
-- Fibers: `fibers.pyg4_fiber_core_attach_rindex`,
-  `fibers.pyg4_fiber_core_attach_absorption`,
-  `fibers.pyg4_fiber_core_attach_wls`,
-  `fibers.pyg4_fiber_core_attach_scintillation` (plus cladding 1/2 rindex
-  attachers)
-- Reflectors: `tetratex.pyg4_tetratex_attach_reflectivity`,
-  `tyvek.pyg4_tyvek_attach_reflectivity`, `vm2000.*` (refractive index,
-  reflectivity, WLS, etc.)
-- Substrates/metals: `copper.pyg4_copper_attach_reflectivity`,
-  `germanium.pyg4_germanium_attach_reflectivity`
-- Semiconductors/glass: `silicon.pyg4_silicon_attach_complex_rindex`,
-  `silica.pyg4_silica_attach_rindex`
-- Others: `nylon.*`, `ultem.*`, `water.*`, `pmts.*`
+- Liquid argon (LAr): {func}`legendoptics.lar.pyg4_lar_attach_rindex`,
+  {func}`legendoptics.lar.pyg4_lar_attach_attenuation`,
+  {func}`legendoptics.lar.pyg4_lar_attach_scintillation`
+- PEN: {func}`legendoptics.pen.pyg4_pen_attach_rindex`,
+  {func}`legendoptics.pen.pyg4_pen_attach_attenuation`,
+  {func}`legendoptics.pen.pyg4_pen_attach_wls`,
+  {func}`legendoptics.pen.pyg4_pen_attach_scintillation`
+- TPB: {func}`legendoptics.tpb.pyg4_tpb_attach_rindex`,
+  {func}`legendoptics.tpb.pyg4_tpb_attach_wls`
+- Fibers: {func}`legendoptics.fibers.pyg4_fiber_core_attach_rindex`,
+  {func}`legendoptics.fibers.pyg4_fiber_core_attach_absorption`,
+  {func}`legendoptics.fibers.pyg4_fiber_core_attach_wls`,
+  {func}`legendoptics.fibers.pyg4_fiber_core_attach_scintillation` (plus cladding
+  1/2 rindex attachers)
+- Reflectors: {func}`legendoptics.tetratex.pyg4_tetratex_attach_reflectivity`,
+  {func}`legendoptics.tyvek.pyg4_tyvek_attach_reflectivity`,
+  {func}`legendoptics.vm2000.pyg4_vm2000_attach_wls` (see module for more:
+  rindex, reflectivity, border params)
+- Substrates/metals: {func}`legendoptics.copper.pyg4_copper_attach_reflectivity`,
+  {func}`legendoptics.germanium.pyg4_germanium_attach_reflectivity`
+- Semiconductors/glass: {func}`legendoptics.silicon.pyg4_silicon_attach_complex_rindex`,
+  {func}`legendoptics.silica.pyg4_silica_attach_rindex`
+- Others: {mod}`legendoptics.nylon`, {mod}`legendoptics.ultem`,
+  {mod}`legendoptics.water`, {mod}`legendoptics.pmts`
 
 Minimal usage outline (pseudo-code):
 
@@ -77,17 +83,18 @@ pyg4_lar_attach_attenuation(lar_mat, reg, lar_temperature=88.8)
 pyg4_lar_attach_scintillation(lar_mat, reg)
 ```
 
-Under the hood, the helpers use legendoptics.pyg4utils to patch pyg4ometry with
-pint-aware methods:
+Under the hood, the helpers use {mod}`legendoptics.pyg4utils` to patch {mod}`pyg4ometry`
+with pint-aware methods:
 
 - `Material.addVecPropertyPint(name, energy, values)`
-- `Material.addConstPropertyPint(name, value)` These ensure proper unit handling
-  and ascending-energy ordering.
+- `Material.addConstPropertyPint(name, value)`
+
+These ensure proper unit handling and ascending-energy ordering.
 
 ## Modifying properties without forking (pluggable store)
 
-Many property functions are decorated with `@store.register_pluggable`. This
-makes them dynamically replaceable at runtime.
+Many property functions are decorated with {func}`legendoptics.store.register_pluggable`.
+This makes them dynamically replaceable at runtime.
 
 Common operations:
 
@@ -113,7 +120,8 @@ pen_refractive_index.reset_implementation()
 store.reset_all_to_original()
 ```
 
-You can also load a user module containing overrides (handy in CLIs):
+You can also load a user module containing overrides (handy in CLIs) via
+{func}`legendoptics.store.load_user_material_code`:
 
 ```python
 from legendoptics.store import load_user_material_code
@@ -136,9 +144,9 @@ To integrate a new material in the same style:
 
 1. Provide data-backed property functions
 
-- Use `legendoptics.utils.readdatafile` to read spectra with units from a data
+- Use {func}`legendoptics.utils.readdatafile` to read spectra with units from a data
   file included in a Python package (default `legendoptics.data`).
-- Use `legendoptics.utils.InterpolatingGraph` for interpolation with correct
+- Use {class}`legendoptics.utils.InterpolatingGraph` for interpolation with correct
   unit handling.
 - Decorate property functions you want to be overridable with
   `@store.register_pluggable`.
@@ -167,7 +175,7 @@ def mymat_absorption() -> tuple[u.Quantity, u.Quantity]:
 
 2. Implement pyg4 attachers
 
-- Sample wavelengths with `legendoptics.pyg4utils.pyg4_sample_λ` where needed.
+- Sample wavelengths with {func}`legendoptics.pyg4utils.pyg4_sample_λ` where needed.
 - Convert wavelength to energy inside a pint context and attach via
   `addVecPropertyPint` and `addConstPropertyPint`.
 
@@ -199,8 +207,8 @@ def pyg4_mymat_attach_absorption(mat, reg):
 - Follow patterns in `pen.py`, `tpb.py`, `fibers.py`, and `lar.py`:
   - WLS: `WLSABSLENGTH`, `WLSCOMPONENT`, `WLSTIMECONSTANT`, optional
     `WLSMEANNUMBERPHOTONS`
-  - Scintillation: define a `ScintConfig` in `scintillate.py` style and use
-    `pyg4utils.pyg4_def_scint_by_particle_type`.
+  - Scintillation: define a {class}`legendoptics.scintillate.ScintConfig` in `scintillate.py`
+    style and use {func}`legendoptics.pyg4utils.pyg4_def_scint_by_particle_type`.
 
 4. Include data files
 
@@ -211,7 +219,7 @@ def pyg4_mymat_attach_absorption(mat, reg):
 
 ## CLI helper
 
-A small CLI (defined in `legendoptics.cli`) can generate G4GeneralParticleSource
+A small CLI (defined in {mod}`legendoptics.cli`) can generate G4GeneralParticleSource
 emission spectra:
 
 ```
