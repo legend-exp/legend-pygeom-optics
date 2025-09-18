@@ -44,11 +44,13 @@ Package API reference <api/modules>
 You can install this package from PyPI or conda-forge:
 
 - PyPI (pip):
+
   ```bash
   pip install legend-pygeom-optics
   ```
 
 - conda-forge (conda):
+
   ```bash
   conda install -c conda-forge legend-pygeom-optics
   ```
