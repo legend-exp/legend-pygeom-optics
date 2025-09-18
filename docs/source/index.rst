@@ -11,12 +11,32 @@ To ease the use in `Geant4`_-based simulations, every module defines one or more
 .. _Geant4: https://geant4.web.cern.ch/
 .. _pyg4ometry: https://pyg4ometry.readthedocs.io/en/stable/index.html
 
+Features
+--------
+
+- High-level helpers to attach optical properties to Geant4/pyg4ometry materials
+  and optical surfaces (RINDEX, ABSLENGTH, RAYLEIGH, WLS*, SCINTILLATION*).
+- Pluggable property store to override or swap implementations at runtime
+  without forking your code.
+- Unit-safe data handling using pint, including wavelength/energy conversion
+  contexts for correct conversions.
+- Data-driven spectra with a simple file format and interpolation utilities.
+- Ready-made properties for many materials (LAr, PEN, TPB, scintillating fibers,
+  reflectors like Tyvek/Tetratex/VM2000, metals/semiconductors/glass, water,
+  nylon, Ultem, PMTs).
+- CLI utility to write G4GeneralParticleSource emission spectra from built-in
+  WLS/scintillation spectra.
+- Sphinx plotting helpers to render optical property plots in the docs.
+
+See the User Guide for a short walkthrough of these features.
+
 Table of Contents
 -----------------
 
 .. toctree::
    :maxdepth: 1
 
+   User Guide <user_guide>
    Package API reference <api/modules>
 
 Usage example
