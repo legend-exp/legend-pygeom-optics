@@ -1,4 +1,4 @@
-# Welcome to legend-geom-optics's documentation!
+# legend-geom-optics
 
 This package contains a collection of optical properties of materials used in
 the [LEGEND](https://legend-exp.org/) experiment.
@@ -17,7 +17,8 @@ properties to a material or surface instance.
 ## Features
 
 - High-level helpers to attach optical properties to Geant4/pyg4ometry materials
-  and optical surfaces (RINDEX, ABSLENGTH, RAYLEIGH, WLS*, SCINTILLATION*).
+  and optical surfaces (`RINDEX`, `ABSLENGTH`, `RAYLEIGH`, `WLS*`,
+  `SCINTILLATION*`).
 - Pluggable property store to override or swap implementations at runtime
   without forking your code.
 - Unit-safe data handling using pint, including wavelength/energy conversion
@@ -26,7 +27,7 @@ properties to a material or surface instance.
 - Ready-made properties for many materials (LAr, PEN, TPB, scintillating fibers,
   reflectors like Tyvek/Tetratex/VM2000, metals/semiconductors/glass, water,
   nylon, Ultem, PMTs).
-- CLI utility to write G4GeneralParticleSource emission spectra from built-in
+- CLI utility to write `G4GeneralParticleSource` emission spectra from built-in
   WLS/scintillation spectra.
 - Sphinx plotting helpers to render optical property plots in the docs.
 
@@ -53,11 +54,6 @@ You can install this package from PyPI or conda-forge:
 
   ```bash
   conda install -c conda-forge legend-pygeom-optics
-  ```
-
-- conda-forge (mamba):
-  ```bash
-  mamba install -c conda-forge legend-pygeom-optics
   ```
 
 ## Usage example

@@ -12,8 +12,10 @@ integration with Geant4 geometries via pyg4ometry. It includes:
 
 See concrete geometry integrations and usage examples in:
 
-- LEGEND-200: https://github.com/legend-exp/legend-pygeom-l200
-- LEGEND-1000: https://github.com/legend-exp/legend-pygeom-l1000
+- LEGEND-200:
+  [legend-exp/legend-pygeom-l200](https://github.com/legend-exp/legend-pygeom-l200)
+- LEGEND-1000:
+  [legend-exp/legend-pygeom-l1000](https://github.com/legend-exp/legend-pygeom-l1000)
 
 These repositories demonstrate how this package is used to populate material
 properties in full detector geometries.
@@ -238,10 +240,10 @@ This uses the same emission spectra as the attachers.
 
 ## Practical examples
 
-- LEGEND-200 geometry (integration and usage patterns):
-  https://github.com/legend-exp/legend-pygeom-l200
-
-- LEGEND-1000 geometry: https://github.com/legend-exp/legend-pygeom-l1000
+- LEGEND-200:
+  [legend-exp/legend-pygeom-l200](https://github.com/legend-exp/legend-pygeom-l200)
+- LEGEND-1000:
+  [legend-exp/legend-pygeom-l1000](https://github.com/legend-exp/legend-pygeom-l1000)
 
 Both repositories show how materials are defined, how attachers are called
 during geometry construction, and how to manage optical surfaces and properties
