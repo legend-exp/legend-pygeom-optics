@@ -140,7 +140,7 @@ To integrate a new material in the same style:
   file included in a Python package (default `legendoptics.data`).
 - Use `legendoptics.utils.InterpolatingGraph` for interpolation with correct
   unit handling.
-- Decorate property functions you want to be overrideable with
+- Decorate property functions you want to be overridable with
   `@store.register_pluggable`.
 
 Example:
