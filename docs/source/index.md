@@ -1,10 +1,18 @@
 # Welcome to legend-geom-optics's documentation!
 
-This package contains a collection of optical properties of materials used in the [LEGEND](https://legend-exp.org/) experiment.
+This package contains a collection of optical properties of materials used in
+the [LEGEND](https://legend-exp.org/) experiment.
 
-As a common interface, each optical property gets its own defining function in the material's module. Those functions can be used directly to just retrieve the value(s) of the property. Most property definitions contain unit information via the `pint` package. For a full list of defined properties see the API reference.
+As a common interface, each optical property gets its own defining function in
+the material's module. Those functions can be used directly to just retrieve the
+value(s) of the property. Most property definitions contain unit information via
+the `pint` package. For a full list of defined properties see the API reference.
 
-To ease the use in [Geant4](https://geant4.web.cern.ch/)-based simulations, every module defines one or more functions prefixed with `pyg4_attach_`. Those functions are to be used with [pyg4ometry](https://pyg4ometry.readthedocs.io/en/stable/index.html) and will attach the listed properties to a material or surface instance.
+To ease the use in [Geant4](https://geant4.web.cern.ch/)-based simulations,
+every module defines one or more functions prefixed with `pyg4_attach_`. Those
+functions are to be used with
+[pyg4ometry](https://pyg4ometry.readthedocs.io/en/stable/index.html) and will
+attach the listed properties to a material or surface instance.
 
 ## Features
 
@@ -35,7 +43,8 @@ Package API reference <api/modules>
 
 ## Usage example
 
-This example demonstrates how to use the `legendoptics.lar` submodule to add important optical properties to a pyg4ometry module instance:
+This example demonstrates how to use the `legendoptics.lar` submodule to add
+important optical properties to a pyg4ometry module instance:
 
 ```python
 import legendoptics.lar
