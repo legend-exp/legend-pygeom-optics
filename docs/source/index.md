@@ -39,6 +39,25 @@ User Guide <user_guide>
 Package API reference <api/modules>
 ```
 
+## Installation
+
+You can install this package from PyPI or conda-forge:
+
+- PyPI (pip):
+  ```bash
+  pip install legend-pygeom-optics
+  ```
+
+- conda-forge (conda):
+  ```bash
+  conda install -c conda-forge legend-pygeom-optics
+  ```
+
+- conda-forge (mamba):
+  ```bash
+  mamba install -c conda-forge legend-pygeom-optics
+  ```
+
 ## Usage example
 
 This example demonstrates how to use the {mod}`legendoptics.lar` submodule to
