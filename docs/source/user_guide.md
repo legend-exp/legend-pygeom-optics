@@ -3,7 +3,8 @@
 This package provides reusable optical material property definitions for fast
 integration with Geant4 geometries via pyg4ometry. It includes:
 
-- Ready-to-use functions to attach wavelength-dependent properties to materials
+- Ready-to-use functions to attach optical properties (wavelength-dependent and
+  constant) to materials
   and optical surfaces.
 - A pluggable store mechanism to override or extend material properties without
   forking the package.
@@ -80,7 +81,7 @@ from legendoptics.lar import (
 reg = g4.Registry()
 
 # Create your material in pyg4ometry here (example only; adjust to your setup)
-lar_mat = g4.Material("LAr", 1.396, "g/cm3", reg)  # density, units depend on your setup
+lar_mat = g4.Material(name="LAr", density=1.396, registry=reg)  # density in g/cm**3
 
 # Attach optical properties
 pyg4_lar_attach_rindex(lar_mat, reg)
@@ -126,14 +127,6 @@ pen_refractive_index.reset_implementation()
 store.reset_all_to_original()
 ```
 
-You can also load a user module containing overrides (handy in CLIs) via
-{func}`legendoptics.store.load_user_material_code`:
-
-```python
-from legendoptics.store import load_user_material_code
-
-load_user_material_code("/path/to/my_overrides.py")
-```
 
 Note: Any function listed in the module’s `__all__` or imported via
 `legendoptics.<submodule>` that is decorated with `@store.register_pluggable`
@@ -222,8 +215,8 @@ def pyg4_mymat_attach_absorption(mat, reg):
 
 - Place spectral data in an importable package (e.g., `legendoptics.data`
   style).
-- Format: first line header with units, then pairs of numbers; comments allowed
-  after `#`.
+- Format: first line header with units (`# unit1 unit2`), then pairs of numbers;
+  comments allowed after `#` (after the header line).
 
 ## CLI helper
 
@@ -240,21 +233,23 @@ This uses the same emission spectra as the attachers.
 
 ## Practical examples
 
+- pygeomtools (central material defintions):
+  [legend-exp/legend-pygeom-tools](https://github.com/legend-exp/legend-pygeom-tools)
 - LEGEND-200:
   [legend-exp/legend-pygeom-l200](https://github.com/legend-exp/legend-pygeom-l200)
 - LEGEND-1000:
   [legend-exp/legend-pygeom-l1000](https://github.com/legend-exp/legend-pygeom-l1000)
 
-Both repositories show how materials are defined, how attachers are called
-during geometry construction, and how to manage optical surfaces and properties
-consistently across a large detector model.
+The three repositories illustrate how materials are defined with their attachers,
+and how to manage optical surfaces and properties consistently across a large
+detector model.
 
 ## Tips and best practices
 
 - Always use pint quantities and the provided attach helpers to avoid unit
   mistakes.
 - When interpolating spectra, use `InterpolatingGraph` to handle extrapolation
-  bounds predictably.
+  bounds predictably and similar to Geant4.
 - For wavelength/energy conversions, use a pint context, e.g.
   `with u.context("sp")`.
 - Prefer overriding pluggable functions instead of patching code. This keeps
@@ -262,13 +257,3 @@ consistently across a large detector model.
 - Keep emission spectra zeroed at sampling boundaries to avoid artifacts (see
   `pen.py`, `fibers.py`, `lar.py` patterns).
 
-## Where to look in this package
-
-- `legendoptics/lar.py`: Full set of refractive index, attenuation (Rayleigh +
-  absorption), scintillation attachers.
-- `legendoptics/pen.py`, `legendoptics/tpb.py`, `legendoptics/fibers.py`: WLS
-  and scintillation patterns.
-- `legendoptics/pyg4utils.py`: Pint-aware hooks for pyg4ometry
-  (`addVecPropertyPint`, `addConstPropertyPint`, sampling helpers).
-- `legendoptics/utils.py`: Data loading and interpolation with units.
-- `legendoptics/store.py`: Pluggable function store for overrides.
