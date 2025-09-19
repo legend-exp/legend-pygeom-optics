@@ -4,8 +4,7 @@ This package provides reusable optical material property definitions for fast
 integration with Geant4 geometries via pyg4ometry. It includes:
 
 - Ready-to-use functions to attach optical properties (wavelength-dependent and
-  constant) to materials
-  and optical surfaces.
+  constant) to materials and optical surfaces.
 - A pluggable store mechanism to override or extend material properties without
   forking the package.
 - Utilities to read spectra from data files and interpolate them with physical
@@ -127,7 +126,6 @@ pen_refractive_index.reset_implementation()
 store.reset_all_to_original()
 ```
 
-
 Note: Any function listed in the module’s `__all__` or imported via
 `legendoptics.<submodule>` that is decorated with `@store.register_pluggable`
 can be replaced. The wrapper preserves the original function and exposes:
@@ -240,9 +238,9 @@ This uses the same emission spectra as the attachers.
 - LEGEND-1000:
   [legend-exp/legend-pygeom-l1000](https://github.com/legend-exp/legend-pygeom-l1000)
 
-The three repositories illustrate how materials are defined with their attachers,
-and how to manage optical surfaces and properties consistently across a large
-detector model.
+The three repositories illustrate how materials are defined with their
+attachers, and how to manage optical surfaces and properties consistently across
+a large detector model.
 
 ## Tips and best practices
 
@@ -256,4 +254,3 @@ detector model.
   your runs reproducible and centralized.
 - Keep emission spectra zeroed at sampling boundaries to avoid artifacts (see
   `pen.py`, `fibers.py`, `lar.py` patterns).
-
