@@ -69,6 +69,7 @@ Minimal usage outline (pseudo-code):
 
 ```python
 # Minimal outline with pyg4ometry (exact construction details may vary):
+import pint
 import pyg4ometry.geant4 as g4
 
 from legendoptics.lar import (
@@ -77,6 +78,7 @@ from legendoptics.lar import (
     pyg4_lar_attach_scintillation,
 )
 
+u = pint.get_application_registry().get()
 reg = g4.Registry()
 
 # Create your material in pyg4ometry here (example only; adjust to your setup)
@@ -84,7 +86,7 @@ lar_mat = g4.Material(name="LAr", density=1.396, registry=reg)  # density in g/c
 
 # Attach optical properties
 pyg4_lar_attach_rindex(lar_mat, reg)
-pyg4_lar_attach_attenuation(lar_mat, reg, lar_temperature=88.8)
+pyg4_lar_attach_attenuation(lar_mat, reg, lar_temperature=88.8 * u.K)
 pyg4_lar_attach_scintillation(lar_mat, reg)
 ```
 
@@ -126,8 +128,7 @@ pen_refractive_index.reset_implementation()
 store.reset_all_to_original()
 ```
 
-Note: Any function listed in the module’s `__all__` or imported via
-`legendoptics.<submodule>` that is decorated with `@store.register_pluggable`
+Note: Any imported function that is decorated with `@store.register_pluggable`
 can be replaced. The wrapper preserves the original function and exposes:
 
 - `wrap.replace_implementation(new_impl)`
@@ -205,14 +206,13 @@ def pyg4_mymat_attach_absorption(mat, reg):
 - Follow patterns in `pen.py`, `tpb.py`, `fibers.py`, and `lar.py`:
   - WLS: `WLSABSLENGTH`, `WLSCOMPONENT`, `WLSTIMECONSTANT`, optional
     `WLSMEANNUMBERPHOTONS`
-  - Scintillation: define a {class}`legendoptics.scintillate.ScintConfig` in
-    `scintillate.py` style and use
-    {func}`legendoptics.pyg4utils.pyg4_def_scint_by_particle_type`.
+  - Scintillation: define a {class}`legendoptics.scintillate.ScintConfig` and
+    use {func}`legendoptics.pyg4utils.pyg4_def_scint_by_particle_type`.
 
 4. Include data files
 
-- Place spectral data in an importable package (e.g., `legendoptics.data`
-  style).
+- Place spectral data in an importable package (e.g., the `data` directory in
+  the pakage `mypkg` is importable as `mypkg.data`)
 - Format: first line header with units (`# unit1 unit2`), then pairs of numbers;
   comments allowed after `#` (after the header line).
 
@@ -231,7 +231,7 @@ This uses the same emission spectra as the attachers.
 
 ## Practical examples
 
-- pygeomtools (central material defintions):
+- pygeomtools (central material definitions):
   [legend-exp/legend-pygeom-tools](https://github.com/legend-exp/legend-pygeom-tools)
 - LEGEND-200:
   [legend-exp/legend-pygeom-l200](https://github.com/legend-exp/legend-pygeom-l200)
