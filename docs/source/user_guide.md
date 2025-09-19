@@ -212,7 +212,7 @@ def pyg4_mymat_attach_absorption(mat, reg):
 4. Include data files
 
 - Place spectral data in an importable package (e.g., the `data` directory in
-  the pakage `mypkg` is importable as `mypkg.data`)
+  the package `mypkg` is importable as `mypkg.data`)
 - Format: first line header with units (`# unit1 unit2`), then pairs of numbers;
   comments allowed after `#` (after the header line).
 
