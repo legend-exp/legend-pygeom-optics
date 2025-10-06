@@ -140,7 +140,7 @@ def scintillate_numphot(
     -------
     number of emitted scintillation photons.
     """
-    flat_top, fano, time_components, particles = params
+    flat_top, fano, _time_components, particles = params
 
     # get the particle scintillation info.
     if particle < 0 or particle > particles.shape[0]:
