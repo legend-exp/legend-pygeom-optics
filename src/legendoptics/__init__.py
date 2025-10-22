@@ -1,3 +1,5 @@
+"""A collection of optical properties of materials used in the LEGEND experiment."""
+
 from __future__ import annotations
 
 from legendoptics import (

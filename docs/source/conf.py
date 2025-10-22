@@ -66,6 +66,7 @@ intersphinx_mapping = {
     "matplotlib": ("https://matplotlib.org/stable", None),
     "pint": ("https://pint.readthedocs.io/en/stable", None),
     "pyg4ometry": ("https://pyg4ometry.readthedocs.io/en/stable", None),
+    "pygeomtools": ("https://legend-pygeom-tools.readthedocs.io/en/stable", None),
 }  # add new intersphinx mappings here
 
 # sphinx-autodoc
