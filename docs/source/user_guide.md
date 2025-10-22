@@ -231,7 +231,7 @@ This uses the same emission spectra as the attachers.
 
 ## Practical examples
 
-- pygeomtools (central material definitions):
+- {mod}`pygeomtools` (central material definitions):
   [legend-exp/legend-pygeom-tools](https://github.com/legend-exp/legend-pygeom-tools)
 - LEGEND-200:
   [legend-exp/legend-pygeom-l200](https://github.com/legend-exp/legend-pygeom-l200)

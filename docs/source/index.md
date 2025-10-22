@@ -37,7 +37,7 @@ See the [User Guide](user_guide) for a short walkthrough of these features.
 :hidden:
 
 User Guide <user_guide>
-Package API reference <api/modules>
+Reference Guide <api/modules>
 ```
 
 ## Installation
