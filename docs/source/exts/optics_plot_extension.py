@@ -9,7 +9,7 @@ from typing import Any
 import pint
 from sphinx.application import Sphinx
 
-from legendoptics.plot import plot_callable
+from pygeomoptics.plot import plot_callable
 
 u = pint.get_application_registry()
 

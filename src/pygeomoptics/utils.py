@@ -14,7 +14,7 @@ u = pint.get_application_registry()
 
 
 def readdatafile(
-    filename: str, pkg: str = "legendoptics.data"
+    filename: str, pkg: str = "pygeomoptics.data", ncols: int = 2
 ) -> tuple[Quantity, Quantity]:
     """Read ``(x, y)`` data points from `filename` with units.
 
@@ -36,15 +36,17 @@ def readdatafile(
     pkg
         python package name used to access data files. Only needs to be set to access
         data files in other packages.
+    ncols
+        number of columns to read.
     """
-    x = []
-    y = []
-    lines = files(pkg).joinpath(filename).read_text().split("\n")
+    cols = [[] for _ in range(ncols)]
+    path = files(pkg).joinpath(filename) if pkg is not None else Path(filename)
+    lines = path.read_text().split("\n")
     lines = [line.strip() for line in lines]
 
     # parse header
     header = lines[0]
-    if header[0] != "#" or len(header.lstrip("#").split()) != 2:
+    if header[0] != "#" or len(header.lstrip("#").split()) != ncols:
         msg = "input data file does not seem to contain header with (pint) units"
         raise RuntimeError(msg)
 
@@ -57,14 +59,14 @@ def readdatafile(
             continue
 
         val = line.split()
-        if len(val) != 2:
+        if len(val) != ncols:
             msg = f"could not parse line {lineno}: '{line}'"
             raise RuntimeError(msg)
 
-        x.append(float(val[0]))
-        y.append(float(val[1]))
+        for i in range(ncols):
+            cols[i].append(float(val[i]))
 
-    return (x * u(units[0]), y * u(units[1]))
+    return tuple(cols[i] * u(units[i]) for i in range(ncols))
 
 
 class InterpolatingGraph:
@@ -173,7 +175,7 @@ def g4gps_write_emission_spectrum(
         return
 
     with Path.open(filename, "wt") as f:
-        f.write(f"# {quantity_name} | legendoptics\n\n")
+        f.write(f"# {quantity_name} | pygeomoptics\n\n")
         f.write("/gps/ene/type     Arb\n")
         f.write("/gps/ene/diffspec true\n")
         f.write("/gps/hist/type    arb\n\n")

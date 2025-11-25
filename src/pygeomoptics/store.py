@@ -105,7 +105,7 @@ def load_user_material_code(python_file: str) -> None:
         raise RuntimeError(msg)
 
     spec = importlib.util.spec_from_file_location(
-        "legendoptics.user_materials", python_file
+        "pygeomoptics.user_materials", python_file
     )
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)

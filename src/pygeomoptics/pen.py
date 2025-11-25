@@ -18,9 +18,9 @@ import numpy as np
 import pint
 from pint import Quantity
 
-from legendoptics import store
-from legendoptics.scintillate import ScintConfig, ScintParticle
-from legendoptics.utils import (
+from pygeomoptics import store
+from pygeomoptics.scintillate import ScintConfig, ScintParticle
+from pygeomoptics.utils import (
     InterpolatingGraph,
     g4gps_write_emission_spectrum,
     readdatafile,
@@ -190,7 +190,7 @@ def pyg4_pen_attach_wls(mat, reg, quantum_efficiency: bool | float = True) -> No
     .pen_scint_timeconstant
     .pen_quantum_efficiency
     """
-    from legendoptics.pyg4utils import pyg4_sample_λ
+    from pygeomoptics.pyg4utils import pyg4_sample_λ
 
     λ_abs, absorption = pen_wls_absorption()
 
@@ -222,7 +222,7 @@ def pyg4_pen_attach_scintillation(mat, reg) -> None:
     .pen_wls_emission
     .pen_scint_timeconstant
     """
-    from legendoptics.pyg4utils import pyg4_def_scint_by_particle_type, pyg4_sample_λ
+    from pygeomoptics.pyg4utils import pyg4_def_scint_by_particle_type, pyg4_sample_λ
 
     # sample the measured emission spectrum.
     λ_scint = pyg4_sample_λ(350 * u.nm, 650 * u.nm, 200)
@@ -251,7 +251,7 @@ def g4gps_pen_emissions_spectrum(filename: str, output_macro: bool) -> None:
     .pen_wls_emission
     utils.g4gps_write_emission_spectrum
     """
-    from legendoptics.pyg4utils import pyg4_sample_λ
+    from pygeomoptics.pyg4utils import pyg4_sample_λ
 
     # sample the measured emission spectrum.
     λ_scint = pyg4_sample_λ(350 * u.nm, 650 * u.nm, 200)

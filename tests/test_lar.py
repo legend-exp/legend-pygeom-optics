@@ -3,7 +3,7 @@ from __future__ import annotations
 import pint
 import pytest
 
-from legendoptics import lar
+from pygeomoptics import lar
 
 u = pint.get_application_registry()
 

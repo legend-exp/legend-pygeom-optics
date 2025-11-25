@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from legendoptics import store
-from legendoptics.fibers import (
+from pygeomoptics import store
+from pygeomoptics.fibers import (
     fiber_cladding1_refractive_index,
     fiber_core_refractive_index,
 )

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from legendoptics import (
+from pygeomoptics import (
     copper,
     fibers,
     germanium,
@@ -17,7 +17,7 @@ from legendoptics import (
     vm2000,
     water,
 )
-from legendoptics._version import version as __version__
+from pygeomoptics._version import version as __version__
 
 # do not import pyg4utils here, to not enforce the dependency on pyg4ometry.
 

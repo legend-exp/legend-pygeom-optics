@@ -16,8 +16,8 @@ import numpy as np
 import pint
 from pint import Quantity
 
-from legendoptics import pyg4utils, store
-from legendoptics.utils import InterpolatingGraph, readdatafile
+from pygeomoptics import pyg4utils, store
+from pygeomoptics.utils import InterpolatingGraph, readdatafile
 
 log = logging.getLogger(__name__)
 u = pint.get_application_registry()

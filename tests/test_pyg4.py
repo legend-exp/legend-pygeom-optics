@@ -15,38 +15,38 @@ def _create_dummy_mat() -> tuple[g4.Registry, g4.Material]:
 
 
 def test_pyg4_attach_lar() -> None:
-    import legendoptics.lar
+    import pygeomoptics.lar
 
     u = pint.get_application_registry()
     reg, mat = _create_dummy_mat()
-    legendoptics.lar.pyg4_lar_attach_rindex(mat, reg)
-    legendoptics.lar.pyg4_lar_attach_attenuation(mat, reg, 90 * u.K)
-    legendoptics.lar.pyg4_lar_attach_scintillation(mat, reg)
+    pygeomoptics.lar.pyg4_lar_attach_rindex(mat, reg)
+    pygeomoptics.lar.pyg4_lar_attach_attenuation(mat, reg, 90 * u.K)
+    pygeomoptics.lar.pyg4_lar_attach_scintillation(mat, reg)
     reg, mat = _create_dummy_mat()
-    legendoptics.lar.pyg4_lar_attach_attenuation(
+    pygeomoptics.lar.pyg4_lar_attach_attenuation(
         mat, reg, 90 * u.K, attenuation_method_or_length=10 * u.cm
     )
     reg, mat = _create_dummy_mat()
-    legendoptics.lar.pyg4_lar_attach_attenuation(
+    pygeomoptics.lar.pyg4_lar_attach_attenuation(
         mat,
         reg,
         90 * u.K,
         attenuation_method_or_length=10 * u.cm,
         rayleigh_enabled_or_length=90 * u.cm,
     )
-    legendoptics.lar.pyg4_lar_attach_scintillation(
+    pygeomoptics.lar.pyg4_lar_attach_scintillation(
         mat, reg, triplet_lifetime_method=1.1
     )
     reg, mat = _create_dummy_mat()
-    legendoptics.lar.pyg4_lar_attach_attenuation(
+    pygeomoptics.lar.pyg4_lar_attach_attenuation(
         mat, reg, 90 * u.K, absorption_enabled_or_length=False
     )
     reg, mat = _create_dummy_mat()
-    legendoptics.lar.pyg4_lar_attach_attenuation(
+    pygeomoptics.lar.pyg4_lar_attach_attenuation(
         mat, reg, 90 * u.K, absorption_enabled_or_length=30 * u.cm
     )
     reg, mat = _create_dummy_mat()
-    legendoptics.lar.pyg4_lar_attach_attenuation(
+    pygeomoptics.lar.pyg4_lar_attach_attenuation(
         mat,
         reg,
         90 * u.K,
@@ -55,162 +55,162 @@ def test_pyg4_attach_lar() -> None:
     )
     assert "ABSORPTION" not in mat.properties
     reg, mat = _create_dummy_mat()
-    legendoptics.lar.pyg4_lar_attach_attenuation(
+    pygeomoptics.lar.pyg4_lar_attach_attenuation(
         mat, reg, 90 * u.K, rayleigh_enabled_or_length=False
     )
     assert "RAYLEIGH" not in mat.properties
 
 
 def test_pyg4_attach_tpb() -> None:
-    import legendoptics.tpb
+    import pygeomoptics.tpb
 
     reg, mat = _create_dummy_mat()
-    legendoptics.tpb.pyg4_tpb_attach_rindex(mat, reg)
-    legendoptics.tpb.pyg4_tpb_attach_wls(mat, reg)
+    pygeomoptics.tpb.pyg4_tpb_attach_rindex(mat, reg)
+    pygeomoptics.tpb.pyg4_tpb_attach_wls(mat, reg)
     reg, mat = _create_dummy_mat()
-    legendoptics.tpb.pyg4_tpb_attach_wls(mat, reg, 0.1)
+    pygeomoptics.tpb.pyg4_tpb_attach_wls(mat, reg, 0.1)
     reg, mat = _create_dummy_mat()
-    legendoptics.tpb.pyg4_tpb_attach_wls(mat, reg, True, "polystyrene_matrix")
+    pygeomoptics.tpb.pyg4_tpb_attach_wls(mat, reg, True, "polystyrene_matrix")
 
 
 def test_pyg4_attach_fibers() -> None:
-    import legendoptics.fibers
+    import pygeomoptics.fibers
 
     reg, mat = _create_dummy_mat()
-    legendoptics.fibers.pyg4_fiber_cladding1_attach_rindex(mat, reg)
+    pygeomoptics.fibers.pyg4_fiber_cladding1_attach_rindex(mat, reg)
     reg, mat = _create_dummy_mat()
-    legendoptics.fibers.pyg4_fiber_cladding2_attach_rindex(mat, reg)
+    pygeomoptics.fibers.pyg4_fiber_cladding2_attach_rindex(mat, reg)
     reg, mat = _create_dummy_mat()
-    legendoptics.fibers.pyg4_fiber_core_attach_rindex(mat, reg)
-    legendoptics.fibers.pyg4_fiber_core_attach_wls(mat, reg)
-    legendoptics.fibers.pyg4_fiber_core_attach_absorption(mat, reg)
-    legendoptics.fibers.pyg4_fiber_core_attach_scintillation(mat, reg)
+    pygeomoptics.fibers.pyg4_fiber_core_attach_rindex(mat, reg)
+    pygeomoptics.fibers.pyg4_fiber_core_attach_wls(mat, reg)
+    pygeomoptics.fibers.pyg4_fiber_core_attach_absorption(mat, reg)
+    pygeomoptics.fibers.pyg4_fiber_core_attach_scintillation(mat, reg)
     reg, mat = _create_dummy_mat()
-    legendoptics.fibers.pyg4_fiber_core_attach_absorption(
+    pygeomoptics.fibers.pyg4_fiber_core_attach_absorption(
         mat, reg, use_geometrical_absorption=False
     )
 
 
 def test_pyg4_attach_tetratex() -> None:
-    import legendoptics.tetratex
+    import pygeomoptics.tetratex
 
     reg, mat = _create_dummy_mat()
-    legendoptics.tetratex.pyg4_tetratex_attach_reflectivity(mat, reg)
+    pygeomoptics.tetratex.pyg4_tetratex_attach_reflectivity(mat, reg)
 
 
 def test_pyg4_attach_tyvek() -> None:
-    import legendoptics.tyvek
+    import pygeomoptics.tyvek
 
     reg, mat = _create_dummy_mat()
-    legendoptics.tyvek.pyg4_tyvek_attach_reflectivity(mat, reg)
+    pygeomoptics.tyvek.pyg4_tyvek_attach_reflectivity(mat, reg)
 
 
 def test_pyg4_attach_germanium() -> None:
-    import legendoptics.germanium
+    import pygeomoptics.germanium
 
     reg, mat = _create_dummy_mat()
-    legendoptics.germanium.pyg4_germanium_attach_reflectivity(mat, reg)
+    pygeomoptics.germanium.pyg4_germanium_attach_reflectivity(mat, reg)
 
 
 def test_pyg4_attach_copper() -> None:
-    import legendoptics.copper
+    import pygeomoptics.copper
 
     reg, mat = _create_dummy_mat()
-    legendoptics.copper.pyg4_copper_attach_reflectivity(mat, reg)
+    pygeomoptics.copper.pyg4_copper_attach_reflectivity(mat, reg)
 
 
 def test_pyg4_attach_silicon() -> None:
-    import legendoptics.silicon
+    import pygeomoptics.silicon
 
     reg, mat = _create_dummy_mat()
-    legendoptics.silicon.pyg4_silicon_attach_complex_rindex(mat, reg)
+    pygeomoptics.silicon.pyg4_silicon_attach_complex_rindex(mat, reg)
 
 
 def test_pyg4_attach_nylon() -> None:
-    import legendoptics.nylon
+    import pygeomoptics.nylon
 
     reg, mat = _create_dummy_mat()
-    legendoptics.nylon.pyg4_nylon_attach_rindex(mat, reg)
-    legendoptics.nylon.pyg4_nylon_attach_absorption(mat, reg)
+    pygeomoptics.nylon.pyg4_nylon_attach_rindex(mat, reg)
+    pygeomoptics.nylon.pyg4_nylon_attach_absorption(mat, reg)
 
 
 def test_pyg4_attach_pen() -> None:
-    import legendoptics.pen
+    import pygeomoptics.pen
 
     reg, mat = _create_dummy_mat()
-    legendoptics.pen.pyg4_pen_attach_rindex(mat, reg)
-    legendoptics.pen.pyg4_pen_attach_attenuation(mat, reg)
-    legendoptics.pen.pyg4_pen_attach_wls(mat, reg)
-    legendoptics.pen.pyg4_pen_attach_scintillation(mat, reg)
+    pygeomoptics.pen.pyg4_pen_attach_rindex(mat, reg)
+    pygeomoptics.pen.pyg4_pen_attach_attenuation(mat, reg)
+    pygeomoptics.pen.pyg4_pen_attach_wls(mat, reg)
+    pygeomoptics.pen.pyg4_pen_attach_scintillation(mat, reg)
     reg, mat = _create_dummy_mat()
-    legendoptics.pen.pyg4_pen_attach_wls(mat, reg, 0.1)
+    pygeomoptics.pen.pyg4_pen_attach_wls(mat, reg, 0.1)
 
 
 def test_pyg4_attach_ultem() -> None:
-    import legendoptics.ultem
+    import pygeomoptics.ultem
 
     reg, mat = _create_dummy_mat()
-    legendoptics.ultem.pyg4_ultem_attach_rindex(mat, reg)
-    legendoptics.ultem.pyg4_ultem_attach_absorption(mat, reg)
+    pygeomoptics.ultem.pyg4_ultem_attach_rindex(mat, reg)
+    pygeomoptics.ultem.pyg4_ultem_attach_absorption(mat, reg)
 
 
 def test_pyg4_attach_silica() -> None:
-    import legendoptics.silica
+    import pygeomoptics.silica
 
     reg, mat = _create_dummy_mat()
-    legendoptics.silica.pyg4_silica_attach_rindex(mat, reg)
+    pygeomoptics.silica.pyg4_silica_attach_rindex(mat, reg)
 
 
 def test_pyg4_attach_water() -> None:
-    import legendoptics.water
+    import pygeomoptics.water
 
     reg, mat = _create_dummy_mat()
-    legendoptics.water.pyg4_water_attach_rindex(mat, reg)
-    legendoptics.water.pyg4_water_attach_absorption(mat, reg)
+    pygeomoptics.water.pyg4_water_attach_rindex(mat, reg)
+    pygeomoptics.water.pyg4_water_attach_absorption(mat, reg)
 
 
 def test_pyg4_attach_vm2000() -> None:
-    import legendoptics.pen
-    import legendoptics.vm2000
+    import pygeomoptics.pen
+    import pygeomoptics.vm2000
 
     reg, mat = _create_dummy_mat()
-    legendoptics.vm2000.pyg4_vm2000_attach_reflectivity(mat, reg)
-    legendoptics.vm2000.pyg4_vm2000_attach_absorption_length(mat, reg)
+    pygeomoptics.vm2000.pyg4_vm2000_attach_reflectivity(mat, reg)
+    pygeomoptics.vm2000.pyg4_vm2000_attach_absorption_length(mat, reg)
     # VM2000 seem to consist of PMMA and PEN layers, so add both
-    legendoptics.pen.pyg4_pen_attach_scintillation(mat, reg)
-    legendoptics.vm2000.pyg4_vm2000_attach_particle_scintillationyields(mat, reg)
-    legendoptics.vm2000.pyg4_vm2000_attach_wls(mat, reg)
+    pygeomoptics.pen.pyg4_pen_attach_scintillation(mat, reg)
+    pygeomoptics.vm2000.pyg4_vm2000_attach_particle_scintillationyields(mat, reg)
+    pygeomoptics.vm2000.pyg4_vm2000_attach_wls(mat, reg)
     reg, mat = _create_dummy_mat()
-    legendoptics.vm2000.pyg4_vm2000_attach_border_params(mat, reg)
+    pygeomoptics.vm2000.pyg4_vm2000_attach_border_params(mat, reg)
 
 
 def test_pyg4_attach_pmts() -> None:
-    import legendoptics.pmts
+    import pygeomoptics.pmts
 
     reg, mat = _create_dummy_mat()
-    legendoptics.pmts.pyg4_pmt_attach_acryl_absorption_length(mat, reg)
-    legendoptics.pmts.pyg4_pmt_attach_acryl_rindex(mat, reg)
+    pygeomoptics.pmts.pyg4_pmt_attach_acryl_absorption_length(mat, reg)
+    pygeomoptics.pmts.pyg4_pmt_attach_acryl_rindex(mat, reg)
     reg, mat = _create_dummy_mat()
-    legendoptics.pmts.pyg4_pmt_attach_air_absorption_length(mat, reg)
-    legendoptics.pmts.pyg4_pmt_attach_air_rindex(mat, reg)
+    pygeomoptics.pmts.pyg4_pmt_attach_air_absorption_length(mat, reg)
+    pygeomoptics.pmts.pyg4_pmt_attach_air_rindex(mat, reg)
     reg, mat = _create_dummy_mat()
-    legendoptics.pmts.pyg4_pmt_attach_borosilicate_absorption_length(mat, reg)
-    legendoptics.pmts.pyg4_pmt_attach_borosilicate_rindex(mat, reg)
+    pygeomoptics.pmts.pyg4_pmt_attach_borosilicate_absorption_length(mat, reg)
+    pygeomoptics.pmts.pyg4_pmt_attach_borosilicate_rindex(mat, reg)
     reg, mat = _create_dummy_mat()
-    legendoptics.pmts.pyg4_pmt_attach_photocathode_efficiency(mat, reg)
-    legendoptics.pmts.pyg4_pmt_attach_photocathode_reflectivity(mat, reg)
+    pygeomoptics.pmts.pyg4_pmt_attach_photocathode_efficiency(mat, reg)
+    pygeomoptics.pmts.pyg4_pmt_attach_photocathode_reflectivity(mat, reg)
     reg, mat = _create_dummy_mat()
-    legendoptics.pmts.pyg4_pmt_attach_photocathode_efficiency(mat, reg, name="etl9354")
-    legendoptics.pmts.pyg4_pmt_attach_photocathode_reflectivity(mat, reg)
+    pygeomoptics.pmts.pyg4_pmt_attach_photocathode_efficiency(mat, reg, name="etl9354")
+    pygeomoptics.pmts.pyg4_pmt_attach_photocathode_reflectivity(mat, reg)
     reg, mat = _create_dummy_mat()
-    legendoptics.pmts.pyg4_pmt_attach_photocathode_efficiency(mat, reg, name="gerda")
-    legendoptics.pmts.pyg4_pmt_attach_photocathode_reflectivity(mat, reg)
+    pygeomoptics.pmts.pyg4_pmt_attach_photocathode_efficiency(mat, reg, name="gerda")
+    pygeomoptics.pmts.pyg4_pmt_attach_photocathode_reflectivity(mat, reg)
     reg, mat = _create_dummy_mat()
-    legendoptics.pmts.pyg4_pmt_attach_photocathode_efficiency(mat, reg, name="r7081")
-    legendoptics.pmts.pyg4_pmt_attach_photocathode_reflectivity(mat, reg)
+    pygeomoptics.pmts.pyg4_pmt_attach_photocathode_efficiency(mat, reg, name="r7081")
+    pygeomoptics.pmts.pyg4_pmt_attach_photocathode_reflectivity(mat, reg)
     reg, mat = _create_dummy_mat()
-    legendoptics.pmts.pyg4_pmt_attach_photocathode_efficiency(mat, reg, name="l1000")
-    legendoptics.pmts.pyg4_pmt_attach_photocathode_reflectivity(mat, reg)
+    pygeomoptics.pmts.pyg4_pmt_attach_photocathode_efficiency(mat, reg, name="l1000")
+    pygeomoptics.pmts.pyg4_pmt_attach_photocathode_reflectivity(mat, reg)
     reg, mat = _create_dummy_mat()
-    legendoptics.pmts.pyg4_pmt_attach_steel_efficiency(mat, reg)
-    legendoptics.pmts.pyg4_pmt_attach_steel_reflectivity(mat, reg)
+    pygeomoptics.pmts.pyg4_pmt_attach_steel_efficiency(mat, reg)
+    pygeomoptics.pmts.pyg4_pmt_attach_steel_reflectivity(mat, reg)

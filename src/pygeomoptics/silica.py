@@ -12,7 +12,7 @@ import numpy as np
 import pint
 from pint import Quantity
 
-from legendoptics import store
+from pygeomoptics import store
 
 log = logging.getLogger(__name__)
 u = pint.get_application_registry()
@@ -40,7 +40,7 @@ def pyg4_silica_attach_rindex(mat, reg) -> None:
     --------
     .silica_refractive_index
     """
-    from legendoptics.pyg4utils import pyg4_sample_λ
+    from pygeomoptics.pyg4utils import pyg4_sample_λ
 
     λ = pyg4_sample_λ(200 * u.nm, 650 * u.nm)
     r = silica_refractive_index(λ)

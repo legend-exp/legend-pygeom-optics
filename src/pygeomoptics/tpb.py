@@ -26,8 +26,8 @@ import numpy as np
 import pint
 from pint import Quantity
 
-from legendoptics import store
-from legendoptics.utils import InterpolatingGraph, readdatafile
+from pygeomoptics import store
+from pygeomoptics.utils import InterpolatingGraph, readdatafile
 
 log = logging.getLogger(__name__)
 u = pint.get_application_registry()
@@ -139,7 +139,7 @@ def pyg4_tpb_attach_wls(
     .tpb_wls_timeconstant
     .tpb_quantum_efficiency
     """
-    from legendoptics.pyg4utils import pyg4_sample_λ
+    from pygeomoptics.pyg4utils import pyg4_sample_λ
 
     if emission_spectrum not in ["default", "polystyrene_matrix"]:
         msg = "invalid parameter value of emission_spectrum"

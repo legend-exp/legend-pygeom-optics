@@ -4,8 +4,8 @@ import numpy as np
 import pint
 import pytest
 
-from legendoptics.pyg4utils import pyg4_sample_λ
-from legendoptics.utils import InterpolatingGraph, readdatafile
+from pygeomoptics.pyg4utils import pyg4_sample_λ
+from pygeomoptics.utils import InterpolatingGraph, readdatafile
 
 u = pint.get_application_registry()
 

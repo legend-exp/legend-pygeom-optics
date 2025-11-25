@@ -11,7 +11,7 @@ build:
     pre_build:
       - rm -rf docs/source/api
       - sphinx-apidoc --private --module-first --force --output-dir
-        docs/source/api src/legendoptics src/legendoptics/_version.py
+        docs/source/api src/pygeomoptics src/pygeomoptics/_version.py
 
 python:
   install:
