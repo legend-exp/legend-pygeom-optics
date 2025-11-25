@@ -16,9 +16,9 @@ import numpy as np
 import pint
 from pint import Quantity
 
-from legendoptics import store
-from legendoptics.scintillate import ScintConfig, ScintParticle
-from legendoptics.utils import (
+from pygeomoptics import store
+from pygeomoptics.scintillate import ScintConfig, ScintParticle
+from pygeomoptics.utils import (
     InterpolatingGraph,
     g4gps_write_emission_spectrum,
     readdatafile,
@@ -232,7 +232,7 @@ def pyg4_fiber_core_attach_wls(
     .fiber_wls_emission
     .fiber_wls_timeconstant
     """
-    from legendoptics.pyg4utils import pyg4_sample_λ
+    from pygeomoptics.pyg4utils import pyg4_sample_λ
 
     λ_full = pyg4_sample_λ(112 * u.nm, 650 * u.nm)
     absorption = InterpolatingGraph(*fiber_wls_absorption())(λ_full)
@@ -263,7 +263,7 @@ def pyg4_fiber_core_attach_absorption(
     --------
     .fiber_absorption_path_length
     """
-    from legendoptics.pyg4utils import pyg4_sample_λ
+    from pygeomoptics.pyg4utils import pyg4_sample_λ
 
     λ_full = pyg4_sample_λ(112 * u.nm, 650 * u.nm)
     length = (
@@ -287,7 +287,7 @@ def pyg4_fiber_core_attach_scintillation(mat, reg) -> None:
     .fiber_wls_emission
     .fiber_wls_timeconstant
     """
-    from legendoptics.pyg4utils import pyg4_def_scint_by_particle_type, pyg4_sample_λ
+    from pygeomoptics.pyg4utils import pyg4_def_scint_by_particle_type, pyg4_sample_λ
 
     # sample the measured emission spectrum.
     λ_scint = pyg4_sample_λ(350 * u.nm, 650 * u.nm, 200)
@@ -317,7 +317,7 @@ def g4gps_fiber_emissions_spectrum(filename: str, output_macro: bool) -> None:
     .fiber_wls_emission
     utils.g4gps_write_emission_spectrum
     """
-    from legendoptics.pyg4utils import pyg4_sample_λ
+    from pygeomoptics.pyg4utils import pyg4_sample_λ
 
     # sample the measured emission spectrum.
     λ_scint = pyg4_sample_λ(350 * u.nm, 650 * u.nm, 200)

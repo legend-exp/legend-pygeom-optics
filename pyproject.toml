@@ -50,7 +50,7 @@ Discussions = "https://github.com/legend-exp/legend-pygeom-optics/discussions"
 Changelog = "https://github.com/legend-exp/legend-pygeom-optics/releases"
 
 [tool.setuptools_scm]
-write_to = "src/legendoptics/_version.py"
+write_to = "src/pygeomoptics/_version.py"
 
 [project.optional-dependencies]
 all = [
@@ -69,7 +69,7 @@ test = [
 ]
 
 [project.scripts]
-legend-pygeom-optics = "legendoptics.cli:optics_cli"
+legend-pygeom-optics = "pygeomoptics.cli:optics_cli"
 
 [tool.setuptools]
 include-package-data = true

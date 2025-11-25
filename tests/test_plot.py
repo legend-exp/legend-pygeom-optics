@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pint
 
-from legendoptics.copper import copper_reflectivity
-from legendoptics.lar import lar_refractive_index
-from legendoptics.plot import plot_callable, plot_continuous_prop, plot_discrete_prop
+from pygeomoptics.copper import copper_reflectivity
+from pygeomoptics.lar import lar_refractive_index
+from pygeomoptics.plot import plot_callable, plot_continuous_prop, plot_discrete_prop
 
 u = pint.get_application_registry()
 
@@ -24,7 +24,7 @@ def test_plot_discrete_prop():
 
 
 def test_plot_for_docs(tmp_path):
-    from legendoptics.store import _optical_property_store
+    from pygeomoptics.store import _optical_property_store
 
     # this should mirror the code in the sphinx extension.
     plot_token = ".. optics-plot::"

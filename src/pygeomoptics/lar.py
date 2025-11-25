@@ -34,9 +34,9 @@ import numpy as np
 import pint
 from pint import Quantity
 
-from legendoptics import store
-from legendoptics.scintillate import ScintConfig, ScintParticle
-from legendoptics.utils import (
+from pygeomoptics import store
+from pygeomoptics.scintillate import ScintConfig, ScintParticle
+from pygeomoptics.utils import (
     InterpolatingGraph,
     g4gps_write_emission_spectrum,
     readdatafile,
@@ -317,7 +317,7 @@ def lar_calculate_attenuation(
     .lar_peak_attenuation_length
     .lar_abs_length
     """
-    from legendoptics.pyg4utils import pyg4_sample_λ
+    from pygeomoptics.pyg4utils import pyg4_sample_λ
 
     if rayleigh_enabled_or_length is False and absorption_enabled_or_length is False:
         msg = "cannot disable rayleigh and absorption at the same time"
@@ -467,7 +467,7 @@ def pyg4_lar_attach_rindex(
     .lar_refractive_index
     .lar_dielectric_constant
     """
-    from legendoptics.pyg4utils import pyg4_sample_λ
+    from pygeomoptics.pyg4utils import pyg4_sample_λ
 
     λ_full = pyg4_sample_λ(112 * u.nm, 650 * u.nm)
     rindex = lar_refractive_index(λ_full, lar_dielectric_method)
@@ -569,7 +569,7 @@ def pyg4_lar_attach_scintillation(
     .lar_emission_spectrum
     .lar_lifetimes
     """
-    from legendoptics.pyg4utils import pyg4_def_scint_by_particle_type, pyg4_sample_λ
+    from pygeomoptics.pyg4utils import pyg4_def_scint_by_particle_type, pyg4_sample_λ
 
     λ_peak = pyg4_sample_λ(116 * u.nm, 141 * u.nm)
 
@@ -607,7 +607,7 @@ def g4gps_lar_emissions_spectrum(filename: str, output_macro: bool) -> None:
     .lar_emission_spectrum
     utils.g4gps_write_emission_spectrum
     """
-    from legendoptics.pyg4utils import pyg4_sample_λ
+    from pygeomoptics.pyg4utils import pyg4_sample_λ
 
     λ_peak = pyg4_sample_λ(116 * u.nm, 141 * u.nm)
 

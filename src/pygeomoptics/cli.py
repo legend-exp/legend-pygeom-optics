@@ -29,10 +29,10 @@ def optics_cli() -> None:
 
     if args.command == "g4gps":
         if args.spectrum == "lar_emission":
-            from legendoptics.lar import g4gps_lar_emissions_spectrum as g4gps_spec
+            from pygeomoptics.lar import g4gps_lar_emissions_spectrum as g4gps_spec
         elif args.spectrum == "pen_emission":
-            from legendoptics.pen import g4gps_pen_emissions_spectrum as g4gps_spec
+            from pygeomoptics.pen import g4gps_pen_emissions_spectrum as g4gps_spec
         elif args.spectrum == "fiber_emission":
-            from legendoptics.fibers import g4gps_fiber_emissions_spectrum as g4gps_spec
+            from pygeomoptics.fibers import g4gps_fiber_emissions_spectrum as g4gps_spec
 
         g4gps_spec(args.output, args.type == "macro")

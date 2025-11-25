@@ -8,8 +8,8 @@ from contextlib import contextmanager
 import numpy as np
 import pint
 
-from legendoptics import lar, pen
-from legendoptics import scintillate as sc
+from pygeomoptics import lar, pen
+from pygeomoptics import scintillate as sc
 
 u = pint.get_application_registry()
 

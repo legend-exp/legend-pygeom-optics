@@ -13,7 +13,7 @@ import numpy as np
 import pint
 from pint import Quantity
 
-from legendoptics import store
+from pygeomoptics import store
 
 log = logging.getLogger(__name__)
 u = pint.get_application_registry()

@@ -58,14 +58,14 @@ You can install this package from PyPI or conda-forge:
 
 ## Usage example
 
-This example demonstrates how to use the {mod}`legendoptics.lar` submodule to
+This example demonstrates how to use the {mod}`pygeomoptics.lar` submodule to
 add important optical properties to a {class}`pyg4ometry.geant4.Material`
-instance using {func}`legendoptics.lar.pyg4_lar_attach_rindex`,
-{func}`legendoptics.lar.pyg4_lar_attach_attenuation`, and
-{func}`legendoptics.lar.pyg4_lar_attach_scintillation`:
+instance using {func}`pygeomoptics.lar.pyg4_lar_attach_rindex`,
+{func}`pygeomoptics.lar.pyg4_lar_attach_attenuation`, and
+{func}`pygeomoptics.lar.pyg4_lar_attach_scintillation`:
 
 ```python
-import legendoptics.lar
+import pygeomoptics.lar
 import pint
 import pyg4ometry.geant4 as g4
 
@@ -79,15 +79,15 @@ _liquidargon = g4.Material(
 )
 
 u = pint.get_application_registry().get()
-legendoptics.lar.pyg4_lar_attach_rindex(
+pygeomoptics.lar.pyg4_lar_attach_rindex(
     _liquidargon,
     g4_registry,
 )
-legendoptics.lar.pyg4_lar_attach_attenuation(
+pygeomoptics.lar.pyg4_lar_attach_attenuation(
     _liquidargon,
     g4_registry,
 )
-legendoptics.lar.pyg4_lar_attach_scintillation(
+pygeomoptics.lar.pyg4_lar_attach_scintillation(
     _liquidargon,
     g4_registry,
     triplet_lifetime_method="legend200-llama",
@@ -97,8 +97,8 @@ legendoptics.lar.pyg4_lar_attach_scintillation(
 Each property can be used separately:
 
 ```python
-import legendoptics.lar
+import pygeomoptics.lar
 
-lifetimes = legendoptics.lar.lar_lifetimes(triplet_lifetime_method="legend200-llama")
+lifetimes = pygeomoptics.lar.lar_lifetimes(triplet_lifetime_method="legend200-llama")
 print(lifetimes.triplet)
 ```

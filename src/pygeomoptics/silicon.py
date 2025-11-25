@@ -12,8 +12,8 @@ import logging
 import pint
 from pint import Quantity
 
-from legendoptics import store
-from legendoptics.utils import readdatafile
+from pygeomoptics import store
+from pygeomoptics.utils import readdatafile
 
 log = logging.getLogger(__name__)
 u = pint.get_application_registry()
