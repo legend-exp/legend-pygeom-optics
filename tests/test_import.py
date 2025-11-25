@@ -2,8 +2,30 @@ from __future__ import annotations
 
 import numpy as np
 import pint
+import pytest
 
 u = pint.get_application_registry()
+
+
+def test_import_legacy():
+    with pytest.deprecated_call():
+        import legendoptics.copper
+        import legendoptics.fibers
+        import legendoptics.germanium
+        import legendoptics.lar
+        import legendoptics.nylon
+        import legendoptics.pen
+        import legendoptics.pmts
+        import legendoptics.silica
+        import legendoptics.silicon
+        import legendoptics.tetratex
+        import legendoptics.tpb
+        import legendoptics.tyvek
+        import legendoptics.ultem
+        import legendoptics.vm2000
+        import legendoptics.water
+
+        import legendoptics  # noqa: F401
 
 
 def test_import():
