@@ -6,6 +6,7 @@ import numpy as np
 import pint
 import pyg4ometry.gdml.Units as gdml_u
 import pyg4ometry.geant4 as g4
+from numpy.typing import ArrayLike
 from pint import Quantity
 
 from .scintillate import ScintConfig
@@ -96,6 +97,24 @@ def _gdml_format(unit, registry, **options):
     )
 
 
+def pint_to_gdml(v: pint.Quantity | ArrayLike) -> tuple[str, ArrayLike]:
+    """Convert a pint Quantity or ArrayLike (scalar/vector) object to a unit usable in GDML and the suitable value."""
+    if not isinstance(v, pint.Quantity):
+        return "", v
+
+    base_unit = v.units
+
+    unit = f"{base_unit:~gdml}"
+    # assert unit == f"{base_unit:~}".replace(" ", "").replace("µ", "u")
+    assert "dimensionless" not in unit
+
+    msg = f"Unit pint->gdml: {unit} - {base_unit}"
+    log.debug(msg)
+
+    v = v.m_as(base_unit)
+    return unit, v
+
+
 def _patch_g4_pint_unit_support() -> None:
     """:py:mod:`pyg4ometry` does currently not support code::`pint` unit that we use extensively here.
 
@@ -103,22 +122,6 @@ def _patch_g4_pint_unit_support() -> None:
     :py:class:`pyg4ometry.geant4.solid.OpticalSurface` in order to make adding material properties nicer.
     The new functions also check for some common properties to be used with the correct units.
     """
-
-    def _val_pint_to_gdml(v):
-        if not isinstance(v, pint.Quantity):
-            return "", v
-
-        base_unit = v.units
-
-        unit = f"{base_unit:~gdml}"
-        # assert unit == f"{base_unit:~}".replace(" ", "").replace("µ", "u")
-        assert "dimensionless" not in unit
-
-        msg = f"Unit pint->gdml: {unit} - {base_unit}"
-        log.debug(msg)
-
-        v = v.m_as(base_unit)
-        return unit, v
 
     # Only as of Geant4 11.1.0, `um` and `nm` are supported.
     length_u = ["km", "m", "cm", "mm", "nanometer", "micrometer"]
@@ -136,8 +139,8 @@ def _patch_g4_pint_unit_support() -> None:
     length_props = ["ABSLENGTH", "WLSABSLENGTH", "RAYLEIGH"]
 
     def addVecPropertyPint(self, name, e, v):
-        vunit, v = _val_pint_to_gdml(v)
-        eunit, e = _val_pint_to_gdml(e)
+        vunit, v = pint_to_gdml(v)
+        eunit, e = pint_to_gdml(e)
         v = np.array(v)
         e = np.array(e)
         # assert that we have only numeric data after this:
@@ -162,7 +165,7 @@ def _patch_g4_pint_unit_support() -> None:
     g4.solid.OpticalSurface.addVecPropertyPint = addVecPropertyPint
 
     def addConstPropertyPint(self, name, value):
-        vunit, value = _val_pint_to_gdml(value)
+        vunit, value = pint_to_gdml(value)
 
         if name in ["SCINTILLATIONYIELD"]:
             log.warning("%s cannot be used with scintillationByParticleType", name)
