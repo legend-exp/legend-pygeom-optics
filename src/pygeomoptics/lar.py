@@ -47,6 +47,7 @@ u = pint.get_application_registry()
 
 ArDielectricMethods = Literal["cern2020", "bideau-mehu"]
 ArLifetimeMethods = Literal["legend200-llama"]
+ArAbsCurveMethods = Literal["default", "legend200-llama-two-components"]
 
 
 class ArScintLiftime(NamedTuple):
@@ -224,7 +225,10 @@ def lar_rayleigh(
 
 
 @store.register_pluggable
-def lar_abs_length(λ: Quantity) -> Quantity:
+def lar_abs_length(
+    λ: Quantity,
+    abs_curve: ArAbsCurveMethods = "default",
+) -> Quantity:
     """Absorption length (not correctly scaled).
 
     We don't know how the attenuation length actually varies with the wavelength, so here
@@ -233,11 +237,47 @@ def lar_abs_length(λ: Quantity) -> Quantity:
     This function has to be re-scaled with the intended attenuation length at the VUV
     emission peak.
 
+    Parameters
+    ----------
+    λ
+        Photon wavelength
+    abs_curve
+        Choose the absorption curve model:
+        - 'default': Standard exponential model
+        - 'legend200-llama-two-components': Custom two-point exponential transition model
+
     .. optics-plot:: {'call_x': True}
     """
-    λ = np.maximum(λ, 141 * u.nm)
-    absl = 5.976e-12 * np.exp(0.223 * λ.to("nm").m) * u.cm
-    return np.minimum(absl, 100000 * u.cm)  # avoid large numbers
+    if abs_curve == "default":
+        λ = np.maximum(λ, 141 * u.nm)
+        absl = 5.976e-12 * np.exp(0.223 * λ.to("nm").m) * u.cm
+        return np.minimum(absl, 100000 * u.cm)  # avoid large numbers
+    if abs_curve == "legend200-llama-two-components":
+        # Custom model with exponential transition through two control points
+        # λ_peak = 126.8 nm: labs = 5.6 cm
+        # λ_threshold = 133 nm: labs = 1000 cm
+        labs_s = 5.6 * u.cm
+        labs_l = 1000 * u.cm
+        λ_threshold = 133.0  # nm
+        λ_peak = 126.8  # nm
+
+        λ_nm = λ.to("nm").m
+        λ_threshold_nm = λ_threshold
+
+        # Calculate slope b (dimensionless) in the exponent
+        b = np.log(labs_l.m / labs_s.m) / (λ_threshold - λ_peak)
+        a = labs_s.m / np.exp(b * λ_peak)
+
+        # Exponential for λ < threshold, constant labs_l for λ >= threshold
+        absl_magnitude = np.where(
+            λ_nm < λ_threshold_nm,
+            a * np.exp(b * λ_nm),
+            labs_l.m,
+        )
+
+        return absl_magnitude * u.cm
+    msg = f"unknown abs_curve: {abs_curve}"
+    raise ValueError(msg)
 
 
 @store.register_pluggable
@@ -264,7 +304,7 @@ def lar_calculate_attenuation(
     lar_dielectric_method: ArDielectricMethods = "cern2020",
     attenuation_method_or_length: ArLifetimeMethods | Quantity = "legend200-llama",
     rayleigh_enabled_or_length: bool | Quantity = True,
-    absorption_enabled_or_length: bool | Quantity = True,
+    absorption_enabled_or_length: ArAbsCurveMethods | bool | Quantity = True,
 ) -> tuple[Quantity, Quantity, Quantity, Quantity, Quantity]:
     """Calculate all attenuation-related optical properties to the given LAr material instance.
 
@@ -332,6 +372,13 @@ def lar_calculate_attenuation(
             "All three of attenuation, absorption and rayleigh scattering length are constrained manually. The specified attenuation length will be ignored."
         )
 
+    if isinstance(absorption_enabled_or_length, str):
+        log.warning(
+            "absorption_enabled_or_length is set to '%s' (custom absorption curve). "
+            "The attenuation_method_or_length parameter will be ignored.",
+            absorption_enabled_or_length,
+        )
+
     λ_full = pyg4_sample_λ(112 * u.nm, 650 * u.nm)
 
     # rayleigh scattering is a (theoretically) defined property, that - in principle -
@@ -343,17 +390,23 @@ def lar_calculate_attenuation(
         rayleigh *= rayleigh_enabled_or_length / peak_rayleigh_length
         peak_rayleigh_length = rayleigh_enabled_or_length
 
-    peak_att_length = lar_peak_attenuation_length(attenuation_method_or_length)
-    # absorption length and rayleigh add up inversely to the measured attenuation length.
-    peak_abs_length = 1 / (1 / peak_att_length - 1 / peak_rayleigh_length)
+    if isinstance(absorption_enabled_or_length, str):
+        peak_abs_length = lar_abs_length(126.8 * u.nm, absorption_enabled_or_length)
+        abslength = lar_abs_length(
+            λ_full, absorption_enabled_or_length
+        )  # absorption length _is_ correctly scaled
+    else:
+        peak_att_length = lar_peak_attenuation_length(attenuation_method_or_length)
+        # absorption length and rayleigh add up inversely to the measured attenuation length.
+        peak_abs_length = 1 / (1 / peak_att_length - 1 / peak_rayleigh_length)
 
-    if isinstance(absorption_enabled_or_length, Quantity):
-        assert absorption_enabled_or_length.check("[length]")
-        peak_abs_length = absorption_enabled_or_length
+        if isinstance(absorption_enabled_or_length, Quantity):
+            assert absorption_enabled_or_length.check("[length]")
+            peak_abs_length = absorption_enabled_or_length
 
-    # absorption length is _not_ correctly scaled yet.
-    absl_scale = peak_abs_length / lar_abs_length(126.8 * u.nm)
-    abslength = lar_abs_length(λ_full) * absl_scale
+        # absorption length is _not_ correctly scaled yet.
+        absl_scale = peak_abs_length / lar_abs_length(126.8 * u.nm)
+        abslength = lar_abs_length(λ_full) * absl_scale
 
     if rayleigh_enabled_or_length is False:
         attenuation = abslength
