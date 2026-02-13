@@ -243,9 +243,11 @@ def lar_abs_length(
         Photon wavelength
     method
         Choose the absorption curve model:
+
         - 'default': Standard exponential model
         - 'legend200-llama-two-components': Attenuation in the LEGEND-argon, as measured with LLAMA,
-        can be described with a two-component absorption length model, see [Schwarz2024]_ (p. 137).
+          can be described with a two-component absorption length model, see [Schwarz2024]_ (p. 137).
+
 
     .. optics-plot:: {'call_x': True}
     """
