@@ -253,6 +253,7 @@ def lar_abs_length(
 
 
     .. optics-plot:: {'call_x': True}
+    .. optics-plot:: {'call_x': True, 'standalone': True, 'extra_kwargs': {'method': 'legend200-llama-two-components'}}
     """
     if method == "default":
         λ = np.maximum(λ, 141 * u.nm)
