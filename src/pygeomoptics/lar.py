@@ -231,11 +231,9 @@ def lar_abs_length(
 ) -> Quantity:
     """Absorption length (not correctly scaled).
 
-    We don't know how the attenuation length actually varies with the wavelength, so here
-    we use a custom exponential function connecting the LAr Scintillation peak and the VIS
-    range just to avoid a step-like function. Still is a guess.
-    This function has to be re-scaled with the intended attenuation length at the VUV
-    emission peak.
+    We don't know how the attenuation length actually varies with the wavelength. With the
+    default model, we use a custom exponential function connecting the LAr Scintillation
+    peak and the VIS range just to avoid a step-like function. Still is a guess.
 
     Parameters
     ----------
@@ -244,9 +242,14 @@ def lar_abs_length(
     method
         Choose the absorption curve model:
 
-        - 'default': Standard exponential model
-        - 'legend200-llama-two-components': Attenuation in the LEGEND-argon, as measured with LLAMA,
+        - ``default``: Standard exponential model
+        - ``legend200-llama-two-components``: Attenuation in the LEGEND-argon, as measured with LLAMA,
           can be described with a two-component absorption length model, see [Schwarz2024]_ (p. 137).
+
+    Notes
+    -----
+    For ``mode="default``, the return value of this function has to be re-scaled with the
+    intended attenuation length at the VUV emission peak.
 
 
     .. optics-plot:: {'call_x': True}
