@@ -227,7 +227,7 @@ def lar_rayleigh(
 @store.register_pluggable
 def lar_abs_length(
     λ: Quantity,
-    abs_curve: ArAbsCurveMethods = "default",
+    method: ArAbsCurveMethods = "default",
 ) -> Quantity:
     """Absorption length (not correctly scaled).
 
@@ -248,11 +248,11 @@ def lar_abs_length(
 
     .. optics-plot:: {'call_x': True}
     """
-    if abs_curve == "default":
+    if method == "default":
         λ = np.maximum(λ, 141 * u.nm)
         absl = 5.976e-12 * np.exp(0.223 * λ.to("nm").m) * u.cm
         return np.minimum(absl, 100000 * u.cm)  # avoid large numbers
-    if abs_curve == "legend200-llama-two-components":
+    if method == "legend200-llama-two-components":
         # Custom model with exponential transition through two control points
         # λ_peak = 126.8 nm: labs = 5.6 cm
         # λ_threshold = 133 nm: labs = 1000 cm
@@ -276,7 +276,7 @@ def lar_abs_length(
         )
 
         return absl_magnitude * u.cm
-    msg = f"unknown abs_curve: {abs_curve}"
+    msg = f"unknown method: {method}"
     raise ValueError(msg)
 
 
