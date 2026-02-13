@@ -244,7 +244,8 @@ def lar_abs_length(
     abs_curve
         Choose the absorption curve model:
         - 'default': Standard exponential model
-        - 'legend200-llama-two-components': Custom two-point exponential transition model
+        - 'legend200-llama-two-components': Attenuation in the LEGEND-argon, as measured with LLAMA,
+        can be described with a two-component absorption length model, see [Schwarz2024]_ (p. 137).
 
     .. optics-plot:: {'call_x': True}
     """
