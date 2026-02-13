@@ -59,6 +59,13 @@ def test_pyg4_attach_lar() -> None:
         mat, reg, 90 * u.K, rayleigh_enabled_or_length=False
     )
     assert "RAYLEIGH" not in mat.properties
+    reg, mat = _create_dummy_mat()
+    pygeomoptics.lar.pyg4_lar_attach_attenuation(
+        mat,
+        reg,
+        90 * u.K,
+        absorption_enabled_or_length="legend200-llama-two-components",
+    )
 
 
 def test_pyg4_attach_tpb() -> None:

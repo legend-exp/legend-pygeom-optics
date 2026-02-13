@@ -99,6 +99,8 @@ def plot_callable(
         ret_offset
             use the argument numbered by this (default: 0) as the first argument that will
             be treated as an x or y vector.
+        extra_kwargs
+            add more kwargs to the ``obj()`` call.
     """
     # init plot
     has_ax = ax is not None
@@ -110,18 +112,19 @@ def plot_callable(
     plotoptions = plotoptions if plotoptions is not None else {}
 
     ret_offset = options.get("ret_offset", 0)
+    extra_kwargs = options.get("extra_kwargs", {})
     if "call_x" in options:
         # special case for LAr properties
         lim = [112 * u.nm, 650 * u.nm]
         if "xlim" in options:
             lim = [xl * u.nm for xl in options["xlim"]]
         x = np.linspace(*lim, num=200)
-        ys = obj(x)
+        ys = obj(x, **extra_kwargs)
         ys = ys[ret_offset:]
         # wrap the result in a tuple, if needed
         ys = ys if isinstance(ys, tuple) else (ys,)
     else:
-        data = obj()
+        data = obj(**extra_kwargs)
         x = data[ret_offset]
         # ys holds one or more
         ys = data[ret_offset + 1 :]
@@ -150,7 +153,7 @@ def plot_callable(
 
         ax.plot(x, y, **(po | plotoptions))
 
-    if len(ys) > 1 and "labels" in options:
+    if "labels" in options:
         ax.legend()
 
     # adjust plotting options
