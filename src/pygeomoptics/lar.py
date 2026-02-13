@@ -241,7 +241,7 @@ def lar_abs_length(
     ----------
     λ
         Photon wavelength
-    abs_curve
+    method
         Choose the absorption curve model:
         - 'default': Standard exponential model
         - 'legend200-llama-two-components': Attenuation in the LEGEND-argon, as measured with LLAMA,
