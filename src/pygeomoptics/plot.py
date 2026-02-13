@@ -149,8 +149,6 @@ def plot_callable(
 
         po = {"marker": ".", "markersize": 2, "linewidth": 0.5}
         if "labels" in options:
-            if len(options["labels"]) == 1:
-                raise ValueError(options["labels"])
             po["label"] = options["labels"][i]
 
         ax.plot(x, y, **(po | plotoptions))
