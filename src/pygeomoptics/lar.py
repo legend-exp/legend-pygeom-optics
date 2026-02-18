@@ -638,6 +638,8 @@ def pyg4_lar_attach_scintillation(
     # make sure that the scintillation spectrum is zero at the boundaries.
     scint_em[0] = 0
     scint_em[-1] = 0
+    # correct for differential change between wavelength and frequency space.
+    scint_em *= λ_peak**2 / λ_peak[0] ** 2
 
     with u.context("sp"):
         lar_scint = lar_mat.addVecPropertyPint(

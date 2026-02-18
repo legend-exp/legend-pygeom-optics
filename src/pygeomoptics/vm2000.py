@@ -99,7 +99,10 @@ def vm2000_parameters() -> tuple[Quantity, Quantity, Quantity, Quantity, Quantit
 
     g = InterpolatingGraph(*readdatafile("vm2000_em_spec.dat"), zero_outside=True)
 
-    wls_emission = g(vm2000_energy_range.to("nm")).to("dimensionless")
+    vm2000_λ_range = vm2000_energy_range.to("nm")
+    wls_emission = g(vm2000_λ_range).to("dimensionless")
+    # correct for differential change between wavelength and frequency space.
+    wls_emission *= vm2000_λ_range**2 / vm2000_λ_range[0] ** 2
 
     # Copy the first element to 0th position
     wls_absorption[0] = wls_absorption[1]  # depending on path length in foil --> angle

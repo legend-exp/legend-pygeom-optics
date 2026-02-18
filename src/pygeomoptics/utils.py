@@ -160,8 +160,9 @@ def g4gps_write_emission_spectrum(
         /gps/hist/inter   Lin
     """
     with u.context("sp"):
-        pointwise = np.array([λ_peak.to("MeV").m, scint_em.m]).T
-
+        pointwise = np.array([λ_peak.to("MeV").m, scint_em.to("dimensionless").m]).T
+    # correct for differential change between wavelength and frequency space.
+    pointwise[:, 1] *= (λ_peak**2 / λ_peak[0] ** 2).m
     # reorder the values to be in ascending energy order.
     sort = np.argsort(pointwise[:, 0])
     pointwise[:, 0] = pointwise[:, 0][sort]
