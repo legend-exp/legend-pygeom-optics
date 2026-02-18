@@ -152,10 +152,12 @@ def pyg4_tpb_attach_wls(
     λ_full = pyg4_sample_λ(112 * u.nm, 650 * u.nm, 800)
 
     absorption = InterpolatingGraph(*tpb_wls_absorption())(λ_full)
-    emission = InterpolatingGraph(*emission_fn())(λ_full)
+    emission = InterpolatingGraph(*emission_fn(), zero_outside=True)(λ_full)
     # make sure that the scintillation spectrum is zero at the boundaries.
-    emission[0] = 0
-    emission[-1] = 0
+    assert emission[0] == 0
+    assert emission[-1] == 0
+    # correct for differential change between wavelength and frequency space.
+    emission *= λ_full**2 / λ_full[0] ** 2
 
     with u.context("sp"):
         mat.addVecPropertyPint("WLSABSLENGTH", λ_full.to("eV"), absorption)

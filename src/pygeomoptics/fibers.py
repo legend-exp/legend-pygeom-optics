@@ -236,10 +236,12 @@ def pyg4_fiber_core_attach_wls(
 
     λ_full = pyg4_sample_λ(112 * u.nm, 650 * u.nm)
     absorption = InterpolatingGraph(*fiber_wls_absorption())(λ_full)
-    emission = InterpolatingGraph(*fiber_wls_emission())(λ_full)
+    emission = InterpolatingGraph(*fiber_wls_emission(), zero_outside=True)(λ_full)
     # make sure that the scintillation spectrum is zero at the boundaries.
-    emission[0] = 0
-    emission[-1] = 0
+    assert emission[0] == 0
+    assert emission[-1] == 0
+    # correct for differential change between wavelength and frequency space.
+    emission *= λ_full**2 / λ_full[0] ** 2
 
     with u.context("sp"):
         mat.addVecPropertyPint("WLSABSLENGTH", λ_full.to("eV"), absorption)
@@ -291,10 +293,14 @@ def pyg4_fiber_core_attach_scintillation(mat, reg) -> None:
 
     # sample the measured emission spectrum.
     λ_scint = pyg4_sample_λ(350 * u.nm, 650 * u.nm, 200)
-    scint_em = InterpolatingGraph(*fiber_wls_emission(), min_idx=350 * u.nm)(λ_scint)
+    scint_em = InterpolatingGraph(
+        *fiber_wls_emission(), min_idx=350 * u.nm, zero_outside=True
+    )(λ_scint)
     # make sure that the scintillation spectrum is zero at the boundaries.
-    scint_em[0] = 0
-    scint_em[-1] = 0
+    assert scint_em[0] == 0
+    assert scint_em[-1] == 0
+    # correct for differential change between wavelength and frequency space.
+    scint_em *= λ_scint**2 / λ_scint[0] ** 2
 
     with u.context("sp"):
         mat.addVecPropertyPint("SCINTILLATIONCOMPONENT1", λ_scint.to("eV"), scint_em)
@@ -321,10 +327,12 @@ def g4gps_fiber_emissions_spectrum(filename: str, output_macro: bool) -> None:
 
     # sample the measured emission spectrum.
     λ_scint = pyg4_sample_λ(350 * u.nm, 650 * u.nm, 200)
-    scint_em = InterpolatingGraph(*fiber_wls_emission(), min_idx=350 * u.nm)(λ_scint)
+    scint_em = InterpolatingGraph(
+        *fiber_wls_emission(), min_idx=350 * u.nm, zero_outside=True
+    )(λ_scint)
     # make sure that the scintillation spectrum is zero at the boundaries.
-    scint_em[0] = 0
-    scint_em[-1] = 0
+    assert scint_em[0] == 0
+    assert scint_em[-1] == 0
 
     g4gps_write_emission_spectrum(
         filename, output_macro, λ_scint, scint_em, "fiber_emissions_spectrum"
