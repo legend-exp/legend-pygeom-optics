@@ -232,7 +232,7 @@ def pyg4_fiber_core_attach_wls(
     .fiber_wls_emission
     .fiber_wls_timeconstant
     """
-    from pygeomoptics.pyg4utils import pyg4_sample_λ
+    from pygeomoptics.pyg4utils import pyg4_sample_λ, pyg4_spectral_density
 
     λ_full = pyg4_sample_λ(112 * u.nm, 650 * u.nm)
     absorption = InterpolatingGraph(*fiber_wls_absorption())(λ_full)
@@ -240,12 +240,10 @@ def pyg4_fiber_core_attach_wls(
     # make sure that the scintillation spectrum is zero at the boundaries.
     assert emission[0] == 0
     assert emission[-1] == 0
-    # correct for differential change between wavelength and frequency space.
-    emission *= λ_full**2 / λ_full[0] ** 2
 
     with u.context("sp"):
         mat.addVecPropertyPint("WLSABSLENGTH", λ_full.to("eV"), absorption)
-        mat.addVecPropertyPint("WLSCOMPONENT", λ_full.to("eV"), emission)
+    mat.addVecPropertyPint("WLSCOMPONENT", *pyg4_spectral_density(λ_full, emission))
 
     mat.addConstPropertyPint("WLSTIMECONSTANT", fiber_wls_timeconstant())
 
@@ -289,7 +287,11 @@ def pyg4_fiber_core_attach_scintillation(mat, reg) -> None:
     .fiber_wls_emission
     .fiber_wls_timeconstant
     """
-    from pygeomoptics.pyg4utils import pyg4_def_scint_by_particle_type, pyg4_sample_λ
+    from pygeomoptics.pyg4utils import (
+        pyg4_def_scint_by_particle_type,
+        pyg4_sample_λ,
+        pyg4_spectral_density,
+    )
 
     # sample the measured emission spectrum.
     λ_scint = pyg4_sample_λ(350 * u.nm, 650 * u.nm, 200)
@@ -299,11 +301,10 @@ def pyg4_fiber_core_attach_scintillation(mat, reg) -> None:
     # make sure that the scintillation spectrum is zero at the boundaries.
     assert scint_em[0] == 0
     assert scint_em[-1] == 0
-    # correct for differential change between wavelength and frequency space.
-    scint_em *= λ_scint**2 / λ_scint[0] ** 2
 
-    with u.context("sp"):
-        mat.addVecPropertyPint("SCINTILLATIONCOMPONENT1", λ_scint.to("eV"), scint_em)
+    mat.addVecPropertyPint(
+        "SCINTILLATIONCOMPONENT1", *pyg4_spectral_density(λ_scint, scint_em)
+    )
 
     # time constant is unknown.
     mat.addConstPropertyPint("SCINTILLATIONTIMECONSTANT1", fiber_wls_timeconstant())

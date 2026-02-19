@@ -159,10 +159,12 @@ def g4gps_write_emission_spectrum(
         /gps/hist/file    <filename>
         /gps/hist/inter   Lin
     """
+    from pygeomoptics.pyg4utils import pyg4_scale_spectral_density
+
     with u.context("sp"):
         pointwise = np.array([λ_peak.to("MeV").m, scint_em.to("dimensionless").m]).T
     # correct for differential change between wavelength and frequency space.
-    pointwise[:, 1] *= (λ_peak**2 / λ_peak[0] ** 2).m
+    pointwise[:, 1] *= pyg4_scale_spectral_density(λ_peak)
     # reorder the values to be in ascending energy order.
     sort = np.argsort(pointwise[:, 0])
     pointwise[:, 0] = pointwise[:, 0][sort]
