@@ -139,7 +139,7 @@ def pyg4_tpb_attach_wls(
     .tpb_wls_timeconstant
     .tpb_quantum_efficiency
     """
-    from pygeomoptics.pyg4utils import pyg4_sample_λ
+    from pygeomoptics.pyg4utils import pyg4_sample_λ, pyg4_spectral_density
 
     if emission_spectrum not in ["default", "polystyrene_matrix"]:
         msg = "invalid parameter value of emission_spectrum"
@@ -156,12 +156,10 @@ def pyg4_tpb_attach_wls(
     # make sure that the scintillation spectrum is zero at the boundaries.
     assert emission[0] == 0
     assert emission[-1] == 0
-    # correct for differential change between wavelength and frequency space.
-    emission *= λ_full**2 / λ_full[0] ** 2
 
     with u.context("sp"):
         mat.addVecPropertyPint("WLSABSLENGTH", λ_full.to("eV"), absorption)
-        mat.addVecPropertyPint("WLSCOMPONENT", λ_full.to("eV"), emission)
+    mat.addVecPropertyPint("WLSCOMPONENT", *pyg4_spectral_density(λ_full, emission))
 
     mat.addConstPropertyPint("WLSTIMECONSTANT", tpb_wls_timeconstant())
     if quantum_efficiency is True:

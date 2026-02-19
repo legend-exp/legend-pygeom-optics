@@ -629,7 +629,11 @@ def pyg4_lar_attach_scintillation(
     .lar_emission_spectrum
     .lar_lifetimes
     """
-    from pygeomoptics.pyg4utils import pyg4_def_scint_by_particle_type, pyg4_sample_λ
+    from pygeomoptics.pyg4utils import (
+        pyg4_def_scint_by_particle_type,
+        pyg4_sample_λ,
+        pyg4_spectral_density,
+    )
 
     λ_peak = pyg4_sample_λ(116 * u.nm, 141 * u.nm)
 
@@ -638,14 +642,11 @@ def pyg4_lar_attach_scintillation(
     # make sure that the scintillation spectrum is zero at the boundaries.
     scint_em[0] = 0
     scint_em[-1] = 0
-    # correct for differential change between wavelength and frequency space.
-    scint_em *= λ_peak**2 / λ_peak[0] ** 2
 
-    with u.context("sp"):
-        lar_scint = lar_mat.addVecPropertyPint(
-            "SCINTILLATIONCOMPONENT1", λ_peak.to("eV"), scint_em
-        )
-        lar_mat.addProperty("SCINTILLATIONCOMPONENT2", lar_scint)
+    lar_scint = lar_mat.addVecPropertyPint(
+        "SCINTILLATIONCOMPONENT1", *pyg4_spectral_density(λ_peak, scint_em)
+    )
+    lar_mat.addProperty("SCINTILLATIONCOMPONENT2", lar_scint)
 
     lifetimes = lar_lifetimes(triplet_lifetime_method)
     lar_mat.addConstPropertyPint("SCINTILLATIONTIMECONSTANT1", lifetimes.singlet)

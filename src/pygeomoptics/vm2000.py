@@ -61,6 +61,8 @@ def vm2000_absorption_length() -> Quantity:
 @u.with_context("sp")
 def vm2000_parameters() -> tuple[Quantity, Quantity, Quantity, Quantity, Quantity]:
     """Wavelength-shifting parameters for the reflective foil VM2000."""
+    from pygeomoptics.pyg4utils import pyg4_scale_spectral_density
+
     # Constants
     wls_yield = 0.075  # 0.6 MaGe, 0.075 XENON paper
 
@@ -102,7 +104,7 @@ def vm2000_parameters() -> tuple[Quantity, Quantity, Quantity, Quantity, Quantit
     vm2000_λ_range = vm2000_energy_range.to("nm")
     wls_emission = g(vm2000_λ_range).to("dimensionless")
     # correct for differential change between wavelength and frequency space.
-    wls_emission *= vm2000_λ_range**2 / vm2000_λ_range[0] ** 2
+    wls_emission *= pyg4_scale_spectral_density(vm2000_λ_range)
 
     # Copy the first element to 0th position
     wls_absorption[0] = wls_absorption[1]  # depending on path length in foil --> angle

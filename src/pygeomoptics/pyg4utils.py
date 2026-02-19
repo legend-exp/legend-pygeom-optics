@@ -6,7 +6,7 @@ import numpy as np
 import pint
 import pyg4ometry.gdml.Units as gdml_u
 import pyg4ometry.geant4 as g4
-from numpy.typing import ArrayLike
+from numpy.typing import ArrayLike, NDArray
 from pint import Quantity
 
 from .scintillate import ScintConfig
@@ -17,13 +17,43 @@ ureg = pint.get_application_registry().get()
 
 @ureg.with_context("sp")
 def pyg4_sample_λ(
-    start_lambda: Quantity, end_lambda: Quantity, sample_count: int = 200
+    λ_start: Quantity, λ_end: Quantity, sample_count: int = 200
 ) -> Quantity:
     """Sample equally-spaced energies between the two specified wavelengths."""
-    assert start_lambda <= end_lambda
+    assert λ_start <= λ_end
 
-    samples = np.linspace(end_lambda.to("eV"), start_lambda.to("eV"), num=sample_count)
+    samples = np.linspace(λ_end.to("eV"), λ_start.to("eV"), num=sample_count)
     return samples.to("nm")
+
+
+def pyg4_scale_spectral_density(λ: Quantity) -> NDArray:
+    r"""Calculate a correction factor for emission spectra expressed as spectral density.
+
+    Geant4 samples the emission from the spectrum in energy representation. This requires
+    an additional scaling factor according to the integral substitution:
+
+    .. math::
+
+        \mathrm{d}\lambda \propto \lambda(E)^2 \mathrm{d}E
+    """
+    return (λ**2 / λ[0] ** 2).to("dimensionless").m
+
+
+@ureg.with_context("sp")
+def pyg4_spectral_density(λ: Quantity, s_λ: Quantity) -> tuple[Quantity, Quantity]:
+    """Convert an emission spectra expressed as spectral density in wavelength to vectors for Geant4.
+
+    Parameters
+    ----------
+    λ
+        wavelength vector.
+    s_λ
+        spectral density expressed in wavelength.
+    """
+    if not s_λ.check("1"):
+        msg = "Spectral density must be dimensionless"
+        raise ValueError(msg)
+    return λ.to("eV"), s_λ * pyg4_scale_spectral_density(λ)
 
 
 def _get_scint_yield_vector(yield_per_mev: Quantity):
@@ -187,4 +217,9 @@ def _patch_g4_pint_unit_support() -> None:
 _patch_g4_pint_unit_support()
 
 
-__all__ = ["pyg4_def_scint_by_particle_type", "pyg4_sample_λ"]
+__all__ = [
+    "pyg4_def_scint_by_particle_type",
+    "pyg4_sample_λ",
+    "pyg4_scale_spectral_density",
+    "pyg4_spectral_density",
+]
