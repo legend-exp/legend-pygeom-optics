@@ -165,22 +165,17 @@ def lar_emission_spectrum(λ: Quantity, third_continuum=False) -> Quantity:
 
     # sample the measured emission spectrum and avoid the fluctuations below 115 nm.
     heindl_spectrum = InterpolatingGraph(
-        *heindl,
-        min_idx=115 * u.nm,
-        max_idx=150 * u.nm
+        *heindl, min_idx=115 * u.nm, max_idx=150 * u.nm
     )(λ)
-    
+
     if third_continuum:
         lambda_center = 200.0 * u.nm
         sigma = 50.0 * u.nm
         amplitude = np.max(heindl_spectrum) * 0.2  # relative to Heindl peak
-        third_cont = amplitude * np.exp(-0.5 * ((λ - lambda_center)/sigma)**2)
-        
+        third_cont = amplitude * np.exp(-0.5 * ((λ - lambda_center) / sigma) ** 2)
+
         return heindl_spectrum + third_cont
-    else:
-        return heindl_spectrum
-        
-    
+    return heindl_spectrum
 
 
 @store.register_pluggable
@@ -623,7 +618,7 @@ def pyg4_lar_attach_scintillation(
     reg,
     flat_top_yield: Quantity = 31250 / u.MeV,
     triplet_lifetime_method: float | ArLifetimeMethods = "legend200-llama",
-    third_continuum = False,
+    third_continuum=False,
 ) -> None:
     """Attach all properties for LAr scintillation response to the given LAr material instance.
 
@@ -675,7 +670,11 @@ def pyg4_lar_attach_scintillation(
     pyg4_def_scint_by_particle_type(lar_mat, scint_params)
 
 
-def g4gps_lar_emissions_spectrum(filename: str, output_macro: bool, third_continuum: bool = False,) -> None:
+def g4gps_lar_emissions_spectrum(
+    filename: str,
+    output_macro: bool,
+    third_continuum: bool = False,
+) -> None:
     """Write a LAr emission energy spectrum for G4GeneralParticleSource.
 
     See Also
