@@ -156,7 +156,7 @@ def lar_refractive_index(
 
 
 @store.register_pluggable
-def lar_emission_spectrum(λ: Quantity) -> Quantity:
+def lar_emission_spectrum(λ: Quantity, third_continuum=False) -> Quantity:
     """Return the LAr emission spectrum, adapted from [Heindl2010]_.
 
     .. optics-plot:: {'call_x': True, 'xlim': [116, 141]}
@@ -164,11 +164,23 @@ def lar_emission_spectrum(λ: Quantity) -> Quantity:
     heindl = readdatafile("lar_emission_heindl2010.dat")
 
     # sample the measured emission spectrum and avoid the fluctuations below 115 nm.
-    return InterpolatingGraph(
+    heindl_spectrum = InterpolatingGraph(
         *heindl,
         min_idx=115 * u.nm,
-        max_idx=150 * u.nm,
+        max_idx=150 * u.nm
     )(λ)
+    
+    if third_continuum:
+        lambda_center = 200.0 * u.nm
+        sigma = 50.0 * u.nm
+        amplitude = np.max(heindl_spectrum) * 0.2  # relative to Heindl peak
+        third_cont = amplitude * np.exp(-0.5 * ((λ - lambda_center)/sigma)**2)
+        
+        return heindl_spectrum + third_cont
+    else:
+        return heindl_spectrum
+        
+    
 
 
 @store.register_pluggable
@@ -611,6 +623,7 @@ def pyg4_lar_attach_scintillation(
     reg,
     flat_top_yield: Quantity = 31250 / u.MeV,
     triplet_lifetime_method: float | ArLifetimeMethods = "legend200-llama",
+    third_continuum = False,
 ) -> None:
     """Attach all properties for LAr scintillation response to the given LAr material instance.
 
@@ -635,10 +648,10 @@ def pyg4_lar_attach_scintillation(
         pyg4_spectral_density,
     )
 
-    λ_peak = pyg4_sample_λ(116 * u.nm, 141 * u.nm)
+    λ_peak = pyg4_sample_λ(116 * u.nm, 400 * u.nm)
 
     # sample the measured emission spectrum.
-    scint_em = lar_emission_spectrum(λ_peak)
+    scint_em = lar_emission_spectrum(λ_peak, third_continuum)
     # make sure that the scintillation spectrum is zero at the boundaries.
     scint_em[0] = 0
     scint_em[-1] = 0
@@ -662,7 +675,7 @@ def pyg4_lar_attach_scintillation(
     pyg4_def_scint_by_particle_type(lar_mat, scint_params)
 
 
-def g4gps_lar_emissions_spectrum(filename: str, output_macro: bool) -> None:
+def g4gps_lar_emissions_spectrum(filename: str, output_macro: bool, third_continuum: bool = False,) -> None:
     """Write a LAr emission energy spectrum for G4GeneralParticleSource.
 
     See Also
@@ -675,7 +688,7 @@ def g4gps_lar_emissions_spectrum(filename: str, output_macro: bool) -> None:
     λ_peak = pyg4_sample_λ(116 * u.nm, 141 * u.nm)
 
     # sample the measured emission spectrum.
-    scint_em = lar_emission_spectrum(λ_peak)
+    scint_em = lar_emission_spectrum(λ_peak, third_continuum)
     # make sure that the scintillation spectrum is zero at the boundaries.
     scint_em[0] = 0
     scint_em[-1] = 0
