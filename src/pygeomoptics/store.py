@@ -39,6 +39,9 @@ class PluggableFunction:
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
         return self._impl(*args, **kwargs)
 
+    def __get__(self, obj: Any, objtype: type | None = None) -> PluggableFunction:
+        return self
+
     def reset_implementation(self) -> None:
         """Reset to the original function implementation."""
         self._impl = self._orig_impl

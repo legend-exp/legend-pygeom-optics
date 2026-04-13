@@ -33,8 +33,8 @@ def ultem_refractive_index() -> tuple[Quantity, Quantity]:
     r_smoothed = savgol_filter(r.m, 30, 3, mode="mirror") * r.u
     r[λ > 500 * u.nm] = r_smoothed[λ > 500 * u.nm]
 
-    λ = Quantity(np.insert(λ.m, 0, (np.array([350, 375]) * u.nm).to(λ.u).m), λ.u)
-    r = Quantity(np.insert(r.m, 0, [1.684, 1.667]), r.u)
+    λ = Quantity([350, 375, *λ.to("nm").m], "nm")
+    r = Quantity([1.684, 1.667, *r.m], r.u)
 
     r, λ = r[λ <= 650 * u.nm], λ[λ <= 650 * u.nm]
     return λ.to("nm"), r
@@ -56,7 +56,7 @@ def ultem_absorption() -> tuple[Quantity, Quantity]:
     κ = np.insert(κ, 0, [κ[0], κ[0]], axis=0)
 
     λn, n = ultem_refractive_index()
-    assert np.all(λ == λn)
+    assert np.allclose(λ.to("nm").m, λn.to("nm").m)
 
     # convert to absorption length using the usual relation from em wave absorption.
     # λ₀ = λ × n is the vacuum wavelength.

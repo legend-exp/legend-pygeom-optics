@@ -14,6 +14,7 @@ import math
 
 import numpy as np
 import pint
+from numpy.typing import NDArray
 from pint import Quantity
 
 from pygeomoptics import pyg4utils, store
@@ -59,7 +60,7 @@ def vm2000_absorption_length() -> Quantity:
 
 @store.register_pluggable
 @u.with_context("sp")
-def vm2000_parameters() -> tuple[Quantity, np.ndarray, np.ndarray, Quantity, Quantity]:
+def vm2000_parameters() -> tuple[Quantity, NDArray[np.float64], NDArray[np.float64], Quantity, Quantity]:
     """Wavelength-shifting parameters for the reflective foil VM2000."""
     from pygeomoptics.pyg4utils import pyg4_scale_spectral_density
 

@@ -35,29 +35,9 @@ def water_absorption() -> tuple[Quantity, Quantity]:
     .. optics-plot::
     """
 
-    wvl = Quantity(
-        np.array([600, 550, 500, 450, 400, 350, 300, 250, 200, 150, 100]),
-        "nm",
-    )
+    wvl: Quantity = Quantity([600, 550, 500, 450, 400, 350, 300, 250, 200, 150, 100], "nm")
 
-    abs_len = Quantity(
-        np.array(
-            [
-                10 * 1000,  # 10 m
-                20 * 1000,  # 20 m
-                50 * 1000,  # 50 m
-                100 * 1000,  # 100 m
-                100 * 1000,  # 100 m
-                100 * 1000,  # 100 m
-                90 * 1000,  # 90 m
-                20 * 1000,  # 20 m
-                1 * 1000,  # 1 m
-                0.001,  # 0.001 mm
-                0.0001,  # 0.0001 mm
-            ]
-        ),
-        "mm",
-    )
+    abs_len: Quantity = Quantity([10000, 20000, 50000, 100000, 100000, 100000, 90000, 20000, 1000, 0.001, 0.0001], "mm")
 
     assert abs_len.check("[length]")
     return wvl, abs_len
