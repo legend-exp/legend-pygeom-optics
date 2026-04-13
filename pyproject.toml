@@ -95,6 +95,10 @@ testpaths = "tests"
 [tool.codespell]
 ignore-words-list = "manuel,tre"
 
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+
 [tool.ruff]
 src = ["src"]
 
