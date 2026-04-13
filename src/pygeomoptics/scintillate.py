@@ -109,7 +109,9 @@ def precompute_scintillation_params(
     time_components_ns = np.array([t.to(u.nanosecond).m for t in time_components])
     fano = scint_config.fano_factor if scint_config.fano_factor is not None else 1
 
-    return ComputedScintParams((scint_config.flat_top.to("1/keV").m, fano, time_components_ns, particles))
+    return ComputedScintParams(
+        (scint_config.flat_top.to("1/keV").m, fano, time_components_ns, particles)
+    )
 
 
 @njit

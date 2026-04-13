@@ -22,7 +22,9 @@ def pyg4_sample_λ(
     """Sample equally-spaced energies between the two specified wavelengths."""
     assert λ_start <= λ_end
 
-    samples = np.linspace(λ_end.to("eV").m, λ_start.to("eV").m, num=sample_count) * ureg.eV
+    samples = (
+        np.linspace(λ_end.to("eV").m, λ_start.to("eV").m, num=sample_count) * ureg.eV
+    )
     return samples.to("nm")
 
 

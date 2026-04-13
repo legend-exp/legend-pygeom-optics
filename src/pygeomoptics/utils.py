@@ -177,7 +177,7 @@ def g4gps_write_emission_spectrum(
         np.savetxt(filename, pointwise)
         return
 
-    with open(filename, "wt") as f:
+    with open(filename, "w") as f:
         f.write(f"# {quantity_name} | pygeomoptics\n\n")
         f.write("/gps/ene/type     Arb\n")
         f.write("/gps/ene/diffspec true\n")
