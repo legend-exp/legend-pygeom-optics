@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import logging
 
-import numpy as np
 import pint
 from pint import Quantity
 
@@ -37,8 +36,8 @@ def tetratex_reflectivity() -> tuple[Quantity, Quantity]:
     """
     λ, r = readdatafile("tetratex_reflectivity.dat")
     # add the lower reflectivity for the VUV range.
-    λ = np.insert(λ, 0, 150 * u.nm, axis=0)
-    r = np.insert(r, 0, 0.1, axis=0)
+    λ = Quantity([150, *λ.to("nm").m], "nm")
+    r = Quantity([0.1, *r.m], r.u)
     return λ, r
 
 

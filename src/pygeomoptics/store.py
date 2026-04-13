@@ -16,53 +16,56 @@ all registered pluggable functions.
 
 from __future__ import annotations
 
+import functools
 import logging
 from collections.abc import Callable
-from functools import wraps
 from pathlib import Path
-from types import MethodType
+from typing import Any, Generic, ParamSpec, TypeVar
 
 log = logging.getLogger(__name__)
 
-_optical_property_store = []
+P = ParamSpec("P")
+R = TypeVar("R")
+
+_optical_property_store: list[PluggableFunction[..., Any]] = []
 
 
-def register_pluggable(fn: Callable) -> Callable:
-    """Decorator that registers this function as a pluggable property function."""
+class PluggableFunction(Generic[P, R]):
+    """A wrapper around a function that allows replacing its implementation at runtime."""
 
-    # create the new wrapper object.
-    @wraps(fn)
-    def wrap(*args, **kwargs):
-        return wrap._impl(*args, **kwargs)
+    def __init__(self, fn: Callable[P, R]) -> None:
+        self._impl: Callable[P, R] = fn
+        self._orig_impl: Callable[P, R] = fn
+        functools.update_wrapper(self, fn)
+        self.__name__: str = fn.__name__
 
-    wrap._impl = fn
-    wrap._orig_impl = fn
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
+        return self._impl(*args, **kwargs)
 
-    # add "instance methods" of the new wrapper.
+    def __get__(self, obj: Any, objtype: type | None = None) -> PluggableFunction[P, R]:
+        return self
+
     def reset_implementation(self) -> None:
         """Reset to the original function implementation."""
         self._impl = self._orig_impl
 
-    def replace_implementation(self, new_impl: Callable) -> None:
+    def replace_implementation(self, new_impl: Callable[P, R]) -> None:
         """Replace the underlying function implementation."""
         self._impl = new_impl
 
     def is_original(self) -> bool:
-        """Is the underlying function the original implementation"""
+        """Is the underlying function the original implementation."""
         return self._impl == self._orig_impl
 
-    def original_impl(self) -> Callable:
+    def original_impl(self) -> Callable[P, R]:
         """The original function implementation."""
         return self._orig_impl
 
-    wrap.reset_implementation = MethodType(reset_implementation, wrap)
-    wrap.replace_implementation = MethodType(replace_implementation, wrap)
-    wrap.is_original = MethodType(is_original, wrap)
-    wrap.original_impl = MethodType(original_impl, wrap)
 
-    # store the wrapper to use it in the functions of this module.
+def register_pluggable(fn: Callable[P, R]) -> PluggableFunction[P, R]:
+    """Decorator that registers this function as a pluggable property function."""
+    wrap: PluggableFunction[P, R] = PluggableFunction(fn)
     _optical_property_store.append(wrap)
-
     return wrap
 
 
@@ -107,5 +110,11 @@ def load_user_material_code(python_file: str) -> None:
     spec = importlib.util.spec_from_file_location(
         "pygeomoptics.user_materials", python_file
     )
+    if spec is None:
+        msg = f"could not create module spec for {python_file}"
+        raise RuntimeError(msg)
     mod = importlib.util.module_from_spec(spec)
+    if spec.loader is None:
+        msg = f"module spec has no loader for {python_file}"
+        raise RuntimeError(msg)
     spec.loader.exec_module(mod)
