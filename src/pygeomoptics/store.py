@@ -20,33 +20,36 @@ import functools
 import logging
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import Any, Generic, ParamSpec, TypeVar
 
 log = logging.getLogger(__name__)
 
-_optical_property_store: list[PluggableFunction] = []
+P = ParamSpec("P")
+R = TypeVar("R")
+
+_optical_property_store: list[PluggableFunction[..., Any]] = []
 
 
-class PluggableFunction:
+class PluggableFunction(Generic[P, R]):
     """A wrapper around a function that allows replacing its implementation at runtime."""
 
-    def __init__(self, fn: Callable) -> None:
-        self._impl: Callable = fn
-        self._orig_impl: Callable = fn
+    def __init__(self, fn: Callable[P, R]) -> None:
+        self._impl: Callable[P, R] = fn
+        self._orig_impl: Callable[P, R] = fn
         functools.update_wrapper(self, fn)
         self.__name__: str = fn.__name__
 
-    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
         return self._impl(*args, **kwargs)
 
-    def __get__(self, obj: Any, objtype: type | None = None) -> PluggableFunction:
+    def __get__(self, obj: Any, objtype: type | None = None) -> PluggableFunction[P, R]:
         return self
 
     def reset_implementation(self) -> None:
         """Reset to the original function implementation."""
         self._impl = self._orig_impl
 
-    def replace_implementation(self, new_impl: Callable) -> None:
+    def replace_implementation(self, new_impl: Callable[P, R]) -> None:
         """Replace the underlying function implementation."""
         self._impl = new_impl
 
@@ -54,14 +57,14 @@ class PluggableFunction:
         """Is the underlying function the original implementation."""
         return self._impl == self._orig_impl
 
-    def original_impl(self) -> Callable:
+    def original_impl(self) -> Callable[P, R]:
         """The original function implementation."""
         return self._orig_impl
 
 
-def register_pluggable(fn: Callable) -> PluggableFunction:
+def register_pluggable(fn: Callable[P, R]) -> PluggableFunction[P, R]:
     """Decorator that registers this function as a pluggable property function."""
-    wrap = PluggableFunction(fn)
+    wrap: PluggableFunction[P, R] = PluggableFunction(fn)
     _optical_property_store.append(wrap)
     return wrap
 

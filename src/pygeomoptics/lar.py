@@ -28,7 +28,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Literal, NamedTuple
+from typing import Literal, NamedTuple, cast
 
 import numpy as np
 import pint
@@ -398,9 +398,10 @@ def lar_calculate_attenuation(
         peak_rayleigh_length = rayleigh_enabled_or_length
 
     if isinstance(absorption_enabled_or_length, str):
-        peak_abs_length = lar_abs_length(126.8 * u.nm, absorption_enabled_or_length)
+        abs_method = cast(ArAbsCurveMethods, absorption_enabled_or_length)
+        peak_abs_length = lar_abs_length(126.8 * u.nm, abs_method)
         abslength = lar_abs_length(
-            λ_full, absorption_enabled_or_length
+            λ_full, abs_method
         )  # absorption length _is_ correctly scaled
     else:
         peak_att_length = lar_peak_attenuation_length(attenuation_method_or_length)
