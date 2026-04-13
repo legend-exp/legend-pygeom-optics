@@ -59,7 +59,7 @@ def vm2000_absorption_length() -> Quantity:
 
 @store.register_pluggable
 @u.with_context("sp")
-def vm2000_parameters() -> tuple[Quantity, Quantity, Quantity, Quantity, Quantity]:
+def vm2000_parameters() -> tuple[Quantity, np.ndarray, np.ndarray, Quantity, Quantity]:
     """Wavelength-shifting parameters for the reflective foil VM2000."""
     from pygeomoptics.pyg4utils import pyg4_scale_spectral_density
 

@@ -35,36 +35,30 @@ def water_absorption() -> tuple[Quantity, Quantity]:
     .. optics-plot::
     """
 
-    wvl = [
-        600,
-        550,
-        500,
-        450,
-        400,
-        350,
-        300,
-        250,
-        200,
-        150,
-        100,
-    ] * u.nm
+    wvl = Quantity(
+        np.array([600, 550, 500, 450, 400, 350, 300, 250, 200, 150, 100]),
+        "nm",
+    )
 
-    abs = [
-        10 * 1000,  # 10 m
-        20 * 1000,  # 20 m
-        50 * 1000,  # 50 m
-        100 * 1000,  # 100 m
-        100 * 1000,  # 100 m
-        100 * 1000,  # 100 m
-        90 * 1000,  # 90 m
-        20 * 1000,  # 20 m
-        1 * 1000,  # 1 m
-        0.001,  # 0.001 mm
-        0.0001,  # 0.0001 mm
-    ] * u.mm
+    abs_lengths = Quantity(
+        np.array([
+            10 * 1000,  # 10 m
+            20 * 1000,  # 20 m
+            50 * 1000,  # 50 m
+            100 * 1000,  # 100 m
+            100 * 1000,  # 100 m
+            100 * 1000,  # 100 m
+            90 * 1000,  # 90 m
+            20 * 1000,  # 20 m
+            1 * 1000,  # 1 m
+            0.001,  # 0.001 mm
+            0.0001,  # 0.0001 mm
+        ]),
+        "mm",
+    )
 
-    assert abs.check("[length]")
-    return wvl, abs
+    assert abs_lengths.check("[length]")
+    return wvl, abs_lengths
 
 
 def pyg4_water_attach_rindex(mat, reg) -> None:

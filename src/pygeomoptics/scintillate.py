@@ -74,7 +74,7 @@ PARTICLE_INDICES = {
 
 def particle_to_index(particle: str) -> ParticleIndex:
     """Converts the given G4 scintillation particle name to a module-internal index."""
-    return PARTICLE_INDICES[particle.lower()]
+    return ParticleIndex(PARTICLE_INDICES[particle.lower()])
 
 
 def precompute_scintillation_params(
@@ -101,14 +101,15 @@ def precompute_scintillation_params(
         p = scint_config.get_particle(k)
         p = electron if p is None else p
         if has_2_timeconstants:
+            assert p.exc_ratio is not None
             particles[v] = np.array([p.yield_factor, p.exc_ratio, 1 - p.exc_ratio])
         else:
             particles[v] = np.array([p.yield_factor, 1])
 
-    time_components = np.array([t.to(u.nanosecond).m for t in time_components])
+    tc_array = np.array([t.to(u.nanosecond).m for t in time_components])
     fano = scint_config.fano_factor if scint_config.fano_factor is not None else 1
 
-    return scint_config.flat_top.to("1/keV").m, fano, time_components, particles
+    return ComputedScintParams((scint_config.flat_top.to("1/keV").m, fano, tc_array, particles))
 
 
 @njit
@@ -321,6 +322,8 @@ def scintillate(
 
     # time component along the velocity decrease between x0 and x1.
     if x1_m is not None:
+        assert v0_mpns is not None
+        assert v1_mpns is not None
         x[:, 0] = np.linalg.norm(x1_m - x0_m) / (v0_mpns + λ * (v1_mpns - v0_mpns) / 2)
     else:
         x[:, 0] = 0

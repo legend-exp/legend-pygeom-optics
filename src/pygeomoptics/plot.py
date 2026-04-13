@@ -71,7 +71,7 @@ def plot_callable(
     *,
     ax=None,
     plotoptions: dict | None = None,
-) -> list[str]:
+) -> None:
     """Create a plot from the given optical property function.
 
     By default, it will call ``obj()`` and unpack the result into an x-vector, and multiple
@@ -118,7 +118,7 @@ def plot_callable(
         lim = [112 * u.nm, 650 * u.nm]
         if "xlim" in options:
             lim = [xl * u.nm for xl in options["xlim"]]
-        x = np.linspace(*lim, num=200)
+        x = np.linspace(lim[0].to("nm").m, lim[1].to("nm").m, num=200) * u.nm
         ys = obj(x, **extra_kwargs)
         ys = ys[ret_offset:]
         # wrap the result in a tuple, if needed

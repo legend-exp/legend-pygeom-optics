@@ -152,7 +152,8 @@ def pyg4_tpb_attach_wls(
     λ_full = pyg4_sample_λ(112 * u.nm, 650 * u.nm, 800)
 
     absorption = InterpolatingGraph(*tpb_wls_absorption())(λ_full)
-    emission = InterpolatingGraph(*emission_fn(), zero_outside=True)(λ_full)
+    λ_em, em = emission_fn()
+    emission = InterpolatingGraph(λ_em, em, zero_outside=True)(λ_full)
     # make sure that the scintillation spectrum is zero at the boundaries.
     assert emission[0] == 0
     assert emission[-1] == 0

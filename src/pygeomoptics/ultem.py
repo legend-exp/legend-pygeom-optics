@@ -33,8 +33,8 @@ def ultem_refractive_index() -> tuple[Quantity, Quantity]:
     r_smoothed = savgol_filter(r.m, 30, 3, mode="mirror") * r.u
     r[λ > 500 * u.nm] = r_smoothed[λ > 500 * u.nm]
 
-    λ = np.insert(λ, 0, [350, 375] * u.nm, axis=0)
-    r = np.insert(r, 0, [1.684, 1.667], axis=0)
+    λ = Quantity(np.insert(λ.m, 0, (np.array([350, 375]) * u.nm).to(λ.u).m), λ.u)
+    r = Quantity(np.insert(r.m, 0, [1.684, 1.667]), r.u)
 
     r, λ = r[λ <= 650 * u.nm], λ[λ <= 650 * u.nm]
     return λ.to("nm"), r

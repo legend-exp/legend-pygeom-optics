@@ -39,7 +39,7 @@ def readdatafile(
     ncols
         number of columns to read.
     """
-    cols = [[] for _ in range(ncols)]
+    cols: list[list[float]] = [[] for _ in range(ncols)]
     path = files(pkg).joinpath(filename) if pkg is not None else Path(filename)
     lines = path.read_text().split("\n")
     lines = [line.strip() for line in lines]
@@ -177,7 +177,7 @@ def g4gps_write_emission_spectrum(
         np.savetxt(filename, pointwise)
         return
 
-    with Path.open(filename, "wt") as f:
+    with open(filename, "wt") as f:
         f.write(f"# {quantity_name} | pygeomoptics\n\n")
         f.write("/gps/ene/type     Arb\n")
         f.write("/gps/ene/diffspec true\n")

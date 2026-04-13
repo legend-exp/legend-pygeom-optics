@@ -312,7 +312,7 @@ def lar_calculate_attenuation(
     attenuation_method_or_length: ArLifetimeMethods | Quantity = "legend200-llama",
     rayleigh_enabled_or_length: bool | Quantity = True,
     absorption_enabled_or_length: ArAbsCurveMethods | bool | Quantity = True,
-) -> tuple[Quantity, Quantity, Quantity, Quantity, Quantity]:
+) -> tuple[Quantity, Quantity, Quantity, Quantity | None, Quantity | None, Quantity]:
     """Calculate all attenuation-related optical properties to the given LAr material instance.
 
     Parameters

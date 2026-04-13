@@ -37,8 +37,8 @@ def tetratex_reflectivity() -> tuple[Quantity, Quantity]:
     """
     λ, r = readdatafile("tetratex_reflectivity.dat")
     # add the lower reflectivity for the VUV range.
-    λ = np.insert(λ, 0, 150 * u.nm, axis=0)
-    r = np.insert(r, 0, 0.1, axis=0)
+    λ = Quantity(np.insert(λ.m, 0, (150 * u.nm).to(λ.u).m), λ.u)
+    r = Quantity(np.insert(r.m, 0, 0.1), r.u)
     return λ, r
 
 

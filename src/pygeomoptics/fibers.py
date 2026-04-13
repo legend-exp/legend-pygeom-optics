@@ -236,7 +236,8 @@ def pyg4_fiber_core_attach_wls(
 
     λ_full = pyg4_sample_λ(112 * u.nm, 650 * u.nm)
     absorption = InterpolatingGraph(*fiber_wls_absorption())(λ_full)
-    emission = InterpolatingGraph(*fiber_wls_emission(), zero_outside=True)(λ_full)
+    λ_em, em = fiber_wls_emission()
+    emission = InterpolatingGraph(λ_em, em, zero_outside=True)(λ_full)
     # make sure that the scintillation spectrum is zero at the boundaries.
     assert emission[0] == 0
     assert emission[-1] == 0
@@ -295,9 +296,8 @@ def pyg4_fiber_core_attach_scintillation(mat, reg) -> None:
 
     # sample the measured emission spectrum.
     λ_scint = pyg4_sample_λ(350 * u.nm, 650 * u.nm, 200)
-    scint_em = InterpolatingGraph(
-        *fiber_wls_emission(), min_idx=350 * u.nm, zero_outside=True
-    )(λ_scint)
+    λ_em, em = fiber_wls_emission()
+    scint_em = InterpolatingGraph(λ_em, em, min_idx=350 * u.nm, zero_outside=True)(λ_scint)
     # make sure that the scintillation spectrum is zero at the boundaries.
     assert scint_em[0] == 0
     assert scint_em[-1] == 0
@@ -328,9 +328,8 @@ def g4gps_fiber_emissions_spectrum(filename: str, output_macro: bool) -> None:
 
     # sample the measured emission spectrum.
     λ_scint = pyg4_sample_λ(350 * u.nm, 650 * u.nm, 200)
-    scint_em = InterpolatingGraph(
-        *fiber_wls_emission(), min_idx=350 * u.nm, zero_outside=True
-    )(λ_scint)
+    λ_em, em = fiber_wls_emission()
+    scint_em = InterpolatingGraph(λ_em, em, min_idx=350 * u.nm, zero_outside=True)(λ_scint)
     # make sure that the scintillation spectrum is zero at the boundaries.
     assert scint_em[0] == 0
     assert scint_em[-1] == 0
