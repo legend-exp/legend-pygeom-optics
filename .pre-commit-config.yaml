@@ -54,7 +54,6 @@ repos:
     hooks:
       - id: mypy
         files: src|tests
-        stages: [manual]
         additional_dependencies:
           - pytest
 
