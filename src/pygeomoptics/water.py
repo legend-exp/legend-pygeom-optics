@@ -40,7 +40,7 @@ def water_absorption() -> tuple[Quantity, Quantity]:
         "nm",
     )
 
-    abs_lengths = Quantity(
+    abs_len = Quantity(
         np.array([
             10 * 1000,  # 10 m
             20 * 1000,  # 20 m
@@ -57,8 +57,8 @@ def water_absorption() -> tuple[Quantity, Quantity]:
         "mm",
     )
 
-    assert abs_lengths.check("[length]")
-    return wvl, abs_lengths
+    assert abs_len.check("[length]")
+    return wvl, abs_len
 
 
 def pyg4_water_attach_rindex(mat, reg) -> None:
