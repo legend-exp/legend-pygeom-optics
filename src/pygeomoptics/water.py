@@ -37,6 +37,7 @@ def water_absorption() -> tuple[Quantity, Quantity]:
 
     wvl: Quantity = Quantity([600, 550, 500, 450, 400, 350, 300, 250, 200, 150, 100], "nm")
 
+    # absorption lengths in mm: 10 m, 20 m, 50 m, 100 m, 100 m, 100 m, 90 m, 20 m, 1 m, 0.001 mm, 0.0001 mm
     abs_len: Quantity = Quantity([10000, 20000, 50000, 100000, 100000, 100000, 90000, 20000, 1000, 0.001, 0.0001], "mm")
 
     assert abs_len.check("[length]")
