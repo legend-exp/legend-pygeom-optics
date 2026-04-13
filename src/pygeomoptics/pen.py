@@ -195,10 +195,9 @@ def pyg4_pen_attach_wls(mat, reg, quantum_efficiency: bool | float = True) -> No
     λ_abs, absorption = pen_wls_absorption()
 
     λ_scint = pyg4_sample_λ(350 * u.nm, 650 * u.nm, 800)  # sample more points for WLS.
-    λ_em, em = pen_wls_emission()
-    emission = InterpolatingGraph(λ_em, em, min_idx=350 * u.nm, zero_outside=True)(
-        λ_scint
-    )
+    emission = InterpolatingGraph(
+        *pen_wls_emission(), min_idx=350 * u.nm, zero_outside=True
+    )(λ_scint)
     # make sure that the scintillation spectrum is zero at the boundaries.
     assert emission[0] == 0
     assert emission[-1] == 0
