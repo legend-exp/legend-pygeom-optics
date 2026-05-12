@@ -86,12 +86,24 @@ def pmt_borosilicate_absorption_length() -> tuple[Quantity, Quantity]:
 
 
 @store.register_pluggable
+def pmt_steel_reflectivity() -> tuple[Quantity, Quantity]:
+    """Reflectivity. Modeled after [STEEL1982]_.
+
+    .. optics-plot::
+    """
+    wvl = np.array([200, 300, 400, 600, 800]) * u.nm
+    refl = np.array([0.35, 0.45, 0.55, 0.58, 0.60])
+    return wvl, refl
+
+
+@store.register_pluggable
 def pmt_steel_efficiency() -> float:
     """Efficiency.
 
-    .. optics-const::
+    .. deprecated:: 0.16.1
+            steel should not have a detection efficiency.
     """
-    return 0.0  # steel should not have an efficiency. Keep the function for version compatibility.
+    return 0.0
 
 
 @store.register_pluggable
@@ -163,7 +175,8 @@ def pyg4_pmt_attach_acryl_rindex(mat, reg) -> None:
     energy = np.array([1.0, 6.0]) * u.eV
     r = [pmt_acryl_refractive_index()] * 2
 
-    mat.addVecPropertyPint("RINDEX", energy, r)
+    with u.context("sp"):
+        mat.addVecPropertyPint("RINDEX", energy, r)
 
 
 def pyg4_pmt_attach_acryl_absorption_length(mat, reg) -> None:
@@ -176,7 +189,8 @@ def pyg4_pmt_attach_acryl_absorption_length(mat, reg) -> None:
 
     energy, absorpt = pmt_acryl_absorption_length()
 
-    mat.addVecPropertyPint("ABSLENGTH", energy, absorpt)
+    with u.context("sp"):
+        mat.addVecPropertyPint("ABSLENGTH", energy, absorpt)
 
 
 def pyg4_pmt_attach_air_rindex(mat, reg) -> None:
@@ -189,7 +203,8 @@ def pyg4_pmt_attach_air_rindex(mat, reg) -> None:
     energy = np.array([1.0, 6.0]) * u.eV
     r = [pmt_air_refractive_index()] * 2
 
-    mat.addVecPropertyPint("RINDEX", energy, r)
+    with u.context("sp"):
+        mat.addVecPropertyPint("RINDEX", energy, r)
 
 
 def pyg4_pmt_attach_air_absorption_length(mat, reg) -> None:
@@ -203,7 +218,8 @@ def pyg4_pmt_attach_air_absorption_length(mat, reg) -> None:
     energy = np.array([1.0, 6.0]) * u.eV
     absorpt = np.full_like(energy, pmt_air_absorption_length())
 
-    mat.addVecPropertyPint("ABSLENGTH", energy, absorpt)
+    with u.context("sp"):
+        mat.addVecPropertyPint("ABSLENGTH", energy, absorpt)
 
 
 def pyg4_pmt_attach_borosilicate_rindex(mat, reg) -> None:
@@ -216,7 +232,8 @@ def pyg4_pmt_attach_borosilicate_rindex(mat, reg) -> None:
     energy = np.array([1.0, 6.0]) * u.eV
     r = [pmt_borosilicate_refractive_index()] * 2
 
-    mat.addVecPropertyPint("RINDEX", energy, r)
+    with u.context("sp"):
+        mat.addVecPropertyPint("RINDEX", energy, r)
 
 
 def pyg4_pmt_attach_borosilicate_absorption_length(mat, reg) -> None:
@@ -229,7 +246,8 @@ def pyg4_pmt_attach_borosilicate_absorption_length(mat, reg) -> None:
 
     energy, absorpt = pmt_borosilicate_absorption_length()
 
-    mat.addVecPropertyPint("ABSLENGTH", energy, absorpt)
+    with u.context("sp"):
+        mat.addVecPropertyPint("ABSLENGTH", energy, absorpt)
 
 
 def pyg4_pmt_attach_steel_reflectivity(mat, reg) -> None:
@@ -239,24 +257,24 @@ def pyg4_pmt_attach_steel_reflectivity(mat, reg) -> None:
     --------
     .pmt_steel_reflectivity
     """
-    wvl = np.array([200, 300, 400, 600, 800]) * u.nm
-    refl = np.array([0.35, 0.45, 0.55, 0.58, 0.60])
+    wvl, refl = pmt_steel_reflectivity()
 
-    mat.addVecPropertyPint("REFLECTIVITY", wvl.to("eV"), refl)
+    with u.context("sp"):
+        mat.addVecPropertyPint("REFLECTIVITY", wvl.to("eV"), refl)
 
 
 def pyg4_pmt_attach_steel_efficiency(mat, reg) -> None:
     """Attach the efficiency to the given PMT steel material instance.
 
-    See Also
-    --------
-    .pmt_steel_efficiency
+    .. deprecated:: 0.16.1
+            steel should not have a detection efficiency.
     """
 
     energy = np.array([1.0, 6.0]) * u.eV
     eff = [pmt_steel_efficiency()] * 2
 
-    mat.addVecPropertyPint("EFFICIENCY", energy, eff)
+    with u.context("sp"):
+        mat.addVecPropertyPint("EFFICIENCY", energy, eff)
 
 
 def pyg4_pmt_attach_photocathode_reflectivity(mat, reg) -> None:
