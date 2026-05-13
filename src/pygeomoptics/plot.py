@@ -111,6 +111,10 @@ def plot_callable(
 
     plotoptions = plotoptions if plotoptions is not None else {}
 
+    def _to_tuple(ret):
+        # check for NamedTuple (a direct type check is not possible)
+        return tuple(ret) if hasattr(ret, "_fields") else ret
+
     ret_offset = options.get("ret_offset", 0)
     extra_kwargs = options.get("extra_kwargs", {})
     if "call_x" in options:
@@ -120,11 +124,13 @@ def plot_callable(
             lim = [xl * u.nm for xl in options["xlim"]]
         x = np.linspace(lim[0].to("nm").m, lim[1].to("nm").m, num=200) * u.nm
         ys = obj(x, **extra_kwargs)
+        ys = _to_tuple(ys)
         ys = ys[ret_offset:]
         # wrap the result in a tuple, if needed
         ys = ys if isinstance(ys, tuple) else (ys,)
     else:
         data = obj(**extra_kwargs)
+        data = _to_tuple(data)
         x = data[ret_offset]
         # ys holds one or more
         ys = data[ret_offset + 1 :]
