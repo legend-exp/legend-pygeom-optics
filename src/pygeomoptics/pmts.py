@@ -101,6 +101,7 @@ def pmt_steel_efficiency() -> float:
     """Efficiency.
 
     .. deprecated:: 0.16.1
+
             steel should not have a detection efficiency.
     """
     return 0.0
@@ -215,7 +216,7 @@ def pyg4_pmt_attach_air_absorption_length(mat, reg) -> None:
     energy = np.array([1.0, 6.0]) * u.eV
     absorpt = np.full_like(energy, pmt_air_absorption_length())
 
-     mat.addVecPropertyPint("ABSLENGTH", energy, absorpt)
+    mat.addVecPropertyPint("ABSLENGTH", energy, absorpt)
 
 
 def pyg4_pmt_attach_borosilicate_rindex(mat, reg) -> None:
@@ -261,6 +262,7 @@ def pyg4_pmt_attach_steel_efficiency(mat, reg) -> None:
     """Attach the efficiency to the given PMT steel material instance.
 
     .. deprecated:: 0.16.1
+
             steel should not have a detection efficiency.
     """
 
