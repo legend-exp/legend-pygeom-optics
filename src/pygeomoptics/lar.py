@@ -305,6 +305,21 @@ def lar_peak_attenuation_length(
     return attenuation_method
 
 
+class ArAttenuation(NamedTuple):
+    peak_rayleigh_length: Quantity
+    """calculated rayleigh scattering length at the scintillation peak (λ = 126.8 nm)."""
+    peak_abs_length: Quantity
+    """calculated absorption length at the scintillation peak (λ = 126.8 nm)."""
+    λ: Quantity
+    """sampled wavelengths λ."""
+    rayleigh: Quantity | None
+    """rayleigh length at all points in λ."""
+    abslength: Quantity | None
+    """absorption length at all points in λ."""
+    attenuation: Quantity
+    """attenuation length at all points in λ."""
+
+
 @store.register_pluggable
 def lar_calculate_attenuation(
     lar_temperature: Quantity = 88.8 * u.K,
@@ -312,7 +327,7 @@ def lar_calculate_attenuation(
     attenuation_method_or_length: ArLifetimeMethods | Quantity = "legend200-llama",
     rayleigh_enabled_or_length: bool | Quantity = True,
     absorption_enabled_or_length: ArAbsCurveMethods | bool | Quantity = True,
-) -> tuple[Quantity, Quantity, Quantity, Quantity | None, Quantity | None, Quantity]:
+) -> ArAttenuation:
     """Calculate all attenuation-related optical properties to the given LAr material instance.
 
     Parameters
@@ -337,15 +352,6 @@ def lar_calculate_attenuation(
 
         If set to a length-Quantity, the given value will be used as the absorption length at
         the scintillation peak.
-
-    Returns
-    -------
-    * calculated rayleigh scattering length at the scintillation peak (λ = 126.8 nm)
-    * calculated absorption length at the scintillation peak (λ = 126.8 nm)
-    * sampled wavelengths λ
-    * rayleigh length at all points in λ
-    * absorption length at all points in λ
-    * attenuation length at all points in λ
 
     Important
     ---------
@@ -425,7 +431,7 @@ def lar_calculate_attenuation(
     else:
         attenuation = 1 / (1 / rayleigh + 1 / abslength)
 
-    return (
+    return ArAttenuation(
         peak_rayleigh_length,
         peak_abs_length,
         λ_full,
@@ -588,23 +594,21 @@ def pyg4_lar_attach_attenuation(
     .lar_abs_length
     .lar_calculate_attenuation
     """
-    peak_rayleigh_length, peak_abs_length, λ_full, rayleigh, abslength, _attenuation = (
-        lar_calculate_attenuation(
-            lar_temperature,
-            lar_dielectric_method,
-            attenuation_method_or_length,
-            rayleigh_enabled_or_length,
-            absorption_enabled_or_length,
-        )
+    att = lar_calculate_attenuation(
+        lar_temperature,
+        lar_dielectric_method,
+        attenuation_method_or_length,
+        rayleigh_enabled_or_length,
+        absorption_enabled_or_length,
     )
 
     with u.context("sp"):
-        if rayleigh is not None:
-            lar_mat.addVecPropertyPint("RAYLEIGH", λ_full.to("eV"), rayleigh)
-        if abslength is not None:
-            lar_mat.addVecPropertyPint("ABSLENGTH", λ_full.to("eV"), abslength)
+        if att.rayleigh is not None:
+            lar_mat.addVecPropertyPint("RAYLEIGH", att.λ.to("eV"), att.rayleigh)
+        if att.abslength is not None:
+            lar_mat.addVecPropertyPint("ABSLENGTH", att.λ.to("eV"), att.abslength)
 
-    return peak_rayleigh_length, peak_abs_length
+    return att.peak_rayleigh_length, att.peak_abs_length
 
 
 def pyg4_lar_attach_scintillation(
