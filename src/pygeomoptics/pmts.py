@@ -2,10 +2,12 @@
 PMT components incorporating data for different PMT models.
 Common parameters applicable to both models are included where relevant, like refractive index of borosilicate glass.
 Currently the photocathode efficiencies for the ETL9354KB [ETEL2010]_ and R7081 [HAMAMATSU2019]_ PMT models are included.
+The steel reflactivity is modeled according to [STEEL1982]_.
 
 .. [ETEL2010] ET Enterprises Limited 2010 “200 mm (8") photomultiplier 9354KB series data sheet”, 2010, http://lampes-et-tubes.info/pm/9354KB.pdf
 .. [HAMAMATSU2019] Hammamatsu Photonics 2019 "Large Area PMT data sheet"
     https://www.hamamatsu.com/content/dam/hamamatsu-photonics/sites/documents/99_SALES_LIBRARY/etd/LARGE_AREA_PMT_TPMH1376E.pdf
+.. [STEEL1982] Optical constants and spectral selectivity of stainless steel and its oxides https://pubs.aip.org/aip/jap/article/53/9/6340/308961/Optical-constants-and-spectral-selectivity-of
 
 """
 
@@ -84,21 +86,25 @@ def pmt_borosilicate_absorption_length() -> tuple[Quantity, Quantity]:
 
 
 @store.register_pluggable
-def pmt_steel_reflectivity() -> float:
-    """Reflectivity.
+def pmt_steel_reflectivity() -> tuple[Quantity, Quantity]:
+    """Reflectivity. Modeled after [STEEL1982]_.
 
-    .. optics-const::
+    .. optics-plot::
     """
-    return 0.9
+    λ = np.array([200, 300, 400, 600, 800]) * u.nm
+    refl = np.array([0.35, 0.45, 0.55, 0.58, 0.60])
+    return λ, refl
 
 
 @store.register_pluggable
 def pmt_steel_efficiency() -> float:
     """Efficiency.
 
-    .. optics-const::
+    .. deprecated:: 0.16.1
+
+            steel should not have a detection efficiency.
     """
-    return 1.0
+    return 0.0
 
 
 @store.register_pluggable
@@ -150,14 +156,14 @@ def pmt_photocathode_reflectivity() -> tuple[Quantity, Quantity]:
     .borosilicate_refractive_index
     """
 
-    wvl = np.array([270, 700]) * u.nm
+    λ = np.array([270, 700]) * u.nm
 
     reflectivity_max = (
         (1 - pmt_borosilicate_refractive_index())
         / (1 + pmt_borosilicate_refractive_index())
     ) ** 2
-    reflectivity = np.full_like(wvl, reflectivity_max - 0.01)
-    return wvl, reflectivity
+    reflectivity = np.full_like(λ, reflectivity_max - 0.01)
+    return λ, reflectivity
 
 
 def pyg4_pmt_attach_acryl_rindex(mat, reg) -> None:
@@ -246,18 +252,18 @@ def pyg4_pmt_attach_steel_reflectivity(mat, reg) -> None:
     --------
     .pmt_steel_reflectivity
     """
-    energy = np.array([1.0, 6.0]) * u.eV
-    refl = [pmt_steel_reflectivity()] * 2
+    λ, refl = pmt_steel_reflectivity()
 
-    mat.addVecPropertyPint("REFLECTIVITY", energy, refl)
+    with u.context("sp"):
+        mat.addVecPropertyPint("REFLECTIVITY", λ.to("eV"), refl)
 
 
 def pyg4_pmt_attach_steel_efficiency(mat, reg) -> None:
     """Attach the efficiency to the given PMT steel material instance.
 
-    See Also
-    --------
-    .pmt_steel_efficiency
+    .. deprecated:: 0.16.1
+
+            steel should not have a detection efficiency.
     """
 
     energy = np.array([1.0, 6.0]) * u.eV
@@ -273,10 +279,10 @@ def pyg4_pmt_attach_photocathode_reflectivity(mat, reg) -> None:
     --------
     .pmt_photocathode_reflectivity
     """
-    wvl, refl = pmt_photocathode_reflectivity()
+    λ, refl = pmt_photocathode_reflectivity()
 
     with u.context("sp"):
-        mat.addVecPropertyPint("REFLECTIVITY", wvl.to("eV"), refl)
+        mat.addVecPropertyPint("REFLECTIVITY", λ.to("eV"), refl)
 
 
 def pyg4_pmt_attach_photocathode_efficiency(
@@ -291,16 +297,16 @@ def pyg4_pmt_attach_photocathode_efficiency(
     """
 
     if name in {"etl9354", "gerda"}:
-        wvl, pmt_qe = pmt_etl9354kb_photocathode_efficiency()
+        λ, pmt_qe = pmt_etl9354kb_photocathode_efficiency()
         pmt_efficiency = (
             pmt_qe / 100 * pmt_etl9354kb_photocathode_collection_efficiency()
         )
     elif name in {"r7081", "l1000"}:
-        wvl, pmt_qe = pmt_r7081_photocathode_efficiency()
+        λ, pmt_qe = pmt_r7081_photocathode_efficiency()
         pmt_efficiency = pmt_qe / 100 * pmt_r7081_photocathode_collection_efficiency()
     else:
         msg = f"PMT name {name} not known. There exists only r7081 or etl9354 data."
         raise ValueError(msg)
 
     with u.context("sp"):
-        mat.addVecPropertyPint("EFFICIENCY", wvl.to("eV"), pmt_efficiency)
+        mat.addVecPropertyPint("EFFICIENCY", λ.to("eV"), pmt_efficiency)
