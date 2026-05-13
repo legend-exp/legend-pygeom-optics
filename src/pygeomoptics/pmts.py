@@ -91,9 +91,9 @@ def pmt_steel_reflectivity() -> tuple[Quantity, Quantity]:
 
     .. optics-plot::
     """
-    wvl = np.array([200, 300, 400, 600, 800]) * u.nm
+    λ = np.array([200, 300, 400, 600, 800]) * u.nm
     refl = np.array([0.35, 0.45, 0.55, 0.58, 0.60])
-    return wvl, refl
+    return λ, refl
 
 
 @store.register_pluggable
@@ -155,14 +155,14 @@ def pmt_photocathode_reflectivity() -> tuple[Quantity, Quantity]:
     .borosilicate_refractive_index
     """
 
-    wvl = np.array([270, 700]) * u.nm
+    λ = np.array([270, 700]) * u.nm
 
     reflectivity_max = (
         (1 - pmt_borosilicate_refractive_index())
         / (1 + pmt_borosilicate_refractive_index())
     ) ** 2
-    reflectivity = np.full_like(wvl, reflectivity_max - 0.01)
-    return wvl, reflectivity
+    reflectivity = np.full_like(λ, reflectivity_max - 0.01)
+    return λ, reflectivity
 
 
 def pyg4_pmt_attach_acryl_rindex(mat, reg) -> None:
@@ -175,8 +175,7 @@ def pyg4_pmt_attach_acryl_rindex(mat, reg) -> None:
     energy = np.array([1.0, 6.0]) * u.eV
     r = [pmt_acryl_refractive_index()] * 2
 
-    with u.context("sp"):
-        mat.addVecPropertyPint("RINDEX", energy, r)
+    mat.addVecPropertyPint("RINDEX", energy, r)
 
 
 def pyg4_pmt_attach_acryl_absorption_length(mat, reg) -> None:
@@ -189,8 +188,7 @@ def pyg4_pmt_attach_acryl_absorption_length(mat, reg) -> None:
 
     energy, absorpt = pmt_acryl_absorption_length()
 
-    with u.context("sp"):
-        mat.addVecPropertyPint("ABSLENGTH", energy, absorpt)
+    mat.addVecPropertyPint("ABSLENGTH", energy, absorpt)
 
 
 def pyg4_pmt_attach_air_rindex(mat, reg) -> None:
@@ -203,8 +201,7 @@ def pyg4_pmt_attach_air_rindex(mat, reg) -> None:
     energy = np.array([1.0, 6.0]) * u.eV
     r = [pmt_air_refractive_index()] * 2
 
-    with u.context("sp"):
-        mat.addVecPropertyPint("RINDEX", energy, r)
+    mat.addVecPropertyPint("RINDEX", energy, r)
 
 
 def pyg4_pmt_attach_air_absorption_length(mat, reg) -> None:
@@ -218,8 +215,7 @@ def pyg4_pmt_attach_air_absorption_length(mat, reg) -> None:
     energy = np.array([1.0, 6.0]) * u.eV
     absorpt = np.full_like(energy, pmt_air_absorption_length())
 
-    with u.context("sp"):
-        mat.addVecPropertyPint("ABSLENGTH", energy, absorpt)
+     mat.addVecPropertyPint("ABSLENGTH", energy, absorpt)
 
 
 def pyg4_pmt_attach_borosilicate_rindex(mat, reg) -> None:
@@ -232,8 +228,7 @@ def pyg4_pmt_attach_borosilicate_rindex(mat, reg) -> None:
     energy = np.array([1.0, 6.0]) * u.eV
     r = [pmt_borosilicate_refractive_index()] * 2
 
-    with u.context("sp"):
-        mat.addVecPropertyPint("RINDEX", energy, r)
+    mat.addVecPropertyPint("RINDEX", energy, r)
 
 
 def pyg4_pmt_attach_borosilicate_absorption_length(mat, reg) -> None:
@@ -246,8 +241,7 @@ def pyg4_pmt_attach_borosilicate_absorption_length(mat, reg) -> None:
 
     energy, absorpt = pmt_borosilicate_absorption_length()
 
-    with u.context("sp"):
-        mat.addVecPropertyPint("ABSLENGTH", energy, absorpt)
+    mat.addVecPropertyPint("ABSLENGTH", energy, absorpt)
 
 
 def pyg4_pmt_attach_steel_reflectivity(mat, reg) -> None:
@@ -257,10 +251,10 @@ def pyg4_pmt_attach_steel_reflectivity(mat, reg) -> None:
     --------
     .pmt_steel_reflectivity
     """
-    wvl, refl = pmt_steel_reflectivity()
+    λ, refl = pmt_steel_reflectivity()
 
     with u.context("sp"):
-        mat.addVecPropertyPint("REFLECTIVITY", wvl.to("eV"), refl)
+        mat.addVecPropertyPint("REFLECTIVITY", λ.to("eV"), refl)
 
 
 def pyg4_pmt_attach_steel_efficiency(mat, reg) -> None:
@@ -273,8 +267,7 @@ def pyg4_pmt_attach_steel_efficiency(mat, reg) -> None:
     energy = np.array([1.0, 6.0]) * u.eV
     eff = [pmt_steel_efficiency()] * 2
 
-    with u.context("sp"):
-        mat.addVecPropertyPint("EFFICIENCY", energy, eff)
+    mat.addVecPropertyPint("EFFICIENCY", energy, eff)
 
 
 def pyg4_pmt_attach_photocathode_reflectivity(mat, reg) -> None:
@@ -284,10 +277,10 @@ def pyg4_pmt_attach_photocathode_reflectivity(mat, reg) -> None:
     --------
     .pmt_photocathode_reflectivity
     """
-    wvl, refl = pmt_photocathode_reflectivity()
+    λ, refl = pmt_photocathode_reflectivity()
 
     with u.context("sp"):
-        mat.addVecPropertyPint("REFLECTIVITY", wvl.to("eV"), refl)
+        mat.addVecPropertyPint("REFLECTIVITY", λ.to("eV"), refl)
 
 
 def pyg4_pmt_attach_photocathode_efficiency(
@@ -302,16 +295,16 @@ def pyg4_pmt_attach_photocathode_efficiency(
     """
 
     if name in {"etl9354", "gerda"}:
-        wvl, pmt_qe = pmt_etl9354kb_photocathode_efficiency()
+        λ, pmt_qe = pmt_etl9354kb_photocathode_efficiency()
         pmt_efficiency = (
             pmt_qe / 100 * pmt_etl9354kb_photocathode_collection_efficiency()
         )
     elif name in {"r7081", "l1000"}:
-        wvl, pmt_qe = pmt_r7081_photocathode_efficiency()
+        λ, pmt_qe = pmt_r7081_photocathode_efficiency()
         pmt_efficiency = pmt_qe / 100 * pmt_r7081_photocathode_collection_efficiency()
     else:
         msg = f"PMT name {name} not known. There exists only r7081 or etl9354 data."
         raise ValueError(msg)
 
     with u.context("sp"):
-        mat.addVecPropertyPint("EFFICIENCY", wvl.to("eV"), pmt_efficiency)
+        mat.addVecPropertyPint("EFFICIENCY", λ.to("eV"), pmt_efficiency)
