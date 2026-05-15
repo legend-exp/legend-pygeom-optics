@@ -172,6 +172,19 @@ def lar_emission_spectrum(λ: Quantity) -> Quantity:
 
 
 @store.register_pluggable
+def lar_emission_peak_range() -> tuple[Quantity, Quantity]:
+    """Return the range of the main argon emission peak.
+
+    This can be swapped to simulate different argon physics.
+
+    See Also
+    --------
+    .lar_emission_spectrum
+    """
+    return 116 * u.nm, 141 * u.nm
+
+
+@store.register_pluggable
 def lar_fano_factor() -> float:
     """Fano factor.
 
@@ -632,6 +645,7 @@ def pyg4_lar_attach_scintillation(
     --------
     .lar_scintillation_params
     .lar_emission_spectrum
+    .lar_emission_peak_range
     .lar_lifetimes
     """
     from pygeomoptics.pyg4utils import (
@@ -640,7 +654,7 @@ def pyg4_lar_attach_scintillation(
         pyg4_spectral_density,
     )
 
-    λ_peak = pyg4_sample_λ(116 * u.nm, 141 * u.nm)
+    λ_peak = pyg4_sample_λ(*lar_emission_peak_range())
 
     # sample the measured emission spectrum.
     scint_em = lar_emission_spectrum(λ_peak)
@@ -673,11 +687,12 @@ def g4gps_lar_emissions_spectrum(filename: str, output_macro: bool) -> None:
     See Also
     --------
     .lar_emission_spectrum
+    .lar_emission_peak_range
     utils.g4gps_write_emission_spectrum
     """
     from pygeomoptics.pyg4utils import pyg4_sample_λ
 
-    λ_peak = pyg4_sample_λ(116 * u.nm, 141 * u.nm)
+    λ_peak = pyg4_sample_λ(*lar_emission_peak_range())
 
     # sample the measured emission spectrum.
     scint_em = lar_emission_spectrum(λ_peak)
