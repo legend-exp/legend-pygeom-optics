@@ -100,7 +100,7 @@ def pmt_steel_reflectivity() -> tuple[Quantity, Quantity]:
 def pmt_steel_efficiency() -> float:
     """Efficiency.
 
-    .. deprecated:: 0.16.1
+    .. deprecated:: 0.17
 
             steel should not have a detection efficiency.
     """
@@ -261,7 +261,7 @@ def pyg4_pmt_attach_steel_reflectivity(mat, reg) -> None:
 def pyg4_pmt_attach_steel_efficiency(mat, reg) -> None:
     """Attach the efficiency to the given PMT steel material instance.
 
-    .. deprecated:: 0.16.1
+    .. deprecated:: 0.17
 
             steel should not have a detection efficiency.
     """
