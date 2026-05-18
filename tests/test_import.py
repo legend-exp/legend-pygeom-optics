@@ -54,6 +54,7 @@ def test_import():
     pygeomoptics.lar.lar_dielectric_constant_cern2020(λ)
     pygeomoptics.lar.lar_dielectric_constant(λ)
     pygeomoptics.lar.lar_refractive_index(λ)
+    pygeomoptics.lar.gar_refractive_index(λ)
     pygeomoptics.lar.lar_rayleigh(λ, 87 * u.K)
     pygeomoptics.lar.lar_abs_length(λ)
     pygeomoptics.lar.lar_peak_attenuation_length()

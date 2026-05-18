@@ -65,7 +65,7 @@ class ArScintLiftime(NamedTuple):
 
 
 def lar_dielectric_constant_bideau_mehu(
-    λ: Quantity,
+    λ: Quantity, *, is_liquid: bool = True
 ) -> Quantity:
     """Calculate the dielectric constant of LAr for a given photon wavelength.
 
@@ -89,7 +89,8 @@ def lar_dielectric_constant_bideau_mehu(
         + 4.3330 * λ**2 / (214.02 * λ**2 - 1 * u.um**2)
     )
     ϵ *= 2 / 3  # Bideau-Sellmeier -> Clausius-Mossotti
-    ϵ *= 1.396 / 1.66e-3  # density correction (Ar gas -> LAr liquid)
+    if is_liquid:
+        ϵ *= 1.396 / 1.66e-3  # density correction (Ar gas -> LAr liquid)
 
     # solve Clausius-Mossotti
     return (1 + 2 * ϵ) / (1 - ϵ)
@@ -153,6 +154,20 @@ def lar_refractive_index(
     .. optics-plot:: {'call_x': True}
     """
     return np.sqrt(lar_dielectric_constant(λ, method))
+
+
+@store.register_pluggable
+def gar_refractive_index(λ: Quantity) -> Quantity:
+    """Calculate the refractive index of gaseous argon (GAr) for a given photon wavelength.
+
+    See Also
+    --------
+    .lar_dielectric_constant_bideau_mehu
+
+
+    .. optics-plot:: {'call_x': True}
+    """
+    return np.sqrt(lar_dielectric_constant_bideau_mehu(λ, is_liquid=False))
 
 
 @store.register_pluggable
@@ -551,6 +566,22 @@ def pyg4_lar_attach_rindex(
 
     λ_full = pyg4_sample_λ(112 * u.nm, 650 * u.nm)
     rindex = lar_refractive_index(λ_full, lar_dielectric_method)
+    with u.context("sp"):
+        lar_mat.addVecPropertyPint("RINDEX", λ_full.to("eV"), rindex)
+
+
+@store.register_pluggable
+def pyg4_gar_attach_rindex(lar_mat, reg) -> None:
+    """Attach the refractive index to the given gaseous argon (GAr) material instance.
+
+    See Also
+    --------
+    .gar_refractive_index
+    """
+    from pygeomoptics.pyg4utils import pyg4_sample_λ
+
+    λ_full = pyg4_sample_λ(112 * u.nm, 650 * u.nm)
+    rindex = gar_refractive_index(λ_full)
     with u.context("sp"):
         lar_mat.addVecPropertyPint("RINDEX", λ_full.to("eV"), rindex)
 
