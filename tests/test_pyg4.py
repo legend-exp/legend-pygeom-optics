@@ -68,6 +68,13 @@ def test_pyg4_attach_lar() -> None:
     )
 
 
+def test_pyg4_attach_gar() -> None:
+    import pygeomoptics.lar
+
+    reg, mat = _create_dummy_mat()
+    pygeomoptics.lar.pyg4_gar_attach_rindex(mat, reg)
+
+
 def test_pyg4_attach_tpb() -> None:
     import pygeomoptics.tpb
 
