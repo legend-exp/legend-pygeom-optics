@@ -10,10 +10,12 @@ from pygeomoptics import (
     nylon,
     pen,
     pmts,
+    silica,
     silicon,
     tetratex,
     tpb,
     tyvek,
+    ultem
     vm2000,
     water,
 )
@@ -31,10 +33,12 @@ __all__ = [
     "pen",
     "pmts",
     "pyg4utils",  # lazy import!
+    "silica",
     "silicon",
     "tetratex",
     "tpb",
     "tyvek",
+    "ultem",
     "vm2000",
     "water",
 ]
