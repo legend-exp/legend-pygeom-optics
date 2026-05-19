@@ -133,6 +133,13 @@ def test_pyg4_attach_copper() -> None:
     pygeomoptics.copper.pyg4_copper_attach_reflectivity(mat, reg)
 
 
+def test_pyg4_attach_steel() -> None:
+    import pygeomoptics.steel
+
+    reg, mat = _create_dummy_mat()
+    pygeomoptics.steel.pyg4_steel_attach_reflectivity(mat, reg)
+
+
 def test_pyg4_attach_silicon() -> None:
     import pygeomoptics.silicon
 
