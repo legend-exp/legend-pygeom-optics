@@ -39,6 +39,7 @@ def test_import():
     import pygeomoptics.pmts
     import pygeomoptics.silica
     import pygeomoptics.silicon
+    import pygeomoptics.steel
     import pygeomoptics.tetratex
     import pygeomoptics.tpb
     import pygeomoptics.tyvek
@@ -84,6 +85,8 @@ def test_import():
     pygeomoptics.germanium.germanium_reflectivity()
 
     pygeomoptics.copper.copper_reflectivity()
+
+    pygeomoptics.steel.steel_reflectivity()
 
     pygeomoptics.silicon.silicon_complex_rindex()
 

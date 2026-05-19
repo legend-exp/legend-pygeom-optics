@@ -1,14 +1,12 @@
 """
 PMT components incorporating data for different PMT models.
+
 Common parameters applicable to both models are included where relevant, like refractive index of borosilicate glass.
 Currently the photocathode efficiencies for the ETL9354KB [ETEL2010]_ and R7081 [HAMAMATSU2019]_ PMT models are included.
-The steel reflactivity is modeled according to [STEEL1982]_.
 
 .. [ETEL2010] ET Enterprises Limited 2010 “200 mm (8") photomultiplier 9354KB series data sheet”, 2010, http://lampes-et-tubes.info/pm/9354KB.pdf
 .. [HAMAMATSU2019] Hammamatsu Photonics 2019 "Large Area PMT data sheet"
     https://www.hamamatsu.com/content/dam/hamamatsu-photonics/sites/documents/99_SALES_LIBRARY/etd/LARGE_AREA_PMT_TPMH1376E.pdf
-.. [STEEL1982] Optical constants and spectral selectivity of stainless steel and its oxides https://pubs.aip.org/aip/jap/article/53/9/6340/308961/Optical-constants-and-spectral-selectivity-of
-
 """
 
 from __future__ import annotations

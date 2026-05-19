@@ -12,6 +12,7 @@ from pygeomoptics import (
     pmts,
     silica,
     silicon,
+    steel,
     tetratex,
     tpb,
     tyvek,
@@ -35,6 +36,7 @@ __all__ = [
     "pyg4utils",  # lazy import!
     "silica",
     "silicon",
+    "steel",
     "tetratex",
     "tpb",
     "tyvek",
