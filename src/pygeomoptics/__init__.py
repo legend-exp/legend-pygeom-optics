@@ -15,7 +15,7 @@ from pygeomoptics import (
     tetratex,
     tpb,
     tyvek,
-    ultem
+    ultem,
     vm2000,
     water,
 )
