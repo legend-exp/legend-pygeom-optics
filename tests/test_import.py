@@ -40,6 +40,7 @@ def test_import():
     import pygeomoptics.silica
     import pygeomoptics.silicon
     import pygeomoptics.steel
+    import pygeomoptics.tantalum
     import pygeomoptics.tetratex
     import pygeomoptics.tpb
     import pygeomoptics.tyvek
@@ -89,6 +90,8 @@ def test_import():
     pygeomoptics.steel.steel_reflectivity()
 
     pygeomoptics.silicon.silicon_complex_rindex()
+
+    pygeomoptics.tantalum.tantalum_complex_rindex()
 
     pygeomoptics.nylon.nylon_refractive_index()
     pygeomoptics.nylon.nylon_absorption()

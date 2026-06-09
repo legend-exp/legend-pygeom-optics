@@ -25,8 +25,10 @@ u = pint.get_application_registry()
 def germanium_reflectivity() -> tuple[Quantity, Quantity]:
     """Reflectivity of germanium surfaces.
 
-    Measurements from [Wegmann2017]_ (with GERDA dead-layer Li-doped germanium, at room temperature; data-points above 300nm). Data points between 220 and 120 nm from [Salamanna2022]_ (averaged and smoothed).
-    The interpolation between both domains is linear, but arbitrary.
+    Measurements from [Wegmann2017]_ (with GERDA dead-layer Li-doped germanium, at room
+    temperature; data-points above 300nm). Data points between 220 and 120 nm from
+    [Salamanna2022]_ (averaged and smoothed). The interpolation between both domains is
+    linear, but arbitrary.
 
     .. optics-plot::
     """

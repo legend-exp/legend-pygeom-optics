@@ -147,6 +147,13 @@ def test_pyg4_attach_silicon() -> None:
     pygeomoptics.silicon.pyg4_silicon_attach_complex_rindex(mat, reg)
 
 
+def test_pyg4_attach_tantalum() -> None:
+    import pygeomoptics.tantalum
+
+    reg, mat = _create_dummy_mat()
+    pygeomoptics.tantalum.pyg4_tantalum_attach_complex_rindex(mat, reg)
+
+
 def test_pyg4_attach_nylon() -> None:
     import pygeomoptics.nylon
 

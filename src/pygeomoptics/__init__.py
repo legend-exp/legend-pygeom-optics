@@ -1,4 +1,11 @@
-"""A collection of optical properties of materials used in the LEGEND experiment."""
+"""A collection of optical properties of materials used in the LEGEND experiment.
+
+Some properties have been digitized by [Polyanskiy2024]_ but are still cited from their
+original source.
+
+.. [Polyanskiy2024] M. N. Polyanskiy. “Refractiveindex.info database of optical constants”
+    In: Sci. Data 11, 94 (2024). https://doi.org/10.1038/s41597-023-02898-2
+"""
 
 from __future__ import annotations
 
@@ -13,6 +20,7 @@ from pygeomoptics import (
     silica,
     silicon,
     steel,
+    tantalum,
     tetratex,
     tpb,
     tyvek,
@@ -37,6 +45,7 @@ __all__ = [
     "silica",
     "silicon",
     "steel",
+    "tantalum",
     "tetratex",
     "tpb",
     "tyvek",
