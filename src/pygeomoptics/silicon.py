@@ -21,7 +21,9 @@ u = pint.get_application_registry()
 
 @store.register_pluggable
 def silicon_complex_rindex() -> tuple[Quantity, Quantity, Quantity]:
-    """Real and imaginary parts as tuple(wavelength, Re, Im). Measurements from [Phillip1960]_.
+    """Real and imaginary parts of silicon refractive index. Measurements from [Phillip1960]_.
+
+    Returns a tuple(wavelength, Re, Im).
 
     .. optics-plot:: {'labels':('Re n','Im n')}
     """
