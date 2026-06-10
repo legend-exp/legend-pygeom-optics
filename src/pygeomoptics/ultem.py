@@ -7,11 +7,15 @@
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pint
 from pint import Quantity
 from scipy.signal import savgol_filter
+
+if TYPE_CHECKING:
+    import pyg4ometry.geant4 as g4
 
 from pygeomoptics import store
 from pygeomoptics.utils import readdatafile
@@ -65,7 +69,7 @@ def ultem_absorption() -> tuple[Quantity, Quantity]:
     return λ.to("nm"), α
 
 
-def pyg4_ultem_attach_rindex(mat, reg) -> None:
+def pyg4_ultem_attach_rindex(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the refractive index to the given Ultem/PEI material instance.
 
     See Also
@@ -77,7 +81,7 @@ def pyg4_ultem_attach_rindex(mat, reg) -> None:
         mat.addVecPropertyPint("RINDEX", λ.to("eV"), r)
 
 
-def pyg4_ultem_attach_absorption(mat, reg) -> None:
+def pyg4_ultem_attach_absorption(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the absorption length to the given Ultem/PEI material instance.
 
     See Also

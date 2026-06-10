@@ -13,10 +13,14 @@
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pint
 from pint import Quantity
+
+if TYPE_CHECKING:
+    import pyg4ometry.geant4 as g4
 
 from pygeomoptics import store
 from pygeomoptics.scintillate import ScintConfig, ScintParticle
@@ -146,7 +150,7 @@ def pen_scintillation_params() -> ScintConfig:
     )
 
 
-def pyg4_pen_attach_rindex(mat, reg) -> None:
+def pyg4_pen_attach_rindex(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the refractive index to the given PEN material instance.
 
     See Also
@@ -159,7 +163,7 @@ def pyg4_pen_attach_rindex(mat, reg) -> None:
         mat.addVecPropertyPint("RINDEX", λ.to("eV"), r)
 
 
-def pyg4_pen_attach_attenuation(mat, reg) -> None:
+def pyg4_pen_attach_attenuation(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach bulk absorption properties to the given PEN material instance.
 
     See Also
@@ -173,7 +177,9 @@ def pyg4_pen_attach_attenuation(mat, reg) -> None:
         mat.addVecPropertyPint("ABSLENGTH", λ_abs.to("eV"), absorption)
 
 
-def pyg4_pen_attach_wls(mat, reg, quantum_efficiency: bool | float = True) -> None:
+def pyg4_pen_attach_wls(
+    mat: g4.Material, reg: g4.Registry, quantum_efficiency: bool | float = True
+) -> None:
     """Attach wavelength shifting properties to the given PEN material instance.
 
     Parameters
@@ -213,7 +219,7 @@ def pyg4_pen_attach_wls(mat, reg, quantum_efficiency: bool | float = True) -> No
         mat.addConstPropertyPint("WLSMEANNUMBERPHOTONS", quantum_efficiency)
 
 
-def pyg4_pen_attach_scintillation(mat, reg) -> None:
+def pyg4_pen_attach_scintillation(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach Geant4 properties for PEN scintillation response to the given material instance.
 
     .. note:: This currently only adds scintillation for energy deposited by electrons.

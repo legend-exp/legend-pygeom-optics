@@ -12,11 +12,14 @@ Currently the photocathode efficiencies for the ETL9354KB [ETEL2010]_ and R7081 
 from __future__ import annotations
 
 import logging
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 import pint
 from pint import Quantity
+
+if TYPE_CHECKING:
+    import pyg4ometry.geant4 as g4
 
 from pygeomoptics import store
 from pygeomoptics.utils import readdatafile
@@ -164,7 +167,7 @@ def pmt_photocathode_reflectivity() -> tuple[Quantity, Quantity]:
     return λ, reflectivity
 
 
-def pyg4_pmt_attach_acryl_rindex(mat, reg) -> None:
+def pyg4_pmt_attach_acryl_rindex(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the refractive index to the given acryl material instance of the PMT cap.
 
     See Also
@@ -177,7 +180,7 @@ def pyg4_pmt_attach_acryl_rindex(mat, reg) -> None:
     mat.addVecPropertyPint("RINDEX", energy, r)
 
 
-def pyg4_pmt_attach_acryl_absorption_length(mat, reg) -> None:
+def pyg4_pmt_attach_acryl_absorption_length(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the absorption length to the given acryl material instance of the PMT cap.
 
     See Also
@@ -190,7 +193,7 @@ def pyg4_pmt_attach_acryl_absorption_length(mat, reg) -> None:
     mat.addVecPropertyPint("ABSLENGTH", energy, absorpt)
 
 
-def pyg4_pmt_attach_air_rindex(mat, reg) -> None:
+def pyg4_pmt_attach_air_rindex(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the refractive index to the given air material instance of the PMT cap.
 
     See Also
@@ -203,7 +206,7 @@ def pyg4_pmt_attach_air_rindex(mat, reg) -> None:
     mat.addVecPropertyPint("RINDEX", energy, r)
 
 
-def pyg4_pmt_attach_air_absorption_length(mat, reg) -> None:
+def pyg4_pmt_attach_air_absorption_length(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the absorption length to the given air material instance of the PMT cap.
 
     See Also
@@ -217,7 +220,7 @@ def pyg4_pmt_attach_air_absorption_length(mat, reg) -> None:
     mat.addVecPropertyPint("ABSLENGTH", energy, absorpt)
 
 
-def pyg4_pmt_attach_borosilicate_rindex(mat, reg) -> None:
+def pyg4_pmt_attach_borosilicate_rindex(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the refractive index to the given borosilicate material instance of the PMT cap.
 
     See Also
@@ -230,7 +233,9 @@ def pyg4_pmt_attach_borosilicate_rindex(mat, reg) -> None:
     mat.addVecPropertyPint("RINDEX", energy, r)
 
 
-def pyg4_pmt_attach_borosilicate_absorption_length(mat, reg) -> None:
+def pyg4_pmt_attach_borosilicate_absorption_length(
+    mat: g4.Material, reg: g4.Registry
+) -> None:
     """Attach the absorption length to the given borosilicate material instance of the PMT cap.
 
     See Also
@@ -243,7 +248,7 @@ def pyg4_pmt_attach_borosilicate_absorption_length(mat, reg) -> None:
     mat.addVecPropertyPint("ABSLENGTH", energy, absorpt)
 
 
-def pyg4_pmt_attach_steel_reflectivity(mat, reg) -> None:
+def pyg4_pmt_attach_steel_reflectivity(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the reflectivity to the given PMT steel material instance.
 
     See Also
@@ -256,7 +261,7 @@ def pyg4_pmt_attach_steel_reflectivity(mat, reg) -> None:
         mat.addVecPropertyPint("REFLECTIVITY", λ.to("eV"), refl)
 
 
-def pyg4_pmt_attach_steel_efficiency(mat, reg) -> None:
+def pyg4_pmt_attach_steel_efficiency(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the efficiency to the given PMT steel material instance.
 
     .. deprecated:: 0.17
@@ -270,7 +275,9 @@ def pyg4_pmt_attach_steel_efficiency(mat, reg) -> None:
     mat.addVecPropertyPint("EFFICIENCY", energy, eff)
 
 
-def pyg4_pmt_attach_photocathode_reflectivity(mat, reg) -> None:
+def pyg4_pmt_attach_photocathode_reflectivity(
+    mat: g4.Material, reg: g4.Registry
+) -> None:
     """Attach the reflectivity to the given PMT photocathode material instance.
 
     See Also
@@ -284,7 +291,9 @@ def pyg4_pmt_attach_photocathode_reflectivity(mat, reg) -> None:
 
 
 def pyg4_pmt_attach_photocathode_efficiency(
-    mat, reg, name: Literal["etl9354", "gerda", "r7081", "l1000"] = "etl9354"
+    mat: g4.Material,
+    reg: g4.Registry,
+    name: Literal["etl9354", "gerda", "r7081", "l1000"] = "etl9354",
 ) -> None:
     """Attach the efficiency to the given PMT photocathode material instance.
 

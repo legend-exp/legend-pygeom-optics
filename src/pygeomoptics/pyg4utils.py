@@ -86,7 +86,7 @@ def _def_scint_particle(
         mat.addConstProperty(particle + "SCINTILLATIONYIELD2", 1 - exc_ratio)
 
 
-def pyg4_def_scint_by_particle_type(mat, scint_cfg: ScintConfig) -> None:
+def pyg4_def_scint_by_particle_type(mat: g4.Material, scint_cfg: ScintConfig) -> None:
     """Define a full set of particles for scintillation."""
     for particle in scint_cfg.particles:
         if not particle.valid_geant_particle():

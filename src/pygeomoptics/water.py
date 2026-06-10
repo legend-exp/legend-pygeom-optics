@@ -8,10 +8,14 @@ High puritiy water for LEGEND-200 watertank.
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pint
 from pint import Quantity
+
+if TYPE_CHECKING:
+    import pyg4ometry.geant4 as g4
 
 from pygeomoptics import store
 
@@ -61,7 +65,7 @@ def water_absorption() -> tuple[Quantity, Quantity]:
     return wvl, abs_len
 
 
-def pyg4_water_attach_rindex(mat, reg) -> None:
+def pyg4_water_attach_rindex(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the refractive index to the given water material instance.
 
     See Also
@@ -74,7 +78,7 @@ def pyg4_water_attach_rindex(mat, reg) -> None:
         mat.addVecPropertyPint("RINDEX", λ.to("eV"), r)
 
 
-def pyg4_water_attach_absorption(mat, reg) -> None:
+def pyg4_water_attach_absorption(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach absorption to the given water material instance.
 
     See Also

@@ -21,10 +21,14 @@ Tetraphenyl-Butadiene wavelength shifter.
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pint
 from pint import Quantity
+
+if TYPE_CHECKING:
+    import pyg4ometry.geant4 as g4
 
 from pygeomoptics import store
 from pygeomoptics.utils import InterpolatingGraph, readdatafile
@@ -101,7 +105,7 @@ def tpb_wls_absorption() -> tuple[Quantity, Quantity]:
     return wvl, absorp
 
 
-def pyg4_tpb_attach_rindex(mat, reg) -> None:
+def pyg4_tpb_attach_rindex(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the refractive index to the given tpb material instance.
 
     See Also
@@ -115,8 +119,8 @@ def pyg4_tpb_attach_rindex(mat, reg) -> None:
 
 
 def pyg4_tpb_attach_wls(
-    mat,
-    reg,
+    mat: g4.Material,
+    reg: g4.Registry,
     quantum_efficiency: bool | float = True,
     emission_spectrum: str = "default",
 ) -> None:

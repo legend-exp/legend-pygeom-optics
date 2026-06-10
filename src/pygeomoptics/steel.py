@@ -12,10 +12,14 @@ GERDA/LEGEND cryostat) until we have a dedicated measurement available.
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pint
 from pint import Quantity
+
+if TYPE_CHECKING:
+    import pyg4ometry.geant4 as g4
 
 from pygeomoptics import store
 
@@ -39,7 +43,7 @@ def steel_reflectivity() -> tuple[Quantity, Quantity]:
     return λ, refl
 
 
-def pyg4_steel_attach_reflectivity(mat, reg) -> None:
+def pyg4_steel_attach_reflectivity(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the optical reflectivity to the given steel material instance.
 
     See Also

@@ -8,9 +8,13 @@
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 import pint
 from pint import Quantity
+
+if TYPE_CHECKING:
+    import pyg4ometry.geant4 as g4
 
 from pygeomoptics import store
 from pygeomoptics.utils import readdatafile
@@ -34,7 +38,7 @@ def tantalum_complex_rindex() -> tuple[Quantity, Quantity, Quantity]:
     return real[0], real[1], imag[1]
 
 
-def pyg4_tantalum_attach_complex_rindex(mat, reg) -> None:
+def pyg4_tantalum_attach_complex_rindex(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the complex refractive index to the given tantalum material instance.
 
     See Also
