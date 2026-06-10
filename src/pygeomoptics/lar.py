@@ -28,11 +28,14 @@
 from __future__ import annotations
 
 import logging
-from typing import Literal, NamedTuple, cast
+from typing import TYPE_CHECKING, Literal, NamedTuple, cast
 
 import numpy as np
 import pint
 from pint import Quantity
+
+if TYPE_CHECKING:
+    import pyg4ometry.geant4 as g4
 
 from pygeomoptics import store
 from pygeomoptics.scintillate import ScintConfig, ScintParticle
@@ -547,7 +550,9 @@ def lar_scintillation_params(
 
 @store.register_pluggable
 def pyg4_lar_attach_rindex(
-    lar_mat, reg, lar_dielectric_method: ArDielectricMethods = "cern2020"
+    lar_mat: g4.Material,
+    reg: g4.Registry,
+    lar_dielectric_method: ArDielectricMethods = "cern2020",
 ) -> None:
     """Attach the refractive index to the given LAr material instance.
 
@@ -571,7 +576,7 @@ def pyg4_lar_attach_rindex(
 
 
 @store.register_pluggable
-def pyg4_gar_attach_rindex(lar_mat, reg) -> None:
+def pyg4_gar_attach_rindex(lar_mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the refractive index to the given gaseous argon (GAr) material instance.
 
     See Also
@@ -588,8 +593,8 @@ def pyg4_gar_attach_rindex(lar_mat, reg) -> None:
 
 @store.register_pluggable
 def pyg4_lar_attach_attenuation(
-    lar_mat,
-    reg,
+    lar_mat: g4.Material,
+    reg: g4.Registry,
     lar_temperature: Quantity,
     lar_dielectric_method: ArDielectricMethods = "cern2020",
     attenuation_method_or_length: ArLifetimeMethods | Quantity = "legend200-llama",
@@ -656,8 +661,8 @@ def pyg4_lar_attach_attenuation(
 
 
 def pyg4_lar_attach_scintillation(
-    lar_mat,
-    reg,
+    lar_mat: g4.Material,
+    reg: g4.Registry,
     flat_top_yield: Quantity = 31250 / u.MeV,
     triplet_lifetime_method: float | ArLifetimeMethods = "legend200-llama",
 ) -> None:

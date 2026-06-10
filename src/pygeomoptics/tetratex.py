@@ -8,9 +8,13 @@ Tetratex reflector.
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 import pint
 from pint import Quantity
+
+if TYPE_CHECKING:
+    import pyg4ometry.geant4 as g4
 
 from pygeomoptics import store
 from pygeomoptics.utils import readdatafile
@@ -41,7 +45,9 @@ def tetratex_reflectivity() -> tuple[Quantity, Quantity]:
     return λ, r
 
 
-def pyg4_tetratex_attach_reflectivity(mat, reg, reflectivity_scale: float = 1) -> None:
+def pyg4_tetratex_attach_reflectivity(
+    mat: g4.Material, reg: g4.Registry, reflectivity_scale: float = 1
+) -> None:
     """Attach the optical reflectivity to the given tetratex material instance.
 
     Parameters

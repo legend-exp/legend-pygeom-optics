@@ -11,11 +11,15 @@ from __future__ import annotations
 
 import logging
 import math
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pint
 from numpy.typing import NDArray
 from pint import Quantity
+
+if TYPE_CHECKING:
+    import pyg4ometry.geant4 as g4
 
 from pygeomoptics import pyg4utils, store
 from pygeomoptics.utils import InterpolatingGraph, readdatafile
@@ -131,7 +135,7 @@ def vm2000_scint_timeconstant() -> Quantity:
     return 0.5 * u.ns
 
 
-def pyg4_vm2000_attach_rindex(mat, reg) -> None:
+def pyg4_vm2000_attach_rindex(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the refractive index to the given VM2000 material instance.
 
     See Also
@@ -145,7 +149,7 @@ def pyg4_vm2000_attach_rindex(mat, reg) -> None:
         mat.addVecPropertyPint("RINDEX", λ.to("eV"), r)
 
 
-def pyg4_vm2000_attach_absorption_length(mat, reg) -> None:
+def pyg4_vm2000_attach_absorption_length(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the refractive index to the given VM2000 material instance.
 
     See Also
@@ -159,14 +163,16 @@ def pyg4_vm2000_attach_absorption_length(mat, reg) -> None:
         mat.addVecPropertyPint("ABSLENGTH", λ.to("eV"), r)
 
 
-def pyg4_vm2000_attach_particle_scintillationyields(mat, reg) -> None:
+def pyg4_vm2000_attach_particle_scintillationyields(
+    mat: g4.Material, reg: g4.Registry
+) -> None:
     """Attach the scintillation yiels (except of electron yield) to the given VM2000 material instance."""
 
     pyg4utils._def_scint_particle(mat, "DEUTERON", 0 / u.eV, 0.0, None)
     pyg4utils._def_scint_particle(mat, "TRITON", 0 / u.eV, 0.0, None)
 
 
-def pyg4_vm2000_attach_reflectivity(mat, reg) -> None:
+def pyg4_vm2000_attach_reflectivity(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the reflectivity to the given VM2000 material instance.
 
     See Also
@@ -178,7 +184,7 @@ def pyg4_vm2000_attach_reflectivity(mat, reg) -> None:
     mat.addVecPropertyPint("REFLECTIVITY", energy, r)
 
 
-def pyg4_vm2000_attach_efficiency(mat, reg) -> None:
+def pyg4_vm2000_attach_efficiency(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the efficiency to the given VM2000 material instance.
 
     See Also
@@ -190,7 +196,7 @@ def pyg4_vm2000_attach_efficiency(mat, reg) -> None:
     mat.addVecPropertyPint("EFFICIENCY", vm2000_energy_range, vm2000_efficiency)
 
 
-def pyg4_vm2000_attach_wls(mat, reg) -> None:
+def pyg4_vm2000_attach_wls(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach wavelength shifting properties to the given VM2000 material instance.
 
     See Also
@@ -206,7 +212,7 @@ def pyg4_vm2000_attach_wls(mat, reg) -> None:
     mat.addConstPropertyPint("WLSTIMECONSTANT", vm2000_scint_timeconstant())
 
 
-def pyg4_vm2000_attach_border_params(mat, reg) -> None:
+def pyg4_vm2000_attach_border_params(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach border parameters between water and the given VM2000 material instance.
 
     See Also

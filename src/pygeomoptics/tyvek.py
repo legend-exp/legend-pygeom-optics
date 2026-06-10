@@ -3,9 +3,13 @@
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 import pint
 from pint import Quantity
+
+if TYPE_CHECKING:
+    import pyg4ometry.geant4 as g4
 
 from pygeomoptics import store
 from pygeomoptics.utils import readdatafile
@@ -26,7 +30,9 @@ def tyvek_reflectivity() -> tuple[Quantity, Quantity]:
     return readdatafile("tyvek_reflectivity.dat")
 
 
-def pyg4_tyvek_attach_reflectivity(mat, reg, reflectivity_scale: float = 1) -> None:
+def pyg4_tyvek_attach_reflectivity(
+    mat: g4.Material, reg: g4.Registry, reflectivity_scale: float = 1
+) -> None:
     """Attach the optical reflectivity to the given material instance.
 
     Parameters

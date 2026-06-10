@@ -11,10 +11,14 @@ Scinillating fibers BCF91-A from Saint Gobain.
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pint
 from pint import Quantity
+
+if TYPE_CHECKING:
+    import pyg4ometry.geant4 as g4
 
 from pygeomoptics import store
 from pygeomoptics.scintillate import ScintConfig, ScintParticle
@@ -180,7 +184,7 @@ def fiber_core_scintillation_params() -> ScintConfig:
     )
 
 
-def pyg4_fiber_cladding1_attach_rindex(mat, reg) -> None:
+def pyg4_fiber_cladding1_attach_rindex(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the refractive index to the given fiber cladding 1 material instance.
 
     See Also
@@ -193,7 +197,7 @@ def pyg4_fiber_cladding1_attach_rindex(mat, reg) -> None:
         mat.addVecPropertyPint("RINDEX", λ.to("eV"), r)
 
 
-def pyg4_fiber_cladding2_attach_rindex(mat, reg) -> None:
+def pyg4_fiber_cladding2_attach_rindex(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the refractive index to the given fiber cladding 2 material instance.
 
     See Also
@@ -206,7 +210,7 @@ def pyg4_fiber_cladding2_attach_rindex(mat, reg) -> None:
         mat.addVecPropertyPint("RINDEX", λ.to("eV"), r)
 
 
-def pyg4_fiber_core_attach_rindex(mat, reg) -> None:
+def pyg4_fiber_core_attach_rindex(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach the refractive index to the given fiber core material instance.
 
     See Also
@@ -220,8 +224,8 @@ def pyg4_fiber_core_attach_rindex(mat, reg) -> None:
 
 
 def pyg4_fiber_core_attach_wls(
-    mat,
-    reg,
+    mat: g4.Material,
+    reg: g4.Registry,
     wls_abs_at_400nm: Quantity = 0.7 * u.mm,
 ) -> None:
     """Attach wavelength shifting properties to the given material instance.
@@ -249,7 +253,7 @@ def pyg4_fiber_core_attach_wls(
 
 
 def pyg4_fiber_core_attach_absorption(
-    mat, reg, use_geometrical_absorption: bool = True
+    mat: g4.Material, reg: g4.Registry, use_geometrical_absorption: bool = True
 ) -> None:
     """Attach absorption to the given material instance.
 
@@ -276,7 +280,7 @@ def pyg4_fiber_core_attach_absorption(
         mat.addVecPropertyPint("ABSLENGTH", λ_full.to("eV"), absorption)
 
 
-def pyg4_fiber_core_attach_scintillation(mat, reg) -> None:
+def pyg4_fiber_core_attach_scintillation(mat: g4.Material, reg: g4.Registry) -> None:
     """Attach Geant4 properties for fiber scintillation response to the given material instance.
 
     .. note:: This currently only adds scintillation for energy deposited by electrons or alphas.
