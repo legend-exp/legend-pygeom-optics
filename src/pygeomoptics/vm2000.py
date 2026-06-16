@@ -64,9 +64,7 @@ def vm2000_absorption_length() -> Quantity:
 
 @store.register_pluggable
 @u.with_context("sp")
-def vm2000_parameters() -> tuple[
-    Quantity, NDArray[np.float64], NDArray[np.float64], Quantity, Quantity
-]:
+def vm2000_parameters() -> tuple[Quantity, NDArray[np.float64], Quantity, Quantity]:
     """Wavelength-shifting parameters for the reflective foil VM2000."""
     from pygeomoptics.pyg4utils import pyg4_scale_spectral_density
 
@@ -86,7 +84,6 @@ def vm2000_parameters() -> tuple[
 
     # Create arrays for energy and optical properties
     vm2000_reflectivity = np.zeros(num1)
-    vm2000_efficiency = np.zeros(num1)
     wls_absorption = np.zeros(num1) * u.m
 
     # Set reflectivity, absorption, and emission
@@ -120,7 +117,6 @@ def vm2000_parameters() -> tuple[
     return (
         vm2000_energy_range,
         vm2000_reflectivity,
-        vm2000_efficiency,
         wls_absorption,
         wls_emission,
     )
@@ -179,21 +175,9 @@ def pyg4_vm2000_attach_reflectivity(mat: g4.Material, reg: g4.Registry) -> None:
     --------
     .vm2000_parameters
     """
-    energy, r, _, _, _ = vm2000_parameters()
+    energy, r, _, _ = vm2000_parameters()
 
     mat.addVecPropertyPint("REFLECTIVITY", energy, r)
-
-
-def pyg4_vm2000_attach_efficiency(mat: g4.Material, reg: g4.Registry) -> None:
-    """Attach the efficiency to the given VM2000 material instance.
-
-    See Also
-    --------
-    .vm2000_parameters
-    """
-    vm2000_energy_range, _, vm2000_efficiency, _, _ = vm2000_parameters()
-
-    mat.addVecPropertyPint("EFFICIENCY", vm2000_energy_range, vm2000_efficiency)
 
 
 def pyg4_vm2000_attach_wls(mat: g4.Material, reg: g4.Registry) -> None:
@@ -205,7 +189,7 @@ def pyg4_vm2000_attach_wls(mat: g4.Material, reg: g4.Registry) -> None:
     .vm2000_scint_timeconstant
     """
 
-    vm2000_energy_range, _, _, wls_absorption, wls_emission = vm2000_parameters()
+    vm2000_energy_range, _, wls_absorption, wls_emission = vm2000_parameters()
 
     mat.addVecPropertyPint("WLSABSLENGTH", vm2000_energy_range, wls_absorption)
     mat.addVecPropertyPint("WLSCOMPONENT", vm2000_energy_range, wls_emission)
@@ -219,14 +203,10 @@ def pyg4_vm2000_attach_border_params(mat: g4.Material, reg: g4.Registry) -> None
     --------
     .vm2000_parameters
     """
-    vm2000_energy_range, vm2000_reflectivity, vm2000_efficiency, _, _ = (
-        vm2000_parameters()
-    )
+    vm2000_energy_range, vm2000_reflectivity, _, _ = vm2000_parameters()
 
     reflectivity_front = vm2000_reflectivity * 0
-    efficiency_border = vm2000_efficiency * 0
     transmittance_border = [1.0] * len(vm2000_energy_range)
 
     mat.addVecPropertyPint("REFLECTIVITY", vm2000_energy_range, reflectivity_front)
-    mat.addVecPropertyPint("EFFICIENCY", vm2000_energy_range, efficiency_border)
     mat.addVecPropertyPint("TRANSMITTANCE", vm2000_energy_range, transmittance_border)
