@@ -65,7 +65,15 @@ def vm2000_absorption_length() -> Quantity:
 @store.register_pluggable
 @u.with_context("sp")
 def vm2000_parameters() -> tuple[Quantity, NDArray[np.float64], Quantity, Quantity]:
-    """Wavelength-shifting parameters for the reflective foil VM2000."""
+    """Wavelength-shifting parameters for the reflective foil VM2000.
+
+    Returns the photon energy vector, followed by the reflectivity, the WLS absorption
+    length and the WLS emission spectrum on that energy grid.
+
+    .. optics-plot:: {'y_indices': [0], 'xlabel': 'energy', 'ylabel': 'reflectivity'}
+    .. optics-plot:: {'y_indices': [1], 'standalone': True, 'xlabel': 'energy', 'ylabel': 'WLS abs. length', 'yscale': 'log'}
+    .. optics-plot:: {'y_indices': [2], 'standalone': True, 'xlabel': 'energy', 'ylabel': 'WLS emission'}
+    """
     from pygeomoptics.pyg4utils import pyg4_scale_spectral_density
 
     # Constants

@@ -99,6 +99,10 @@ def plot_callable(
         ret_offset
             use the argument numbered by this (default: 0) as the first argument that will
             be treated as an x or y vector.
+        y_indices
+            only plot the y vectors at these indices (counted from the first y vector, i.e.
+            after applying ``ret_offset``). Useful to get one plot per property from a
+            function returning multiple, differently-dimensioned properties.
         extra_kwargs
             add more kwargs to the ``obj()`` call.
     """
@@ -134,6 +138,9 @@ def plot_callable(
         x = data[ret_offset]
         # ys holds one or more
         ys = data[ret_offset + 1 :]
+
+    if "y_indices" in options:
+        ys = tuple(ys[i] for i in options["y_indices"])
 
     if isinstance(x, pint.Quantity):
         if "xunit" in options:
