@@ -107,9 +107,7 @@ def vm2000_parameters() -> tuple[Quantity, NDArray[np.float64], Quantity, Quanti
             # depending on path length in foil --> angle
             wls_absorption[ji] = vm2000_calculate_wls_mfp(wls_yield)  # Absorbs UV
         else:
-            wls_absorption[ji] = (
-                1.0 * u.m
-            )  # Imperturbed, no absorption of visible light
+            wls_absorption[ji] = 10 * u.m  # Imperturbed, no absorption of visible light
 
     g = InterpolatingGraph(*readdatafile("vm2000_em_spec.dat"), zero_outside=True)
 
