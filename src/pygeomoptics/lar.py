@@ -292,28 +292,19 @@ def lar_abs_length(
         return np.minimum(absl, 100000 * u.cm)  # avoid large numbers
     if method == "legend200-llama-two-components":
         # Custom model with exponential transition through two control points
-        # λ_peak = 126.8 nm: labs = 5.6 cm
-        # λ_threshold = 133 nm: labs = 1000 cm
+        # λ_threshold = 133 nm; below labs = 5.6 cm, above labs = 1000 cm
         labs_s = 5.6 * u.cm
         labs_l = 1000 * u.cm
-        λ_threshold = 133.0  # nm
-        λ_peak = 126.8  # nm
+        λ_threshold_nm = 133.0  # nm
 
-        λ_nm = λ.to("nm").m
-        λ_threshold_nm = λ_threshold
-
-        # Calculate slope b (dimensionless) in the exponent
-        b = np.log(labs_l.m / labs_s.m) / (λ_threshold - λ_peak)
-        a = labs_s.m / np.exp(b * λ_peak)
-
-        # Exponential for λ < threshold, constant labs_l for λ >= threshold
-        absl_magnitude = np.where(
-            λ_nm < λ_threshold_nm,
-            a * np.exp(b * λ_nm),
+        # constant for λ < threshold, constant labs_l for λ >= threshold
+        absl_cm = np.where(
+            λ.to("nm").m < λ_threshold_nm,
+            labs_s.m,
             labs_l.m,
         )
 
-        return absl_magnitude * u.cm
+        return absl_cm * u.cm
     msg = f"unknown method: {method}"
     raise ValueError(msg)
 
