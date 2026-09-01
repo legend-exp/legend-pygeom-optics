@@ -7,6 +7,9 @@ Currently the photocathode efficiencies for the ETL9354KB [ETEL2010]_ and R7081 
 .. [ETEL2010] ET Enterprises Limited 2010 “200 mm (8") photomultiplier 9354KB series data sheet”, 2010, http://lampes-et-tubes.info/pm/9354KB.pdf
 .. [HAMAMATSU2019] Hammamatsu Photonics 2019 "Large Area PMT data sheet"
     https://www.hamamatsu.com/content/dam/hamamatsu-photonics/sites/documents/99_SALES_LIBRARY/etd/LARGE_AREA_PMT_TPMH1376E.pdf
+.. [ACRYL2023] Complex refractive index measurements of Poly(methyl methacrylate) (PMMA) over the UV-VIS-NIR region, 2023, https://doi.org/10.1364/OPTCON.495634
+.. [BODMER2014] Measurement of optical attenuation in acrylic light guides for a dark matter detector, 2014, https://doi.org/10.1088/1748-0221/9/02/P02002
+.. [BSIL2023] Spectroscopy of a borosilicate crown glass in the wavelength range of 0.2 µm-15 cm, 2023, https://doi.org/10.1088/2040-8986/accaf9
 """
 
 from __future__ import annotations
@@ -29,23 +32,37 @@ u = pint.get_application_registry()
 
 
 @store.register_pluggable
-def pmt_acryl_refractive_index() -> float:
-    """Refractive index.
+def pmt_acryl_refractive_index() -> tuple[Quantity, Quantity]:
+    """Refractive index. From [ACRYL2023]_.
 
-    .. optics-const::
+    .. optics-plot::
     """
-    return 1.489
+    wavelength = np.array([200, 250, 300, 400, 600]) * u.nm
+    refractive_index = np.array([1.73, 1.549, 1.488, 1.484, 1.501])
+    return wavelength, refractive_index
 
 
 @store.register_pluggable
 def pmt_acryl_absorption_length() -> tuple[Quantity, Quantity]:
-    """Absorption length.
+    """Absorption length. From 200-300 nm: [ACRYL2023]_ (thin-film measurement in strong absorption regime)
+    400-600 nm: [BODMER2014]_
 
     .. optics-plot::
     """
-    energy = np.array([1.0, 6.0]) * u.eV
-    absorp_length = np.array([2.5, 3.5]) * u.m  # estimation
-    return energy, absorp_length
+    wavelength = np.array([200, 250, 300, 400, 600]) * u.nm
+    absorp_length = (
+        np.array(
+            [
+                0.003,
+                0.079,
+                0.10,
+                3000,
+                20000,
+            ]
+        )
+        * u.mm
+    )
+    return wavelength, absorp_length
 
 
 @store.register_pluggable
@@ -67,23 +84,25 @@ def pmt_air_absorption_length() -> Quantity:
 
 
 @store.register_pluggable
-def pmt_borosilicate_refractive_index() -> float:
-    """Refractive index.
+def pmt_borosilicate_refractive_index() -> tuple[Quantity, Quantity]:
+    """Refractive index. Digitized from fig. 5 [BSIL2023]_.
 
-    .. optics-const::
+    .. optics-plot::
     """
-    return 1.49
+    wavelength = np.array([200, 250, 300, 400, 600]) * u.nm
+    refractive_index = np.array([1.63, 1.58, 1.55, 1.53, 1.51])
+    return wavelength, refractive_index
 
 
 @store.register_pluggable
 def pmt_borosilicate_absorption_length() -> tuple[Quantity, Quantity]:
-    """Absorption length.
+    """Absorption length. Digitized from fig. 5 [BSIL2023]_.
 
     .. optics-plot::
     """
-    energy = np.array([1.0, 6.0]) * u.eV
-    absorp_length = np.array([2.0, 3.0]) * u.m  # estimation
-    return energy, absorp_length
+    wavelength = np.array([200, 250, 300, 400, 600]) * u.nm
+    absorp_length = np.array([0.1, 0.07, 0.1, 125.0, 1400.0]) * u.mm
+    return wavelength, absorp_length
 
 
 @store.register_pluggable
@@ -92,8 +111,8 @@ def pmt_steel_reflectivity() -> tuple[Quantity, Quantity]:
 
     .. optics-plot::
     """
-    λ = np.array([200, 300, 400, 600, 800]) * u.nm
-    refl = np.array([0.35, 0.45, 0.55, 0.58, 0.60])
+    λ = np.array([200, 300, 400, 600]) * u.nm
+    refl = np.array([0.35, 0.45, 0.55, 0.58])
     return λ, refl
 
 
@@ -157,12 +176,9 @@ def pmt_photocathode_reflectivity() -> tuple[Quantity, Quantity]:
     .borosilicate_refractive_index
     """
 
-    λ = np.array([270, 700]) * u.nm
-
-    reflectivity_max = (
-        (1 - pmt_borosilicate_refractive_index())
-        / (1 + pmt_borosilicate_refractive_index())
-    ) ** 2
+    λ = np.array([200, 600]) * u.nm
+    n = pmt_borosilicate_refractive_index()[1][2]  # refractive index at 400 nm
+    reflectivity_max = ((1 - n) / (1 + n)) ** 2
     reflectivity = np.full_like(λ, reflectivity_max - 0.01)
     return λ, reflectivity
 
@@ -174,10 +190,9 @@ def pyg4_pmt_attach_acryl_rindex(mat: g4.Material, reg: g4.Registry) -> None:
     --------
     .pmt_acryl_refractive_index
     """
-    energy = np.array([1.0, 6.0]) * u.eV
-    r = [pmt_acryl_refractive_index()] * 2
-
-    mat.addVecPropertyPint("RINDEX", energy, r)
+    λ, r = pmt_acryl_refractive_index()
+    with u.context("sp"):
+        mat.addVecPropertyPint("RINDEX", λ.to("eV"), r)
 
 
 def pyg4_pmt_attach_acryl_absorption_length(mat: g4.Material, reg: g4.Registry) -> None:
@@ -188,9 +203,9 @@ def pyg4_pmt_attach_acryl_absorption_length(mat: g4.Material, reg: g4.Registry) 
     .pmt_acryl_absorption_length
     """
 
-    energy, absorpt = pmt_acryl_absorption_length()
-
-    mat.addVecPropertyPint("ABSLENGTH", energy, absorpt)
+    λ, absorpt = pmt_acryl_absorption_length()
+    with u.context("sp"):
+        mat.addVecPropertyPint("ABSLENGTH", λ.to("eV"), absorpt)
 
 
 def pyg4_pmt_attach_air_rindex(mat: g4.Material, reg: g4.Registry) -> None:
@@ -200,10 +215,11 @@ def pyg4_pmt_attach_air_rindex(mat: g4.Material, reg: g4.Registry) -> None:
     --------
     .pmt_air_refractive_index
     """
-    energy = np.array([1.0, 6.0]) * u.eV
+    λ = np.array([200, 600]) * u.nm
     r = [pmt_air_refractive_index()] * 2
 
-    mat.addVecPropertyPint("RINDEX", energy, r)
+    with u.context("sp"):
+        mat.addVecPropertyPint("RINDEX", λ.to("eV"), r)
 
 
 def pyg4_pmt_attach_air_absorption_length(mat: g4.Material, reg: g4.Registry) -> None:
@@ -214,10 +230,11 @@ def pyg4_pmt_attach_air_absorption_length(mat: g4.Material, reg: g4.Registry) ->
     .pmt_air_absorption_length
     """
 
-    energy = np.array([1.0, 6.0]) * u.eV
-    absorpt = np.full_like(energy, pmt_air_absorption_length())
+    λ = np.array([200, 250, 300, 400, 600]) * u.nm
+    absorpt = np.full_like(λ, pmt_air_absorption_length())
 
-    mat.addVecPropertyPint("ABSLENGTH", energy, absorpt)
+    with u.context("sp"):
+        mat.addVecPropertyPint("ABSLENGTH", λ.to("eV"), absorpt)
 
 
 def pyg4_pmt_attach_borosilicate_rindex(mat: g4.Material, reg: g4.Registry) -> None:
@@ -227,10 +244,10 @@ def pyg4_pmt_attach_borosilicate_rindex(mat: g4.Material, reg: g4.Registry) -> N
     --------
     .pmt_borosilicate_refractive_index
     """
-    energy = np.array([1.0, 6.0]) * u.eV
-    r = [pmt_borosilicate_refractive_index()] * 2
+    λ, r = pmt_borosilicate_refractive_index()
 
-    mat.addVecPropertyPint("RINDEX", energy, r)
+    with u.context("sp"):
+        mat.addVecPropertyPint("RINDEX", λ.to("eV"), r)
 
 
 def pyg4_pmt_attach_borosilicate_absorption_length(
@@ -243,9 +260,10 @@ def pyg4_pmt_attach_borosilicate_absorption_length(
     .pmt_borosilicate_absorption_length
     """
 
-    energy, absorpt = pmt_borosilicate_absorption_length()
+    λ, absorpt = pmt_borosilicate_absorption_length()
 
-    mat.addVecPropertyPint("ABSLENGTH", energy, absorpt)
+    with u.context("sp"):
+        mat.addVecPropertyPint("ABSLENGTH", λ.to("eV"), absorpt)
 
 
 def pyg4_pmt_attach_steel_reflectivity(mat: g4.Material, reg: g4.Registry) -> None:
@@ -269,10 +287,11 @@ def pyg4_pmt_attach_steel_efficiency(mat: g4.Material, reg: g4.Registry) -> None
             steel should not have a detection efficiency.
     """
 
-    energy = np.array([1.0, 6.0]) * u.eV
-    eff = [pmt_steel_efficiency()] * 2
+    λ = np.array([200, 250, 300, 400, 600]) * u.nm
+    eff = [pmt_steel_efficiency()] * 5
 
-    mat.addVecPropertyPint("EFFICIENCY", energy, eff)
+    with u.context("sp"):
+        mat.addVecPropertyPint("EFFICIENCY", λ.to("eV"), eff)
 
 
 def pyg4_pmt_attach_photocathode_reflectivity(
