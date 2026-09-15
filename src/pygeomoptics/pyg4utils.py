@@ -105,8 +105,9 @@ def pyg4_def_scint_by_particle_type(mat: g4.Material, scint_cfg: ScintConfig) ->
 
 
 def _gdml_unit(u: str) -> str:
+    # Two unicode-variants for greek mu, used by older or newer pint.
+    u = u.replace("\u03bc", "u").replace("\u00b5", "u")
     # Only as of Geant4 11.1.0, `um` and `nm` are supported.
-    u = u.replace("µ", "u")
     if u == "nm":
         u = "nanometer"
     if u == "um":
