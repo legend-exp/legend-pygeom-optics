@@ -198,14 +198,21 @@ def scintillate_times(
     part = particles[particle]
     yields = part[1:]
 
-    # derive number of photons for all time components.
-    yields = (num_photons * yields).astype(np.int64)
-    yields[-1] = num_photons - np.sum(yields[0:-1])  # to keep the sum constant.
+    # draw the photons per time component as a chain of binomials
+    counts = np.empty(yields.shape[0], dtype=np.int64)
+    remaining = num_photons
+    prob_left = 1.0
+    for i in range(yields.shape[0] - 1):
+        p = min(yields[i] / prob_left, 1.0) if prob_left > 0 else 0.0
+        counts[i] = rng.binomial(remaining, p)
+        remaining -= counts[i]
+        prob_left -= yields[i]
+    counts[-1] = remaining
 
     # now, calculate the timestamps of each generated photon.
     times = np.log(rng.uniform(size=num_photons))
     start = 0
-    for num_phot, scint_t in zip(yields, time_components):  # noqa: B905
+    for num_phot, scint_t in zip(counts, time_components):  # noqa: B905
         times[start : start + num_phot] *= -scint_t
         start += num_phot
 
