@@ -113,3 +113,23 @@ def test_scintillate_pen():
     ) as scintillate_local:
         scintillate_local(params, part_e, 10)
         scintillate_local(params, part_ion, 10)
+
+
+def test_scintillate_times_few_photons():
+    # the singlet fraction must hold also for a few photons per call
+    params = sc.precompute_scintillation_params(
+        lar.lar_scintillation_params(),
+        lar.lar_lifetimes().as_tuple(),
+    )
+    part_e = sc.particle_to_index("electron")
+    singlet, triplet = params[3][part_e][1:]
+    tau_s, tau_t = params[2]
+    expected = singlet * (1 - np.exp(-50 / tau_s)) + triplet * (1 - np.exp(-50 / tau_t))
+
+    rng = np.random.default_rng(0)
+    for n in (1, 2, 4):
+        t = np.concatenate(
+            [sc.scintillate_times(params, part_e, n, rng) for _ in range(40000 // n)]
+        )
+        assert len(t) == n * (40000 // n)
+        assert abs(np.mean(t < 50) - expected) < 0.015
