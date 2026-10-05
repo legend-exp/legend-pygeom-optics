@@ -231,12 +231,14 @@ between the time components (e.g. singlet and triplet in LAr).
   what Geant4 does. It shifts photons into the last component (the triplet in
   LAr) when steps produce few photons.
 
-```{important}
+:::{important}
+
 The default no longer matches Geant4. Optical simulations that use
 {func}`pygeomoptics.scintillate.scintillate` give different photon time
 distributions than previous versions. Pass `time_component_model="geant4"` to
 reproduce the old results.
-```
+
+:::
 
 ## CLI helper
 
