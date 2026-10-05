@@ -85,7 +85,7 @@ class InterpolatingGraph:
     ):
         if not isinstance(idx, Quantity) or not isinstance(vals, Quantity):
             msg = "only pint Quantities can be used as index or value"
-            raise ValueError(msg)
+            raise TypeError(msg)
         if len(idx.shape) != 1 or len(vals.shape) != 1:
             msg = "only 1-dimensional data can be used as index or value"
             raise ValueError(msg)
@@ -182,6 +182,7 @@ def g4gps_write_emission_spectrum(
         f.write("/gps/ene/type     Arb\n")
         f.write("/gps/ene/diffspec true\n")
         f.write("/gps/hist/type    arb\n\n")
-        for point in pointwise:
-            f.write(f"/gps/hist/point   {point[0]} {point[1]}\n")
+        f.writelines(
+            f"/gps/hist/point   {point[0]} {point[1]}\n" for point in pointwise
+        )
         f.write("\n/gps/hist/inter   Lin\n")

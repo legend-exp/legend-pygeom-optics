@@ -158,7 +158,7 @@ def plot_callable(
             y = y.magnitude
         elif not isinstance(y, np.ndarray | list):
             msg = f"unsupported y-vector type {type(y)} for plot {plot_file}"
-            raise ValueError(msg)
+            raise TypeError(msg)
 
         po = {"marker": ".", "markersize": 2, "linewidth": 0.5}
         if "labels" in options:
