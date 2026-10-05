@@ -161,7 +161,7 @@ def scintillate_numphot(
     else:
         num_photons = rng.poisson(mean_num_phot)
 
-    return 0 if num_photons <= 0 else num_photons
+    return max(0, num_photons)
 
 
 @njit
