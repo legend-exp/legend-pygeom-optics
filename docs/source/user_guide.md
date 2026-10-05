@@ -216,6 +216,30 @@ def pyg4_mymat_attach_absorption(mat, reg):
 - Format: first line header with units (`# unit1 unit2`), then pairs of numbers;
   comments allowed after `#` (after the header line).
 
+## Scintillation sampling
+
+{mod}`pygeomoptics.scintillate` samples scintillation photons outside of Geant4,
+e.g. for optical simulations with photon detection probability maps. It follows
+the Geant4 scintillation model, with one exception: the split of the photons
+between the time components (e.g. singlet and triplet in LAr).
+
+- `time_component_model="binomial"` (default): each photon belongs to a time
+  component at random, with probability equal to the configured yield fraction.
+  The singlet fraction is correct for any number of photons per step.
+- `time_component_model="geant4"`: each component gets
+  `int(num_photons * yield)` photons, the last component the remainder. This is
+  what Geant4 does. It shifts photons into the last component (the triplet in
+  LAr) when steps produce few photons.
+
+:::{important}
+
+The default no longer matches Geant4. Optical simulations that use
+{func}`pygeomoptics.scintillate.scintillate` give different photon time
+distributions than previous versions. Pass `time_component_model="geant4"` to
+reproduce the old results.
+
+:::
+
 ## CLI helper
 
 A small CLI (defined in {mod}`pygeomoptics.cli`) can generate
