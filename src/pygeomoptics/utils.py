@@ -85,7 +85,7 @@ class InterpolatingGraph:
     ):
         if not isinstance(idx, Quantity) or not isinstance(vals, Quantity):
             msg = "only pint Quantities can be used as index or value"
-            raise ValueError(msg)
+            raise TypeError(msg)
         if len(idx.shape) != 1 or len(vals.shape) != 1:
             msg = "only 1-dimensional data can be used as index or value"
             raise ValueError(msg)
