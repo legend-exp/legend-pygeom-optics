@@ -61,6 +61,7 @@ def test_scintillate_lar():
     ) as scintillate_local:
         scintillate_local(params, part_e, 10)
         scintillate_local(params, part_ion, 10)
+        scintillate_local(params, part_e, 10, time_component_model="geant4")
 
     x0 = np.array([0, 0, 0], dtype=np.float64)
     x1 = np.array([0, 0, 1], dtype=np.float64)

@@ -170,6 +170,7 @@ def scintillate_times(
     particle: ParticleIndex,
     num_photons: int,
     rng: np.random.Generator,
+    time_component_model: Literal["binomial", "geant4"] = "binomial",
 ) -> np.ndarray:
     """Generates the scintillation emission time profile.
 
@@ -181,6 +182,9 @@ def scintillate_times(
         module-internal particle index, see :meth:`particle_to_index`.
     num_photons
         number of photons emitted in this step.
+    time_component_model
+        ``binomial`` draws the time component of each photon at random. ``geant4``
+        reproduces Geant4, which is biased towards the last component for few photons.
 
     Returns
     -------
@@ -198,16 +202,21 @@ def scintillate_times(
     part = particles[particle]
     yields = part[1:]
 
-    # draw the photons per time component as a chain of binomials
-    counts = np.empty(yields.shape[0], dtype=np.int64)
-    remaining = num_photons
-    prob_left = 1.0
-    for i in range(yields.shape[0] - 1):
-        p = min(yields[i] / prob_left, 1.0) if prob_left > 0 else 0.0
-        counts[i] = rng.binomial(remaining, p)
-        remaining -= counts[i]
-        prob_left -= yields[i]
-    counts[-1] = remaining
+    if time_component_model == "geant4":
+        # truncated mean per time component, the last one keeps the sum constant.
+        counts = (num_photons * yields).astype(np.int64)
+        counts[-1] = num_photons - np.sum(counts[0:-1])
+    else:
+        # draw the photons per time component as a chain of binomials
+        counts = np.empty(yields.shape[0], dtype=np.int64)
+        remaining = num_photons
+        prob_left = 1.0
+        for i in range(yields.shape[0] - 1):
+            p = min(yields[i] / prob_left, 1.0) if prob_left > 0 else 0.0
+            counts[i] = rng.binomial(remaining, p)
+            remaining -= counts[i]
+            prob_left -= yields[i]
+        counts[-1] = remaining
 
     # now, calculate the timestamps of each generated photon.
     times = np.log(rng.uniform(size=num_photons))
@@ -226,11 +235,13 @@ def scintillate_local(
     edep_keV: float,
     rng: np.random.Generator,
     emission_term_model: Literal["poisson", "normal_fano"] = "normal_fano",
+    time_component_model: Literal["binomial", "geant4"] = "binomial",
 ) -> np.ndarray:
     """Generates a Poisson/Gauss-distributed number of photons according to the
     scintillation yield formula, as implemented in Geant4.
 
-    This function only calculates the local part of scintillation.
+    This function only calculates the local part of scintillation. By default, the
+    split into time components differs from Geant4, see :meth:`scintillate_times`.
 
     Parameters
     ----------
@@ -243,6 +254,9 @@ def scintillate_local(
     emission_term_model
         switch between a Geant4-like photon number term (normal distribution with fano
         factor) and a simplified model using a Poisson distribution.
+    time_component_model
+        how the photons are split between the time components, see
+        :meth:`scintillate_times`.
 
     Returns
     -------
@@ -253,7 +267,7 @@ def scintillate_local(
         params, particle, edep_keV, rng, emission_term_model
     )
 
-    return scintillate_times(params, particle, num_photons, rng)
+    return scintillate_times(params, particle, num_photons, rng, time_component_model)
 
 
 @njit
@@ -269,6 +283,7 @@ def scintillate(
     edep_keV: float,
     rng: np.random.Generator,
     emission_term_model: Literal["poisson", "normal_fano"] = "normal_fano",
+    time_component_model: Literal["binomial", "geant4"] = "binomial",
 ):
     """Generates a Poisson/Gauss-distributed number of photons according to the
     scintillation yield formula, as implemented in Geant4, along the line segment
@@ -276,6 +291,9 @@ def scintillate(
 
     In case x1 is not supplied the position along the step and the time offsets
     are not considered.
+
+    By default, the split into time components differs from Geant4, see
+    :meth:`scintillate_times`.
 
     Parameters
     ----------
@@ -300,6 +318,9 @@ def scintillate(
     emission_term_model
         switch between a Geant4-like photon number term (normal distribution with fano
         factor) and a simplified model using a Poisson distribution.
+    time_component_model
+        how the photons are split between the time components, see
+        :meth:`scintillate_times`.
 
     Returns
     -------
@@ -309,7 +330,7 @@ def scintillate(
     The emitted photons are distributed uniformly in space along the path and not ordered.
     """
     delta_t_scint = scintillate_local(
-        params, particle, edep_keV, rng, emission_term_model
+        params, particle, edep_keV, rng, emission_term_model, time_component_model
     )
     # emission position for each single photon.
     if x1_m is not None:
