@@ -25,7 +25,7 @@ def test_readdatafile():
 def test_interpolating_init():
     """test various common errors in initialization."""
 
-    with pytest.raises(ValueError, match="pint Quantities"):
+    with pytest.raises(TypeError, match="pint Quantities"):
         InterpolatingGraph(np.array([0, 1]), np.array([0, 1]))
     with pytest.raises(ValueError, match="1-dimensional"):
         InterpolatingGraph(
