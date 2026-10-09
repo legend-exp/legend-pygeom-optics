@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import argparse
 
+from pygeomoptics.store import load_user_material_code
+
 
 def optics_cli() -> None:
     parser = argparse.ArgumentParser(
@@ -17,17 +19,25 @@ def optics_cli() -> None:
     g4gps_parser.add_argument(
         "--type",
         choices=("arb_file", "macro"),
-        help="file that contains a list of detector ids that are part of the input file. default: %(default)e",
+        help="file that contains a list of detector ids that are part of the input file. default: %(default)s",
         default="macro",
     )
     g4gps_parser.add_argument(
         "spectrum", choices=("lar_emission", "pen_emission", "fiber_emission")
+    )
+    g4gps_parser.add_argument(
+        "--pygeom-optics-plugin",
+        action="store",
+        help="""Execute the python module given by this path before writing the spectrum""",
     )
     g4gps_parser.add_argument("output", help="output file")
 
     args = parser.parse_args()
 
     if args.command == "g4gps":
+        if args.pygeom_optics_plugin:
+            load_user_material_code(args.pygeom_optics_plugin)
+
         if args.spectrum == "lar_emission":
             from pygeomoptics.lar import g4gps_lar_emissions_spectrum as g4gps_spec
         elif args.spectrum == "pen_emission":
