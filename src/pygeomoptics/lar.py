@@ -349,6 +349,8 @@ def lar_calculate_attenuation(
     attenuation_method_or_length: ArLifetimeMethods | Quantity = "legend200-llama",
     rayleigh_enabled_or_length: bool | Quantity = True,
     absorption_enabled_or_length: ArAbsCurveMethods | bool | Quantity = True,
+    vuv_abs_length: Quantity | None = None,
+    vis_abs_length: Quantity | None = None,
 ) -> ArAttenuation:
     """Calculate all attenuation-related optical properties to the given LAr material instance.
 
@@ -374,11 +376,22 @@ def lar_calculate_attenuation(
 
         If set to a length-Quantity, the given value will be used as the absorption length at
         the scintillation peak.
+    vuv_abs_length
+        Absorption length below 141 nm, seen by the LAr scintillation light. Default:
+        derived from the attenuation and Rayleigh scattering lengths.
+    vis_abs_length
+        Absorption length above 167.5 nm, seen by wavelength-shifted light. Default: 1000 m.
 
     Important
     ---------
     If all three of rayleigh length, absorption length and attenuation length are set via the function
     parameters, the parameter defining the total attenuation length will be ignored!
+
+    If `vuv_abs_length` or `vis_abs_length` is set, the absorption length is constant below
+    141 nm and above 167.5 nm, and exponential in wavelength in between. Otherwise the whole
+    default curve is scaled by one factor, and the absorption length above 167.5 nm stays at
+    ~370 times the one below 141 nm. Setting both `absorption_enabled_or_length` (as a
+    length) and `vuv_abs_length` raises an error.
 
     Notes
     -----
@@ -406,6 +419,12 @@ def lar_calculate_attenuation(
         log.warning(
             "All three of attenuation, absorption and rayleigh scattering length are constrained manually. The specified attenuation length will be ignored."
         )
+
+    if vuv_abs_length is not None and isinstance(
+        absorption_enabled_or_length, Quantity
+    ):
+        msg = "set only one of absorption_enabled_or_length and vuv_abs_length"
+        raise ValueError(msg)
 
     if isinstance(absorption_enabled_or_length, str):
         log.warning(
@@ -439,10 +458,19 @@ def lar_calculate_attenuation(
         if isinstance(absorption_enabled_or_length, Quantity):
             assert absorption_enabled_or_length.check("[length]")
             peak_abs_length = absorption_enabled_or_length
+        elif vuv_abs_length is not None:
+            peak_abs_length = vuv_abs_length
 
-        # absorption length is _not_ correctly scaled yet.
-        absl_scale = peak_abs_length / lar_abs_length(126.8 * u.nm)
-        abslength = lar_abs_length(λ_full) * absl_scale
+        if vuv_abs_length is None and vis_abs_length is None:
+            # absorption length is _not_ correctly scaled yet.
+            absl_scale = peak_abs_length / lar_abs_length(126.8 * u.nm)
+            abslength = lar_abs_length(λ_full) * absl_scale
+        else:
+            vis = 1000 * u.m if vis_abs_length is None else vis_abs_length
+            t = np.clip((λ_full.to("nm").m - 141) / (167.5 - 141), 0, 1)
+            abslength = (
+                peak_abs_length.to("cm").m ** (1 - t) * vis.to("cm").m ** t * u.cm
+            )
 
     if rayleigh_enabled_or_length is False:
         attenuation = abslength
@@ -591,6 +619,8 @@ def pyg4_lar_attach_attenuation(
     attenuation_method_or_length: ArLifetimeMethods | Quantity = "legend200-llama",
     rayleigh_enabled_or_length: bool | Quantity = True,
     absorption_enabled_or_length: bool | Quantity = True,
+    vuv_abs_length: Quantity | None = None,
+    vis_abs_length: Quantity | None = None,
 ) -> tuple[Quantity, Quantity]:
     """Attach all attenuation-related optical properties to the given LAr material instance.
 
@@ -616,6 +646,10 @@ def pyg4_lar_attach_attenuation(
 
         If set to a length-Quantity, the given value will be used as the absorption length at
         the scintillation peak.
+    vuv_abs_length
+        See :func:`lar_calculate_attenuation`.
+    vis_abs_length
+        See :func:`lar_calculate_attenuation`.
 
     Returns
     -------
@@ -640,6 +674,8 @@ def pyg4_lar_attach_attenuation(
         attenuation_method_or_length,
         rayleigh_enabled_or_length,
         absorption_enabled_or_length,
+        vuv_abs_length,
+        vis_abs_length,
     )
 
     with u.context("sp"):
